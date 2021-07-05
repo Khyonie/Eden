@@ -1,0 +1,149 @@
+{
+  "todo": [
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T18:33:41.269Z",
+      "description": {
+        "content": "A module disabled without the proper token gets marked as disabled, without being disabled.",
+        "mime": "text/markdown"
+      },
+      "id": "9",
+      "references": [],
+      "title": "BUG - Disabling modules with @PreventDisable has odd effects",
+      "type": "bug"
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T18:34:42.155Z",
+      "description": {
+        "content": "Commands marked with @PreventDisable still get disabled.",
+        "mime": "text/markdown"
+      },
+      "id": "10",
+      "references": [],
+      "title": "BUG - @PreventDisable does not work for resources other than modules",
+      "type": "bug"
+    }
+  ],
+  "in-progress": [],
+  "testing": [],
+  "done": [
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T16:23:19.998Z",
+      "description": {
+        "content": "Event classes are being instantiated and added twice.",
+        "mime": "text/markdown"
+      },
+      "id": "2",
+      "references": [],
+      "title": "BUG - Events are registered twice",
+      "type": "bug"
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T18:14:21.967Z",
+      "description": {
+        "content": "\"zcommand_help\" fails to print any options.",
+        "mime": "text/markdown"
+      },
+      "id": "8",
+      "references": [],
+      "title": "BUG - /parent help does not work."
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T16:22:11.482Z",
+      "description": {
+        "content": "Test if the @Unimplemented annotation prevents classes from being loaded.",
+        "mime": "text/markdown"
+      },
+      "id": "1",
+      "references": [],
+      "title": "TESTING - @Unimplemented"
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T16:30:34.618Z",
+      "description": {
+        "content": "What happens when a module is disabled?",
+        "mime": "text/markdown"
+      },
+      "details": {
+        "content": "Its' commands are removed, leaving a ghost. Its' events are removed as expected.\nGood enough for now.",
+        "mime": "text/markdown"
+      },
+      "id": "5",
+      "references": [],
+      "title": "TESTING - Disabling modules"
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T16:34:02.194Z",
+      "description": {
+        "content": "What happens when we load a module that wasn't in /mods at startup?",
+        "mime": "text/markdown"
+      },
+      "details": {
+        "content": "It works as expected. Events are added correctly, however command parents won't show up as tab suggestions because of how bukkit handles commands. Command executions work however.",
+        "mime": "text/markdown"
+      },
+      "id": "7",
+      "references": [],
+      "title": "TESTING - Hotadding modules"
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T16:29:41.499Z",
+      "description": {
+        "content": "What happens when a command is unloaded?",
+        "mime": "text/markdown"
+      },
+      "id": "3",
+      "references": [],
+      "title": "TESTING - Unloading commands"
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T16:29:57.495Z",
+      "description": {
+        "content": "What happens when an event is unloaded?",
+        "mime": "text/markdown"
+      },
+      "id": "4",
+      "references": [],
+      "title": "TESTING - Unloading events"
+    },
+    {
+      "assignedTo": {
+        "name": "Hailey"
+      },
+      "creation_time": "2021-06-28T16:30:58.544Z",
+      "description": {
+        "content": "What happens when a module is unloaded?",
+        "mime": "text/markdown"
+      },
+      "id": "6",
+      "references": [],
+      "title": "TESTING - Unloading modules"
+    }
+  ]
+}
