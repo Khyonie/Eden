@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "**/bin/": true,
+        "**/doc/": true,
+        "**/.gitattributes": true,
+        "**/LICENSE": true,
+        "**/README.md": true,
+        "**/.gitignore": true,
+        "**/plugin.yml": true,
+        "**/.vscode/": true,
+        "**/internalModules/": true,
+    }
+}

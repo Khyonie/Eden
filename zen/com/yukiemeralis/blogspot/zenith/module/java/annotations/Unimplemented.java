@@ -1,0 +1,13 @@
+package com.yukiemeralis.blogspot.zenith.module.java.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Unimplemented 
+{
+    String value() default "This class is not finished.";
+}
