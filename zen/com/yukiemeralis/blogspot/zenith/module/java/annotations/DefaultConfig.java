@@ -5,10 +5,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotation for modules that have an @ZenConfig annotation. Provides the keys and values for a default config.
+ * @author Hailey
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DefaultConfig
 {
-    String[] keys();
-    String[] values();
+	/** */
+	String[] keys();
+	/** */
+	String[] values();
 }

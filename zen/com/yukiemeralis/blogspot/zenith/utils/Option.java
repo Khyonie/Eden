@@ -1,5 +1,6 @@
 package com.yukiemeralis.blogspot.zenith.utils;
 
+@SuppressWarnings("javadoc")
 public class Option<T>
 {
     public static enum OptionState

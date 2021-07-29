@@ -1,5 +1,8 @@
 package com.yukiemeralis.blogspot.zenith.core.modgui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.yukiemeralis.blogspot.modules.zenithgui.GuiItemStack;
 import com.yukiemeralis.blogspot.modules.zenithgui.base.DynamicGui;
 import com.yukiemeralis.blogspot.zenith.Zenith;
@@ -8,12 +11,14 @@ import com.yukiemeralis.blogspot.zenith.module.java.enums.CallerToken;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.zenith.utils.ItemUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
+import com.yukiemeralis.blogspot.zenith.utils.ChatUtils;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class ModuleSubGui extends DynamicGui
 {
@@ -39,7 +44,16 @@ public class ModuleSubGui extends DynamicGui
         };
 
         disable_button = new GuiItemStack(
-            ItemUtils.build(Material.RED_CONCRETE, "§r§c§lDisable module", "§r§4Disable an enabled module.", "§r§4This unloads all commands and events", "§r§4tied to the module.")
+            ItemUtils.build(
+                Material.RED_CONCRETE, 
+                "§r§c§lDisable module", 
+                "§r§4Disable an enabled module.", 
+                "§r§4This unloads all commands and events", 
+                "§r§4tied to the module.",
+                "",
+                "§r§4All listed reliant modules will",
+                "§r§4also be disabled. "
+            )
         ) {
             @Override
             public void onIconInteract(InventoryClickEvent event) 
@@ -112,9 +126,20 @@ public class ModuleSubGui extends DynamicGui
             addComponent(3, disable_button);
 
         getInventory().setItem(4, module.toIcon());
+        getInventory().setItem(8, reliantModules());
         addComponent(5, unload_button);
 
         paintComponents();
+    }
+
+    private ItemStack reliantModules()
+    {
+        if (module.getReliantModules().size() == 0)
+            return getBlankIcon().clone();
+
+        List<String> lore = new ArrayList<>();
+        module.getReliantModules().forEach(mod -> lore.add("§r" + ChatUtils.of("9CE8A7") + mod.getName()));
+        return ItemUtils.build(Material.OAK_SAPLING, "§r" + ChatUtils.of("DD73CE") + "§lReliant modules", lore.toArray(new String[lore.size()]));
     }
 
     @Override

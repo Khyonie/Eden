@@ -23,6 +23,10 @@ import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
+/**
+ * An instance of a Zenith command. Please look at the wiki @ https://github.com/YukiEmeralis/Zenith for documentation.
+ * @author Yuki_emeralis
+ */
 public abstract class ZenithCommand extends Command implements TabCompleter
 {
     private Map<String, String> redirects = new HashMap<>();
@@ -33,6 +37,9 @@ public abstract class ZenithCommand extends Command implements TabCompleter
     private static Class<?> permissions;
     private static Method isAuthorized = null;
 
+    /**
+     * Initializes some static variables, and thus should only be run once.
+     */
     public void init()
     {
         if (permissions == null)
@@ -47,18 +54,32 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         }
     }
 
+    /**
+     * A Zenith command with the specified name.
+     * @param name The name of the command, as in "/name".
+     */
     public ZenithCommand(String name) 
     {
         super(name, "ZenithCommand: " + name, "ZenithCommand: " + name, new ArrayList<>());
         generateRedirects();
     }
     
+    /**
+     * A Zenith command with the specified name and a list of potential aliases.
+     * @param name The name of the command, as in "/name".
+     * @param aliases A list of potential aliases for this command.
+     */
     public ZenithCommand(String name, List<String> aliases) 
     {
         super(name, "ZenithCommand: " + name, "ZenithCommand: " + name, aliases);
         generateRedirects();
     }
 
+    /**
+     * A Zenith command with the specified name and tied to the given module. Commands tied to a module are categorized with the /zen helpall command.
+     * @param name The name of the command, as in "/name".
+     * @param parent_module The module this command is tied to.
+     */
     public ZenithCommand(String name, ZenithModule parent_module) 
     {
         super(name, "ZenithCommand: " + name, "ZenithCommand: " + name, new ArrayList<>());
@@ -66,6 +87,12 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         this.parent_module = parent_module;
     }
     
+    /**
+     * A Zenith command with the specified name, a list of potential aliases, and tied to the given module. Commands tied to a module are categorized with the /zen helpall command.
+     * @param name The name of the command, as in "/name".
+     * @param aliases A list of potential aliases for this command.
+     * @param parent_module parent_module The module this command is tied to.
+     */
     public ZenithCommand(String name, List<String> aliases, ZenithModule parent_module) 
     {
         super(name, "ZenithCommand: " + name, "ZenithCommand: " + name, aliases);
@@ -73,6 +100,10 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         this.parent_module = parent_module;
     }
 
+    /**
+     * Obtains a TabCompleteTree for this command. TabCompleteTrees must be specified in your command's constructor.
+     * @return This command's TabCompleteTree
+     */
     public TabCompleteTree getTabCompleteTree()
     {
         return this.tabCompleteTree;
@@ -192,6 +223,12 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         }
     }
 
+    /**
+     * A shared help command, always present with every Zenith command.
+     * @param sender The command sender.
+     * @param commandLabel The label used for this command.
+     * @param args A list of arguments in string format.
+     */
     @ZenCommandHandler(usage = "<parent command> help", description = "Provides a list of subcommands tied to this parent command.", argsCount = 1, minAuthorizedRank = 0)
     public void zcommand_help(CommandSender sender, String commandLabel, String[] args)
     {
@@ -219,6 +256,12 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         }
     }
 
+    /**
+     * A shared debug command to print trees.
+     * @param sender The command sender.
+     * @param commandLabel The label used for this command.
+     * @param args A list of arguments in string format.
+     */
     @ZenCommandHandler(usage = "/parent tree <args>", description = "View suggestions from this command's tabcomplete tree.", argsCount = 2, minAuthorizedRank = 3)
     public void zcommand_tree(CommandSender sender, String commandLabel, String[] args)
     {
@@ -239,11 +282,22 @@ public abstract class ZenithCommand extends Command implements TabCompleter
             });
     }
 
+    /**
+     * Obtains the module this command is tied to.
+     * @return This command's parent module.
+     */
     public ZenithModule getParentModule()
     {
         return this.parent_module;
     }
 
+    /**
+     * Performs a command redirection.
+     * @param label The label to redirect to.
+     * @param sender The command sender.
+     * @param commandLabel The label used for this command.
+     * @param args A list of arguments in string format.
+     */
     public void redirectCommand(String label, CommandSender sender, String commandLabel, String[] args)
     {
         String redirect = redirects.get(label);

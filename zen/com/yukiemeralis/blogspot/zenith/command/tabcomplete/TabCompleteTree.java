@@ -11,6 +11,7 @@ import com.yukiemeralis.blogspot.zenith.Zenith;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
+@SuppressWarnings("javadoc")
 public class TabCompleteTree 
 {
     public TabCompleteRoot root;

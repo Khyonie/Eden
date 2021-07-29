@@ -32,6 +32,14 @@ public class ChatUtils implements Listener
 
     private static List<CommandSender> deactivated_threads = new ArrayList<>();
 
+    /**
+     * Primes a thread to expect a chat input.
+     * @param target The user to expect input from.
+     * @param action An action to perform when input is received.
+     * @param timeout An action to perform if the thread times out.
+     * @param timeoutTime The time, in ticks (20 ticks = 1 second), to timeout
+     * @param args Optional arguments passed into a chataction.
+     */
     public static void expectChat(CommandSender target, ChatAction action, TimeoutAction timeout, long timeoutTime, Object... args)
     {
         new BukkitRunnable() {
@@ -41,8 +49,16 @@ public class ChatUtils implements Listener
                 timeout.run();
             }
         }.runTaskLater(Zenith.getInstance(), timeoutTime);
+        
+        expectChat(target, action, args);
     }
 
+    /**
+     * Primes a thread to expect a chat input.
+     * @param target The user to expect input from.
+     * @param action An action to perform when input is received.
+     * @param args Optional arguments passed into a chataction.
+     */
     public static void expectChat(CommandSender target, ChatAction action, Object... args)
     {
         if (active_threads.containsKey(target))
@@ -86,17 +102,31 @@ public class ChatUtils implements Listener
         t.start();
     }
 
+    /**
+     * Receives a string from a player's chat.
+     * @param target The player to receive from.
+     * @return A string that the player sent as a chat message.
+     */
     public static String receiveResult(CommandSender target)
     {
         return results.get(target);
     }
 
+    /**
+     * Clears a result.
+     * @param target The player to clear the result from.
+     */
     public static void deleteResult(CommandSender target)
     {
         results.put(target, "0123456789");
         results.remove(target);
     }
 
+    /**
+     * Force-notifies an active chat thread to continue.
+     * @param target
+     * @param stop
+     */
     public static void forceNotify(CommandSender target, boolean stop)
     {
         if (!active_threads.containsKey(target))
@@ -108,17 +138,36 @@ public class ChatUtils implements Listener
         active_threads.get(target).notify();
     }
 
+    /**
+     * Converts a hex string to a minecraft format.
+     * @param hex
+     * @return The given hex color string in minecraft format.
+     */
+    public static String of(String hex)
+    {
+        if (hex.length() != 6)
+            throw new IllegalArgumentException("Hex color codes must have a length of exactly 6. Given: " + hex.length());
+
+        StringBuilder builder = new StringBuilder("§x");
+        for (String str : hex.split(""))
+            builder.append("§" + str);
+        return builder.toString();
+    }
+
+    @SuppressWarnings("javadoc")
     public static interface ChatAction
     {
         void run();
     }
 
+    @SuppressWarnings("javadoc")
     public static interface TimeoutAction
     {
         void run();
     }
 
     @EventHandler
+    @SuppressWarnings("javadoc")
     public void onChat(AsyncPlayerChatEvent event)
     {
         if (!active_threads.containsKey(event.getPlayer()))

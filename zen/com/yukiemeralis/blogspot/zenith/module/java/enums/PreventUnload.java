@@ -18,5 +18,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface PreventUnload 
 {
+	/** */
     CallerToken value() default CallerToken.CONSOLE;
 }

@@ -15,7 +15,8 @@ import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
 	modFamily = "Zenith base modules",
 	modIcon = Material.END_PORTAL_FRAME, 
 	maintainer = "Yuki_emeralis", 
-	version = "1.1"
+	version = "1.1",
+	supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
 )
 @LoadBefore(loadBefore = {"ZenithAuth"})
 @PreventUnload(CallerToken.ZENITH)

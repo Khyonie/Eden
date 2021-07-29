@@ -4,10 +4,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents a type of user requesting a resource.
+ * @author Yuki_emeralis
+ */
 public enum CallerToken 
 {
+	/** */
     ZENITH(ConsoleCommandSender.class),
+    /** */
     CONSOLE(ConsoleCommandSender.class),
+    /** */
     PLAYER(Player.class)
     ;
 
@@ -18,6 +25,10 @@ public enum CallerToken
         this.caller = caller;
     }
 
+    /**
+     * Converts a callertoken into a type of commandsender.
+     * @return
+     */
     public Class<? extends CommandSender> getCallerToken()
     {
         return this.caller;

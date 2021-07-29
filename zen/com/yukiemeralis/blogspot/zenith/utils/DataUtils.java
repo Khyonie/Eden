@@ -12,8 +12,19 @@ import com.yukiemeralis.blogspot.zenith.Zenith;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * A collection of slightly random utilities involving classes and data.
+ * @author Yuki_emeralis
+ */
 public class DataUtils 
 {
+	/**
+	 * Checks if a class has a method with the given name and parameters.
+	 * @param methodName The name of a method
+	 * @param class_ The class that supposedly contains a method
+	 * @param classParams The parameters for the method
+	 * @return Whether or not the class has a method with the given name and parameters.
+	 */
     public static boolean hasMethod(String methodName, Class<?> class_, Class<?>... classParams)
     {
         try {
@@ -24,6 +35,10 @@ public class DataUtils
         }
     }
 
+    /**
+     * Obtains the plugin .jar for Zenith.
+     * @return The plugin .jar for Zenith.
+     */
     public static File getZenithJar()
     {
         JavaPlugin plugin = (JavaPlugin) Zenith.getInstance().getServer().getPluginManager().getPlugin("ZenithCore");
@@ -41,6 +56,10 @@ public class DataUtils
         }
     }
 
+    /**
+     * Throws and catches an error, which generates a stacktrace in the console.
+     * @param message A message describing what is being checked.
+     */
     public static void generateStackTrace(String message)
     {
         try {

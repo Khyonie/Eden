@@ -33,8 +33,11 @@ import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Represents the Zenith core plugin, with module management and commands.
+ * @author Yuki_emeralis
+ */
 @Branch(BranchType.NIGHTLY)
-@SuppressWarnings("serial")
 public class Zenith extends JavaPlugin
 {
 	private static Zenith server_instance;
@@ -118,26 +121,46 @@ public class Zenith extends JavaPlugin
 		});
 	}
 
+	/**
+	 * Obtains an instance of Zenith that is currently running.
+	 * @return The current instance of Zenith.
+	 */
 	public static Zenith getInstance()
 	{
 		return server_instance;
 	}
 
+	/**
+	 * Obtains the exact server version running.
+	 * @return The current server version.
+	 */
 	public static String getNMSVersion()
 	{
 		return nms_version;
 	}
 
+	/**
+	 * Obtains the module manager in use for the server.
+	 * @return The current module manager.
+	 */
 	public static ModuleManager getModuleManager()
 	{
 		return module_manager;
 	}
 
+	/**
+	 * Obtains the map of strings that represents Zenith's global configuration file.
+	 * @return Zenith's configuration.
+	 */
 	public static Map<String, String> getZenithConfig()
 	{
 		return config;
 	}
 
+	/**
+	 * Whether or not Zenith is being disabled currently. Zenith, when being disabled, skips all callertoken checks for disabling/unloading modules.
+	 * @return Whether or not Zenith is being disabled.
+	 */
 	public static boolean isBeingDisabled()
 	{
 		return isBeingDisabled;

@@ -37,6 +37,8 @@ import com.yukiemeralis.blogspot.zenith.utils.DataUtils;
 import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
+import com.yukiemeralis.blogspot.zenith.utils.Result.UndefinedResultException;
+import com.yukiemeralis.blogspot.zenith.utils.Result;
 
 /**
  * Handler for all tasks related to Zenith's modules.</p>
@@ -63,6 +65,9 @@ public class ModuleManager
 	// #################### Module gathering ####################
 	// ##########################################################
 
+	/**
+	 * Performs the full startup process.
+	 */
 	public void performFullLoad()
 	{
 		PrintUtils.logVerbose("-----[ Preload ]-----", InfoType.INFO);
@@ -91,6 +96,7 @@ public class ModuleManager
 				{
 					PrintUtils.log("Missing dependency \"" + str + "\" for module \"" + modname + "\"!", InfoType.ERROR);
 					valid = false;
+					continue;
 				}
 			}
 
@@ -109,10 +115,20 @@ public class ModuleManager
 			try {
 				loader.finalizeLoading();
 				disabled_modules.add(loader.getModule());
+				
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException e) {
 				e.printStackTrace();
 			}
 		}
+
+		// Register all reliant modules
+		for (ZenithModule module : disabled_modules)
+			if (module.getClass().isAnnotationPresent(LoadBefore.class))
+				for (String modName : module.getClass().getAnnotation(LoadBefore.class).loadBefore())
+				{
+					getDisabledModuleByName(modName).addReliantModule(module);
+					PrintUtils.log("Module \"" + module.getClass().getAnnotation(ModInfo.class).modName() + "\" is marked as reliant on \"" + modName + "\".");
+				}
 		PrintUtils.logVerbose("Finished preload!", InfoType.INFO);
 	}
 
@@ -140,7 +156,7 @@ public class ModuleManager
 		temp.delete();
 	}
 
-	public void loadAllModules()
+	private void loadAllModules()
 	{
 		// Obtain all module classes
 		for (File f : mods_folder.listFiles())
@@ -254,34 +270,63 @@ public class ModuleManager
 		return moduleFiles;
 	}
 
-	public ZenithModule loadSingleModule(String filepath)
+	/**
+	 * Loads a single module from a filepath.
+	 * @param filepath The filepath leading to the module file.
+	 * @return A result of either a ZenithModule or a String describing the error.
+	 */
+	public Result<ZenithModule, String> loadSingleModule(String filepath)
 	{
+		Result<ZenithModule, String> result = new Result<>(ZenithModule.class, String.class);
+		
 		if (!new File(filepath).exists())
-			return null;
+		{
+			try { result.err("File does not exist."); } catch (UndefinedResultException e) {}
+			return result;
+		}
 
 		ModuleClassLoader mcl = loadModule(new File(filepath));
 
 		if (mcl == null)
-			return null;
+		{
+			try { result.err("File could not be opened."); } catch (UndefinedResultException e) {}
+			return result;
+		}
 
 		precacheModuleClasses(mcl);
 
 		if (mcl.getModuleClass().isAnnotationPresent(LoadBefore.class))
 			if (!isModuleListPresent(mcl.getModuleClass().getAnnotation(LoadBefore.class).loadBefore()))
-				return null;
+			{
+				try { result.err("Module dependencies are missing."); } catch (UndefinedResultException e) {}
+				return result;
+			}
 
 		try {
 			mcl.finalizeLoading();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException e) {
 			e.printStackTrace();
-			return null;
+			try { result.err("Module has invalid classes. Failed with error: " + e.getClass().getSimpleName()); } catch (UndefinedResultException e_) {}
+			return result;
 		}
 
 		disabled_modules.add(mcl.getModule());
 
+		// Handle reliance
+		if (mcl.getModuleClass().isAnnotationPresent(LoadBefore.class))
+		{
+			for (String modName : mcl.getModuleClass().getAnnotation(LoadBefore.class).loadBefore())
+			{
+				loader_cache.get(modName).getModule().addReliantModule(mcl.getModule());
+				PrintUtils.log("Module \"" + mcl.getModuleClass().getAnnotation(ModInfo.class).modName() + "\" is marked as reliant on \"" + modName + "\".");
+			}
+		}
+
 		Zenith.getInstance().getServer().getPluginManager().callEvent(new ModuleLoadEvent(mcl.getModule(), mcl.getName()));
 		Zenith.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(mcl.getModule(), filepath));
-		return mcl.getModule();
+
+		try { result.ok(mcl.getModule()); } catch (UndefinedResultException e) { }
+		return result;
 	}
 	// ########################################################################
 	// #################### Enabling, disabling, unloading ####################
@@ -408,21 +453,22 @@ public class ModuleManager
 
 		List<ZenithModule> disabledMods = new ArrayList<>();
 		// Disable reliant modules
-		for (ZenithModule mod : module.getReliantModules())
-		{
-			if (!disableModule(mod.getName(), caller)) // If we can't disable a reliant module, reload all disabled modules and abort
+		if (!CallerToken.isEqualToOrHigher(caller, CallerToken.ZENITH))
+			for (ZenithModule mod : module.getReliantModules())
 			{
-				PrintUtils.log("Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.", InfoType.ERROR);
-				disabledMods.forEach(mod_ -> { 
-					enableModule(mod_);
-					mod_.setEnabled();
-				});
-			}
+				if (!disableModule(mod.getName(), caller)) // If we can't disable a reliant module, reload all disabled modules and abort
+				{
+					PrintUtils.log("Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.", InfoType.ERROR);
+					disabledMods.forEach(mod_ -> { 
+						enableModule(mod_);
+						mod_.setEnabled();
+					});
+				}
 
-			mod.removeReliantModule(module);
-			disabledMods.add(mod);
-			mod.setDisabled();
-		}
+				mod.removeReliantModule(module);
+				disabledMods.add(mod);
+				mod.setDisabled();
+			}
 
 		if (module.getClass().isAnnotationPresent(ZenConfig.class))
 		{
@@ -485,6 +531,7 @@ public class ModuleManager
 	/**
 	 * Removes a ZenithModule from memory. Modules being unloaded are expected to already be disabled.
 	 * @param name The name of the module to remove.
+	 * @param caller The token for the caller.
 	 * @see {@link ModuleManager#disableModule(String, CallerToken)}
 	 */
 	public void removeModuleFromMemory(String name, CallerToken caller)

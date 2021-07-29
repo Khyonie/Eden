@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.jar.JarFile;
 
 import org.bukkit.event.Listener;
 
+import com.yukiemeralis.blogspot.zenith.Zenith;
 import com.yukiemeralis.blogspot.zenith.command.ZenithCommand;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule.ModInfo;
@@ -27,6 +29,10 @@ import com.yukiemeralis.blogspot.zenith.utils.DataUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
+/**
+ * Special classloader that loads a module from a file.
+ * @author Yuki_emeralis
+ */
 @SuppressWarnings("unused")
 public class ModuleClassLoader extends URLClassLoader
 {
@@ -46,6 +52,13 @@ public class ModuleClassLoader extends URLClassLoader
 	private final List<Class<? extends ZenithCommand>> commandClasses = new ArrayList<>();
 	private final List<Class<? extends Listener>> listenerClasses = new ArrayList<>();
 	
+	/**
+	 * @param parent Parent classloader
+	 * @param loader The module manager for the current Zenith context
+	 * @param file File to load from
+	 * @throws MalformedURLException When the filepath is malformed.
+	 * @throws NullPointerException When the filepath is incorrect.
+	 */
 	public ModuleClassLoader(ClassLoader parent, ModuleManager loader, File file) throws MalformedURLException, NullPointerException
 	{
 		super(new URL[] { file.toURI().toURL() }, parent);
@@ -86,6 +99,14 @@ public class ModuleClassLoader extends URLClassLoader
 					PrintUtils.log("If you are a developer seeing this message, please attach an @ModInfo annotation to your module class.", InfoType.ERROR);
 					PrintUtils.log("If you are a server owner seeing this message, please either update this module, update Zenith, or contact this module's maintainer.", InfoType.ERROR);
 					PrintUtils.log("Offending file: " + file.getName(), InfoType.ERROR);
+					return null;
+				}
+
+				if (!Arrays.asList(buffer.getAnnotation(ModInfo.class).supportedApiVersions()).contains(Zenith.getNMSVersion()))
+				{
+					PrintUtils.log("Module \"" + buffer.getAnnotation(ModInfo.class).modName() + "\" is declared as compatible with the following version(s): " + Arrays.toString(buffer.getAnnotation(ModInfo.class).supportedApiVersions()) + ",", InfoType.ERROR);
+					PrintUtils.log("however this server is running on version " + Zenith.getNMSVersion() + ".", InfoType.ERROR);
+					PrintUtils.log("Please upgrade or downgrade this module, or contact this module's maintainer.", InfoType.ERROR);
 					return null;
 				}
 
@@ -165,11 +186,19 @@ public class ModuleClassLoader extends URLClassLoader
 		return findClass(name, true);
 	}
 
+	/**
+	 * Obtains the module loaded by this classloader.
+	 * @return The module loaded by this classloader.
+	 */
 	public ZenithModule getModule()
 	{
 		return module;
 	}
 
+	/**
+	 * Obtains a set of classes loaded by this classloader.
+	 * @return A set of classes loaded by this classloader.
+	 */
 	public Set<String> getClasses()
 	{
 		return interior_classes.keySet();

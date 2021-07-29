@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("javadoc")
 public class TabCompleteRoot
 {
     private Map<String, TabCompleteBranch> branches = new HashMap<>();

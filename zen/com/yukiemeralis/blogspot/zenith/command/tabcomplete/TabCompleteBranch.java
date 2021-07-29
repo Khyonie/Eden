@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("javadoc")
 public class TabCompleteBranch 
 {
     private final List<String> data;

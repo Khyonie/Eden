@@ -2,6 +2,12 @@ package com.yukiemeralis.blogspot.zenith.utils;
 
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * A generic item parser that can read and write objects of type T to an itemstack's persistent data container.
+ * @author Yuki_emeralis
+ *
+ * @param <T> Type of object to read/write
+ */
 public interface ItemParser<T>
 {
     /**

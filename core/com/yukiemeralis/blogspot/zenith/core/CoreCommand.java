@@ -33,6 +33,8 @@ import com.yukiemeralis.blogspot.zenith.module.java.enums.CallerToken;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
+import com.yukiemeralis.blogspot.zenith.utils.Result;
+import com.yukiemeralis.blogspot.zenith.utils.Result.UndefinedResultException;
 
 @PreventUnload(CallerToken.ZENITH)
 public class CoreCommand extends ZenithCommand
@@ -467,7 +469,22 @@ public class CoreCommand extends ZenithCommand
         switch (args[1])
         {
             case "load":
-                module = Zenith.getModuleManager().loadSingleModule("./plugins/Zenith/mods/" + args[2] + ".jar");
+            	Result<ZenithModule, String> result = Zenith.getModuleManager().loadSingleModule("./plugins/Zenith/mods/" + args[2] + ".jar");
+            	
+            	switch (result.getState())
+            	{
+            		case OK:
+						try {
+							module = (ZenithModule) result.unwrap();
+						} catch (UndefinedResultException e1) { return; }
+            			break;
+            		case ERR:
+            			try {
+            				PrintUtils.sendMessage(sender, "Failed to load module! Error: \"" + result.unwrap() + "\"");
+            				return;
+            			} catch (UndefinedResultException e) { return; }
+            		default: return;
+            	}
 
                 if (module == null)
                 {

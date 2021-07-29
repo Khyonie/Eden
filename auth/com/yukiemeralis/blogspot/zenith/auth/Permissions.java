@@ -20,7 +20,6 @@ import com.yukiemeralis.blogspot.zenith.utils.ChatUtils;
 import com.yukiemeralis.blogspot.zenith.utils.JsonUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.ChatUtils.ChatAction;
-import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
 public class Permissions 
 {

@@ -18,7 +18,8 @@ import org.bukkit.Material;
     modFamily = "Zenith base modules",
     version = "1.0",
     maintainer = "Yuki_emeralis",
-    modIcon = Material.CHEST
+    modIcon = Material.CHEST,
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
 )
 @PreventUnload(CallerToken.ZENITH)
 public class GuiModule extends ZenithModule

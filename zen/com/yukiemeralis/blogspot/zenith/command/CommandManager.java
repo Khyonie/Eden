@@ -13,6 +13,10 @@ import com.yukiemeralis.blogspot.zenith.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
+/**
+ * General-purpose handler for registering and unregistering Zenith commands into the server.
+ * @author Yuki_emeralis
+ */
 public class CommandManager 
 {
     private static CommandMap commandMap;
@@ -91,15 +95,19 @@ public class CommandManager
     }
 
     /**
-     * 
-     * @param name
-     * @return
+     * Obtains a generic (not necessarily Zenith) command from Bukkit's commandmap.
+     * @param name The name of the command.
+     * @return A command matching the name given.
      */
     public static Command getCommand(String name)
     {
         return commandMap.getCommand(name);
     }
 
+    /**
+     * Obtains a list of registered Zenith commands.
+     * @return
+     */
     public static List<ZenithCommand> getKnownCommands()
     {
         return knownZenCommands;

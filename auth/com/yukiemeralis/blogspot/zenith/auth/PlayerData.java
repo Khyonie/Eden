@@ -1,5 +1,8 @@
 package com.yukiemeralis.blogspot.zenith.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.annotations.Expose;
 
 import org.bukkit.entity.Player;
@@ -12,6 +15,8 @@ public class PlayerData
     private String autoLoginUsername = null, expectedIP = null;
     @Expose(serialize = true, deserialize = true)
     private int autoLoginKey = -1;
+    @Expose(serialize = true, deserialize = true)
+    private Map<String, ModulePlayerData> moduleData = new HashMap<>();
 
     /**
      * An instance of a core player account, generated upon first login and saved to a local file.

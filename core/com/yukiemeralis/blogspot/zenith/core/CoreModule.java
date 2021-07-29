@@ -35,8 +35,9 @@ import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
     description = "Zenith's core module.",
     modFamily = "Zenith base modules",
     maintainer = "Yuki_emeralis",
-    version = "71221-2.2.0",
-    modIcon = Material.ENDER_EYE
+    version = "72821-2.2.0",
+    modIcon = Material.ENDER_EYE,
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
 )
 @LoadBefore(loadBefore = {"ZenithAuth", "ZenithGui"})
 @ZenConfig

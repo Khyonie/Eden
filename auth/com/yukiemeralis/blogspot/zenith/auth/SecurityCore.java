@@ -32,7 +32,8 @@ import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
     modFamily = "Zenith base modules",
     version = "1.3.1",
     modIcon = Material.IRON_BARS,
-    maintainer = "Yuki_emeralis"
+    maintainer = "Yuki_emeralis",
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
 )
 @ZenConfig
 @DefaultConfig (

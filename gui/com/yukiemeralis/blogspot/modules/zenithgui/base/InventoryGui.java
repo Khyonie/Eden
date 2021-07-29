@@ -19,10 +19,9 @@ public abstract class InventoryGui implements Listener
 
     private Inventory inv;
 
-    private static final ItemStack black_glass = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-    static {
-        ItemUtils.applyName(black_glass, "");
-    }
+    private static final ItemStack black_glass = new ItemStack(Material.BLACK_STAINED_GLASS_PANE) {{
+        ItemUtils.applyName(this, " ");
+    }};
 
     public InventoryGui(int invSize, String invName)
     {
@@ -43,7 +42,7 @@ public abstract class InventoryGui implements Listener
     public void paint()
     {
         for (int i = 0; i < this.inv.getSize(); i++)
-            inv.setItem(i, black_glass);
+            inv.setItem(i, getBlankIcon());
     }
 
     public Inventory getInventory()
