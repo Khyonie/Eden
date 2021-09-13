@@ -19,7 +19,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class PagedDynamicGui extends DynamicGui
 {
     private final int rowCount, page;
-    private List<? extends GuiComponent> elements;
+    private List<? extends GuiComponent> elements, topBar;
 
     private final static GuiItemStack next_page, back_page;
     static {
@@ -74,6 +74,22 @@ public class PagedDynamicGui extends DynamicGui
         init();
     }
 
+    public PagedDynamicGui(int rowCount, String invName, Player player, int page, List<? extends GuiComponent> elements, List<? extends GuiComponent> topBar, InventoryAction... allowedActions) 
+    {
+        super(9 + (9 * rowCount), invName, player, allowedActions);
+        this.rowCount = rowCount;
+        this.page = page;
+        
+        this.elements = elements;
+
+        if (topBar.size() > 7)
+            throw new IllegalArgumentException("Top bar cannot contain more than 7 items.");
+
+        this.topBar = topBar;
+
+        init();
+    }
+
     @Override
     public void init()
     {
@@ -96,6 +112,10 @@ public class PagedDynamicGui extends DynamicGui
                 break;
             }
         }
+
+        if (topBar != null)
+            for (int i = 0; i < topBar.size(); i++)
+                addComponent(i, topBar.get(i));
 
         paintComponents();
     }

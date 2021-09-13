@@ -9,5 +9,7 @@
         "**/plugin.yml": true,
         "**/.vscode/": true,
         "**/internalModules/": true,
+        "**/.idea/": true,
+        "**Zenith.iml": true
     }
 }

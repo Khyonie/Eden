@@ -24,7 +24,7 @@ public class CoreListener implements Listener
         if (!Boolean.valueOf(Zenith.getModuleManager().getEnabledModuleByName("Zenith").getConfig().get("loginGreeting")))
             return;
 
-        PrintUtils.sendMessage(event.getPlayer(), "Welcome " + event.getPlayer().getDisplayName() + "! This server is running ZenithCore " + VersionCtrl.getVersion() + ".");
+        PrintUtils.sendMessage(event.getPlayer(), "Welcome " + event.getPlayer().getDisplayName() + "! This server is running Zenith " + VersionCtrl.getVersion() + ".");
 
         if (Boolean.valueOf(Zenith.getModuleManager().getEnabledModuleByName("Zenith").getConfig().get("warnIfNotRelease")))
             switch (Zenith.getInstance().getClass().getAnnotation(Branch.class).value())
@@ -53,6 +53,6 @@ public class CoreListener implements Listener
     @EventHandler
     public void onConfigChange(ZenithConfigChangeEvent e)
     {
-        PrintUtils.log("§8Config for " + e.getModule().getName() + " has changed! §aKey§7: §b" + e.getKey() + "§7, §avalue§7: §b" + e.getOldValue() + " §e-> §b" + e.getValue(), InfoType.INFO);
+        PrintUtils.log("Config for (" + e.getModule().getName() + ") has changed! Key: {" + e.getKey() + "}, value: [" + e.getOldValue() + "] -> [" + e.getValue() + "]", InfoType.INFO);
     }
 }

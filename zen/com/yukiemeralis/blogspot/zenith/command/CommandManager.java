@@ -42,11 +42,10 @@ public class CommandManager
             if (knownZenCommands.contains(command))
                 return;
 
-            command.init();
             commandMap.register(fallback, command);
             knownZenCommands.add(command);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
         }
     } 
 
@@ -60,13 +59,12 @@ public class CommandManager
 
         if (target == null)
         {
-            //PrintUtils.logVerbose("Attemped to unregister unknown command /\"" + commandName + "\"!", InfoType.ERROR);
             return;
         }
 
         if (target.getClass().isAnnotationPresent(PreventUnload.class))
         {
-            PrintUtils.logVerbose("Attempted to unregister command \"/" + commandName + "\" but this command cannot be unregistered!" , InfoType.INFO);
+            PrintUtils.logVerbose("Attempted to unregister command \"[/" + commandName + "]\" but this command cannot be unregistered!" , InfoType.INFO);
             return;
         }
 
@@ -90,7 +88,7 @@ public class CommandManager
                     break;
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
         }
     }
 
@@ -102,6 +100,19 @@ public class CommandManager
     public static Command getCommand(String name)
     {
         return commandMap.getCommand(name);
+    }
+
+    /**
+     * Obtains a registered Zenith command.
+     * @param name The label of the command.
+     * @return A Zenith command matching the name given.
+     */
+    public static ZenithCommand getZenithCommand(String name)
+    {
+        for (ZenithCommand cmd : knownZenCommands)
+            if (cmd.getLabel().equals(name))
+                return cmd;
+        return null;
     }
 
     /**

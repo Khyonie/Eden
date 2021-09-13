@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern; 
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
 
@@ -41,7 +42,7 @@ public class DataUtils
      */
     public static File getZenithJar()
     {
-        JavaPlugin plugin = (JavaPlugin) Zenith.getInstance().getServer().getPluginManager().getPlugin("ZenithCore");
+        JavaPlugin plugin = (JavaPlugin) Zenith.getInstance().getServer().getPluginManager().getPlugin("Zenith");
 
         // Reflection fun
         try {
@@ -51,7 +52,7 @@ public class DataUtils
             File file = (File) getFile.invoke(plugin);
             return file;
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
             return null;
         }
     }
@@ -65,7 +66,7 @@ public class DataUtils
         try {
             throw new IntentionalStackTrace(message);
         } catch (IntentionalStackTrace e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
         }
     }
 
@@ -98,5 +99,71 @@ public class DataUtils
             buffer.addAll(coll);
 
         return Collections.unmodifiableList(buffer);
+    }
+
+    public static long estimatePasswordStrength(String input)
+    {
+        // Strength is calculated using the function f(x) = cumulativeValue^length 
+        // All latin letters and numbers have a value of 1, common symbols [!@$_-()] have a value of 2, uncommon symbols [#%^&*{}[]?/=+\|"',.<>] have a value of 3
+
+        Pattern value1 = Pattern.compile("[a-zA-Z0-9]");
+        Pattern value2 = Pattern.compile("[!@$_\\-\\(\\)]");
+        Pattern value3 = Pattern.compile("[#%^&*+={}',.<>?_|\\[\\]\\/\\-\\\\\"]");
+
+        int value1Matches = (int) value1.matcher(input).results().count(); 
+        int value2Matches = (int) value2.matcher(input).results().count();
+        int value3Matches = (int) value3.matcher(input).results().count(); 
+
+        return (long) Math.pow(value1Matches + value2Matches + value3Matches, input.length());
+    }
+
+    public static String fixColor(String in)
+    {
+        // Trim # 
+        String buffer = in.substring(1);
+        // We can try to make some assumptions:
+        // 1) # can be expanded to #000000
+        // 2) #R can be expanded to #RRRRRR
+        // 3) #RR can be expanded to #RRRRRR
+        // 4) #RGB can be expanded to #RRGGBB
+        // 5) #RRGB can be expanded to #RRGGBB
+        // 6) #RRGGB can be expanded to #RRGGBB
+
+        switch (buffer.length())
+        {
+            case 0: // # -> #000000
+                return "#000000";
+            case 1: // #R -> #RRRRRR
+                return "#" + buffer.repeat(6);
+            case 2: // #RR -> #RRRRRR
+                return "#" + buffer.repeat(3);
+            case 3: // #RGB -> #RRGGBB
+                return "#" + buffer.substring(0, 1).repeat(2) + buffer.substring(1, 2).repeat(2) + buffer.substring(2).repeat(2);
+            case 4: // #RRGB -> #RRGGBB
+                return "#" + buffer.substring(0, 2) + buffer.substring(2, 3).repeat(2) + buffer.substring(3).repeat(2);
+            case 5: // #RRGGB -> #RRGGBB
+                return "#" + buffer.substring(0, 5) + buffer.substring(4).repeat(1);
+            default: // Probably fine to trim off anything extra, even though the regex "<#[a-fA-F0-9]{0,6}>" can't match anything extra
+                return "#" + buffer.substring(0, 6);
+        }
+    }
+
+    private static int cachedJavaVersion = -1;
+    public static int getJavaVersion()
+    {
+        if (cachedJavaVersion != -1)
+            return cachedJavaVersion;
+
+        String version = System.getProperty("java.version");
+
+        if (version.startsWith("1.")) // 8 or older
+        {
+            cachedJavaVersion = Integer.parseInt(version.substring(2, 3));
+            return cachedJavaVersion;
+        }
+            
+        cachedJavaVersion = Integer.parseInt(version.split("\\.")[0]);
+        // 9 or newer
+        return cachedJavaVersion;
     }
 }

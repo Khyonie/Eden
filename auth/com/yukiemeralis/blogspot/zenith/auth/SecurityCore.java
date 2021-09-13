@@ -6,14 +6,10 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-
-import com.yukiemeralis.blogspot.zenith.auth.SecurePlayerAccount.AccountType;
+import com.yukiemeralis.blogspot.zenith.Zenith;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule.ModInfo;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule.ZenConfig;
@@ -24,27 +20,29 @@ import com.yukiemeralis.blogspot.zenith.utils.ChatUtils;
 import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
 import com.yukiemeralis.blogspot.zenith.utils.JsonUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
-import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
+
+import org.bukkit.Material;
 
 @ModInfo (
     modName = "ZenithAuth",
-    description = "Provides account security for users and commands.",
+    description = "Provides permissions for users and commands.",
     modFamily = "Zenith base modules",
-    version = "1.3.1",
+    version = "1.4.0",
     modIcon = Material.IRON_BARS,
     maintainer = "Yuki_emeralis",
     supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
 )
-@ZenConfig
-@DefaultConfig (
-    keys =   {"console_password",          "min_rank_for_2fa", "allow_console_logins", "max_failed_login_attempts", "account_lockout_time"},
-    values = {"!ch4nge_m3-Plea5e_[{]}#@!", "1",                "true",                 "3",                         "300"}
-)
 @PreventUnload(CallerToken.ZENITH)
+@ZenConfig
+@DefaultConfig(
+    keys =   {"notifyElevate", "blockPasswordsInChat"},
+    values = {"true",          "true"}
+)
 public class SecurityCore extends ZenithModule
 {
     private static List<String> security_log = new ArrayList<>();
-    static Map<Player, PlayerData> active_players = new HashMap<>();
+
+    private static ZenithModule module;
 
     public SecurityCore()
     {
@@ -56,33 +54,11 @@ public class SecurityCore extends ZenithModule
     @Override
     public void onEnable() 
     {
-        FileUtils.ensureFolder("./plugins/Zenith/user-accounts");
-        FileUtils.ensureFolder("./plugins/Zenith/account-requests");
-        Permissions.populateAccountsList();
+        FileUtils.ensureFolder("./plugins/Zenith/playerdata/");
+        FileUtils.ensureFolder("./plugins/Zenith/permissiongroups/");
 
-        if (Boolean.parseBoolean(this.config.get("allow_console_logins")))
-        {
-            PrintUtils.sendMessage("Console account is active!", InfoType.WARN);
-            PrintUtils.sendMessage("This is discouraged, as the security with a proper SPA is greater than using a plaintext username and password.", InfoType.WARN);
-            PrintUtils.sendMessage("Please create a superadmin account, and change \"allow_console_logins\" to \"false\" in the ZenithAuth config file.", InfoType.WARN);
-
-            // If console user account doesn't exist, create it
-            if (!Permissions.getAccounts().containsKey("console"))
-            {
-                SecurePlayerAccount console_account = new SecurePlayerAccount("console", this.config.get("console_password"), AccountType.SUPERADMIN);
-                console_account.disable2FA();
-                Permissions.registerAccount(console_account);
-            } else {
-                if (!Permissions.comparePassword(Permissions.getAccounts().get("console"), this.config.get("console_password")))
-                {
-                    SecurePlayerAccount console_account = new SecurePlayerAccount("console", this.config.get("console_password"), AccountType.SUPERADMIN);
-                    console_account.disable2FA();
-
-                    Permissions.getAccounts().remove("console");
-                    Permissions.registerAccount(console_account);
-                }
-            }
-        }
+        module = this;
+        Zenith.setPermissionsManager(new ZenithPermissionManager());
     }
 
     /**
@@ -91,51 +67,24 @@ public class SecurityCore extends ZenithModule
     @Override
     public void onDisable() 
     {
-        Permissions.getAccounts().forEach((name, account) -> {
-            JsonUtils.toJsonFile("./plugins/Zenith/user-accounts/" + name + ".json", account);
-        });
-    }
-
-    /**
-     * Returns a player's data. </p>
-     * If the account isn't loaded into memory, the account will be loaded from a local file, or generated fresh.
-     * @param player The player to obtain an account to
-     * @return The data tied to this player
-     */
-    public static PlayerData getPlayerData(Player player)
-    {
-        if (active_players.containsKey(player))
-            return active_players.get(player);
-
-        PlayerData account;
-
-        File accountFile = new File("./plugins/Zenith/playerdata/" + player.getUniqueId() + ".json");
-        if (!accountFile.exists())
+        if (Zenith.getPermissionsManager() instanceof ZenithPermissionManager)
         {
-            account = new PlayerData(player);
-            JsonUtils.toJsonFile(accountFile.getAbsolutePath(), account);
+            ((ZenithPermissionManager) Zenith.getPermissionsManager()).getAllGroups().forEach((label, group) -> {
+                JsonUtils.toJsonFile("./plugins/Zenith/permissiongroups/" + label + ".json", group);
+            });
         }
-
-        account = (PlayerData) JsonUtils.fromJsonFile(accountFile.getAbsolutePath(), PlayerData.class);
-        
-        if (account == null)
-        {
-            PrintUtils.log("Account file for " + player.getName() + " is corrupt! Moving to " + FileUtils.moveToLostAndFound(accountFile).getAbsolutePath(), InfoType.ERROR);
-            accountFile.delete();
-
-            return getPlayerData(player);
-        }
-
-        return account;
     }
 
     /**
      * Gets a list of all account requests.
      * @return A list of all account requests.
+     * @deprecated Secure player accounts are now deprecated.
      */
-    public static Map<String, SecurePlayerAccount> getAccountRequests()
-    {
-        return Permissions.getAccountRequests();
+    @Deprecated
+    public static Map<String, com.yukiemeralis.blogspot.zenith.auth.old.SecurePlayerAccount> getAccountRequests() 
+    { 
+        //return Permissions.getAccountRequests();
+        return null;
     }
 
     static LocalDate date;
@@ -155,6 +104,11 @@ public class SecurityCore extends ZenithModule
 
         if (printToConsole)
             PrintUtils.sendMessage("§d" + fullMessage);
+    }
+
+    public static ZenithModule getModuleInstance()
+    {
+        return module;
     }
 
     static PrintWriter writer;

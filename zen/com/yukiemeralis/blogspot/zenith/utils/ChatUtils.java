@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
+import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
@@ -83,7 +87,7 @@ public class ChatUtils implements Listener
                         this.wait();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    PrintUtils.printPrettyStacktrace(e);
                     active_threads.remove(target);
                 }
 
@@ -154,6 +158,86 @@ public class ChatUtils implements Listener
         return builder.toString();
     }
 
+    public static String of(String input, String from, String to, String formatting)
+    {
+        if (from.length() != 6)
+            throw new IllegalArgumentException("Hex color codes must have a length of exactly 6. Given: " + from.length());
+        if (to.length() != 6)
+            throw new IllegalArgumentException("Hex color codes must have a length of exactly 6. Given: " + to.length());
+
+        String 
+            redTo = to.substring(0, 2),
+            redFrom = from.substring(0, 2),
+            greenTo = to.substring(2, 4),
+            greenFrom = from.substring(2, 4),
+            blueTo = to.substring(4),
+            blueFrom = from.substring(4);
+
+        int
+            redDelta = Integer.parseInt(redTo, 16) - Integer.parseInt(redFrom, 16),
+            greenDelta = Integer.parseInt(greenTo, 16) - Integer.parseInt(greenFrom, 16),
+            blueDelta = Integer.parseInt(blueTo, 16) - Integer.parseInt(blueFrom, 16);
+
+        String red, green, blue;
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < input.length(); i++)
+        {
+            red = Integer.toHexString(Integer.parseInt(redFrom, 16) + Math.round((redDelta/input.length()) * i)).toUpperCase();
+			blue = Integer.toHexString(Integer.parseInt(blueFrom, 16) + Math.round((blueDelta/input.length()) * i)).toUpperCase();
+			green = Integer.toHexString(Integer.parseInt(greenFrom, 16) + Math.round((greenDelta/input.length()) * i)).toUpperCase();
+
+            if (red.length() == 1)
+				red = "0" + red;
+			if (blue.length() == 1)
+				blue = "0" + blue;
+			if (green.length() == 1)
+				green = "0" + green;
+
+            builder.append(ChatUtils.of(red + green + blue) + formatting + input.charAt(i));
+        }
+
+        return builder.toString();
+    }
+
+    private static boolean outdatedWarning = false;
+    public static String formatWithRegexGroups(String input, String regex, String delimiter, Map<String, String> replacements)
+    {
+        if (DataUtils.getJavaVersion() < 16)
+        {
+            if (!outdatedWarning)
+            {
+                PrintUtils.log("(Java version is )[" + DataUtils.getJavaVersion() + "](. Must be on Java )[16]( or newer to use unicode chat replacements.))", InfoType.ERROR);
+                outdatedWarning = true;
+            }
+                
+            return input;
+        }
+
+        Matcher matcher = Pattern.compile(regex).matcher(input);
+        StringBuilder builder = new StringBuilder(input);
+
+        int delta = 0;
+        String replacement, result;
+
+        for (MatchResult match : matcher.results().toList()) // Java 16 feature, not sure if 
+        {
+            result = match.group().replace(delimiter, "");
+            if (!replacements.containsKey(result))
+                continue;
+
+            replacement = replacements.get(result);
+            builder.replace(match.start() + delta, match.end() + delta, replacement);
+            delta += replacement.length() - (match.end() - match.start());
+        }
+
+        return builder.toString();
+    }
+
+    public static String of(String input, String from, String to)
+    {
+        return of(input, from, to, "");
+    }
+
     @SuppressWarnings("javadoc")
     public static interface ChatAction
     {
@@ -181,7 +265,7 @@ public class ChatUtils implements Listener
                 active_threads.get(event.getPlayer()).notify();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
         }
 
         event.setCancelled(true);

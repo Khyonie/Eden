@@ -1,8 +1,12 @@
-package com.yukiemeralis.blogspot.zenith.auth;
+package com.yukiemeralis.blogspot.zenith.auth.old;
 
 import com.google.gson.annotations.Expose;
 import com.yukiemeralis.blogspot.zenith.Zenith;
 
+/**
+ * @deprecated Permissions are now handled by permission groups.
+ */
+@Deprecated(forRemoval = false)
 public class SecurePlayerAccount 
 {
     @Expose(serialize = true, deserialize = true)
@@ -14,7 +18,9 @@ public class SecurePlayerAccount
 
     /**
      * Account rank associated with an account.
+     * @deprecated Use {@link com.yukiemeralis.blogspot.zenith.auth.PermissionGroup} instead. 
      */
+    @Deprecated
     public static enum AccountType
     {
         USER (0),

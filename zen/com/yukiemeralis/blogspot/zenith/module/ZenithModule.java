@@ -14,9 +14,11 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
 import com.yukiemeralis.blogspot.zenith.command.ZenithCommand;
+import com.yukiemeralis.blogspot.zenith.module.java.ModuleManager;
 import com.yukiemeralis.blogspot.zenith.module.java.annotations.DefaultConfig;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.zenith.utils.ChatUtils;
@@ -179,6 +181,24 @@ public abstract class ZenithModule
         this.reliantModules.remove(module);
     }
 
+    public static ZenithModule getModuleInstance()
+    {
+        // For some unholy reason this is faster than Thread.getCurrentThread().getCurrentStacktrace()
+        StackTraceElement current = new Throwable().getStackTrace()[1];
+        PrintUtils.log("(Method) [" + current.getMethodName() + "] in [" + current.getClassName() + "] (requested instance from a module, however this module does not hide ZenithModule#getInstance\\\\(\\\\)!)", InfoType.ERROR);
+        return null;
+    }
+
+    /**
+     * Returns the instance of Zenith running on this server.<p>
+     * <i> Not to be confused with {@link ZenithModule#getModuleInstance()}
+     * @return
+     */
+    public static JavaPlugin getInstance()
+    {
+        return Zenith.getInstance();
+    }
+
     //
     // Module info generation
     //
@@ -318,7 +338,7 @@ public abstract class ZenithModule
         {
             if (!this.getClass().isAnnotationPresent(DefaultConfig.class))
             {
-                PrintUtils.log("Module \"" + this.modName + "\" requests a configuration file, but one doesn't exist nor is a default config specified!", InfoType.ERROR);
+                PrintUtils.log("(Module \")[" + this.modName + "](\" requests a configuration file, but one doesn't exist nor is a default config specified!)", InfoType.ERROR);
                 return;
             }
 
@@ -337,7 +357,7 @@ public abstract class ZenithModule
             if (this.config == null)
                 throw new ClassCastException();
         } catch (Exception e) {
-            PrintUtils.log("Configuration file for module \"" + this.modName + "\" is corrupt! Moving to lost and found...", InfoType.ERROR);
+            PrintUtils.log("(Configuration file for module \")<" + this.modName + ">(\" is corrupt! Moving to lost and found...)", InfoType.ERROR);
             FileUtils.moveToLostAndFound(file);
 
             DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
@@ -356,7 +376,7 @@ public abstract class ZenithModule
             if (this.config.size() < this.getClass().getAnnotation(DefaultConfig.class).keys().length)
             {
                 DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-                PrintUtils.log("Local config file is missing configuration values. Filling in from default config, please review these new values.", InfoType.WARN);
+                PrintUtils.log("<Local config file is missing configuration values. Filling in from default config, please review these new values.>", InfoType.WARN);
 
                 for (int i = 0; i < defaultconfig.keys().length; i++)
                     if (!this.config.containsKey(defaultconfig.keys()[i]))

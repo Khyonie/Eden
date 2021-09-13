@@ -31,14 +31,22 @@ public interface PacketUtils
 
     public static class PacketUtils_v1_17_R1 implements PacketUtils
     {
-
         @Override
         public void hideEntityInternal(Entity e, Player player)
         {
             net.minecraft.server.network.PlayerConnection connection_1_17 = ((org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer) player).getHandle().b;
             net.minecraft.world.entity.Entity entity_1_17 = ((org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity) e).getHandle();
-            connection_1_17.sendPacket(new net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy(entity_1_17.getId()));
+
+            // Mojang slightly changed how packets work going between 1.16.5, 1.17, and 1.17.1, so we have to handle two different packet constructors
+            
+            // Pain
+
+            try {
+                net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy.class.getConstructor(int.class); // 1.17, but not 1.17.1
+                connection_1_17.sendPacket(new net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy(entity_1_17.getId()));
+            } catch (NoSuchMethodException err) {
+                connection_1_17.sendPacket(new net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy(new int[] {entity_1_17.getId()})); // 1.17.1
+            }
         }
-        
     }
 }

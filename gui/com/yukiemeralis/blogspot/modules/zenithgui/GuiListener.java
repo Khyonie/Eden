@@ -14,9 +14,12 @@ public class GuiListener implements Listener
     public void onClose(InventoryCloseEvent event)
     {
         if (DynamicGui.getOpenedGuis().containsKey((Player) event.getPlayer()))
+        {
             DynamicGui.getOpenedGuis().remove((Player) event.getPlayer());
+        }
     }
 
+    @EventHandler
     public void onDisconnect(PlayerQuitEvent event)
     {
         DynamicGui.getOpenedGuis().remove(event.getPlayer());

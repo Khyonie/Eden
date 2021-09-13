@@ -127,7 +127,7 @@ public class Result<T, E>
      * Exception for when a result's contained value is null.
      * @author Yuki_emeralis
      */
-    public static class UndefinedResultException extends Exception
+    public static class UndefinedResultException extends RuntimeException
     {
 		private static final long serialVersionUID = 4918662729371931947L;
 

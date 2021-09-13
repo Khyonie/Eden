@@ -42,7 +42,7 @@ public class FileUtils
         try {
             java.nio.file.Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
         }
 
         return file;
@@ -82,7 +82,7 @@ public class FileUtils
         try {
             Files.copy(file, newFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
         }
         
         return newFile;
@@ -98,7 +98,7 @@ public class FileUtils
         try {
             Files.copy(from, to);
         } catch (IOException e) {
-            e.printStackTrace();
+            PrintUtils.printPrettyStacktrace(e);
         }
     }
 }

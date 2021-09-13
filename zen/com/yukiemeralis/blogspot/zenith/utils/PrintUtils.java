@@ -3,6 +3,8 @@ package com.yukiemeralis.blogspot.zenith.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
@@ -18,7 +20,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 /**
  * A collection of utilities for printing text to players, entities, and the console.
  * @author Yuki_emeralis
- *
  */
 public class PrintUtils 
 {
@@ -33,12 +34,34 @@ public class PrintUtils
         put(InfoType.FATAL, "§4");
     }};
 
+    private static final HashMap<String, String> log_colors = new HashMap<>()
+    {{
+        put("(?<=([^\\\\]|\\A))\\[", "§a");
+        put("(?<=([^\\\\]|\\A))\\{", "§b");
+        put("(?<=([^\\\\]|\\A))\\(", "§e");
+        put("(?<=([^\\\\]|\\A))<", "§c");
+        put("(?<=[^-\\\\])(\\]|\\}|\\)|>)", "§8");
+    }};
+
+    private static final HashMap<String, String> symbols = new HashMap<>()
+    {{
+        put("spade", "♠");
+        put("club", "♣");
+        put("heartsuit", "♥");
+        put("diamond", "♦");
+        put("star", "★");
+        put("wstar", "☆");
+        put("heart", "❤");
+        put("euro", "£");
+        put("cent", "¢");
+        put("yen", "¥");
+        put("divided", "÷");
+    }};
+
     /**
      * Category of information, used for logging.
      * @author Yuki_emeralis
-     *
      */
-    @SuppressWarnings("javadoc")
     public static enum InfoType
     {
         INFO,
@@ -48,6 +71,38 @@ public class PrintUtils
         ;   
     }
 
+    public static void printPrettyStacktrace(Throwable error)
+    {
+        String header = "§c" + error.getClass().getName();
+
+        if (error.getMessage() != null)
+            header = header + " " + error.getMessage();
+        
+        PrintUtils.log(header, InfoType.ERROR);
+        for (StackTraceElement ste : error.getStackTrace())
+            PrintUtils.log("§c §c §c §c §c §c §c at " + ste.getClassName() + "." + ste.getMethodName() + "\\\\(" + ste.getFileName() + ":" + ste.getLineNumber() + "\\\\)", InfoType.ERROR);
+
+        if (error.getCause() != null)
+            printPrettyStacktrace(error.getCause(), true);
+    }
+
+    public static void printPrettyStacktrace(Throwable error, boolean isCausedBy)
+    {
+        String header = "§c";
+        if (isCausedBy)
+            header = header +  "Caused by: ";
+        header = header + error.getClass().getName();
+        if (error.getMessage() != null)
+            header = header + " " + error.getMessage();
+        
+        PrintUtils.log(header, InfoType.ERROR);
+        for (StackTraceElement ste : error.getStackTrace())
+            PrintUtils.log("§c §c §c §c §c §c §c at " + ste.getClassName() + "." + ste.getMethodName() + "\\\\(" + ste.getFileName() + ":" + ste.getLineNumber() + "\\\\)", InfoType.ERROR);
+
+        if (error.getCause() != null)
+            printPrettyStacktrace(error.getCause(), true);
+    }
+
     /**
      * Sends a message to an entity.
      * @param target
@@ -55,12 +110,73 @@ public class PrintUtils
      */
     public static void sendMessage(Entity target, String message)
     {
-        BaseComponent[] component = new ComponentBuilder("§8[")
-            .append("z").color(ChatColor.of("#" + getZColorHex()))
-            .append("§8]§7 " + message.replaceAll("  ", " "))
-            .create();
+        sendComponent(target, buildComponents("&8[<#FFB7C5>z&8] &7" + message, true, true));
+    }
 
-        target.spigot().sendMessage(component);
+    public static void sendComponent(Entity target, BaseComponent[] components)
+    {
+        target.spigot().sendMessage(components);
+    }
+
+    public static BaseComponent[] buildComponents(String input, boolean translateAnd, boolean translateSymbols)
+    {
+        String data = input;
+        if (translateAnd)
+            data = data.replace('&', '§');
+        if (translateSymbols)
+            data = ChatUtils.formatWithRegexGroups(data, ":[^\s:]{1,9}:", ":", symbols);
+
+        String[] noColorSplit = data.split("<#[0-9a-fA-F]{0,6}>");
+        String[] colorSplit = Pattern.compile("<#[0-9a-fA-F]{0,6}>").matcher(data).results().map(MatchResult::group).toArray(String[]::new);
+
+        // Sanitize colors
+        for (int i = 0; i < colorSplit.length; i++)
+        {
+            String color = colorSplit[i].replaceAll("[<>]", "");
+            if (color.length() != 7) // Invalid color
+            {
+                color = DataUtils.fixColor(color);
+            }
+                
+            colorSplit[i] = color;
+        }
+
+        ComponentBuilder component = new ComponentBuilder();
+
+        if (colorSplit.length == 0)
+        {
+            component = component.append(input);
+            return component.create();
+        }
+
+        if (noColorSplit.length == 0) // No text
+        {
+            return component.append("").create();
+        }
+
+        if (noColorSplit[0].equals("")) // Starts with color
+        {
+            component = component.append(noColorSplit[1]).color(ChatColor.of(colorSplit[0]));
+
+            for (int i = 1; i < colorSplit.length; i++)
+                component = component.append(noColorSplit[i + 1]).color(ChatColor.of(colorSplit[i]));
+
+            return component.create();
+        }
+
+        if (noColorSplit.length > colorSplit.length) // Starts and ends with text
+        {
+            component = component.append(noColorSplit[0]).color(ChatColor.WHITE);
+            for (int i = 1; i < noColorSplit.length; i++)
+                component = component.append(noColorSplit[i]).color(ChatColor.of(colorSplit[i - 1]));
+
+            return component.create();
+        }
+
+        for (int i = 0; i < noColorSplit.length; i++)
+            component = component.append(noColorSplit[i]).color(ChatColor.of(colorSplit[i]));
+
+        return component.create();
     }
 
     /**
@@ -79,6 +195,7 @@ public class PrintUtils
         sendMessage((Entity) target, message);
     }
 
+    @SuppressWarnings("unused")
     private static String getZColorHex()
     {
         if (zcolor_hex == null)
@@ -138,9 +255,11 @@ public class PrintUtils
      */
     public static void log(String message, InfoType type)
     {
-        Zenith.getInstance().getServer().getConsoleSender().sendMessage("§8[§ez§8]§7 " + info_colors.get(type) + "[" + type.name() + "] " + StringUtils.normalizeSpace(message));
+        // Give some nice formatting to messages
+        String formattedMessage = formatLog(message).replaceAll("\\\\(?=[\\[\\]\\(\\)\\{\\}<>])", "");
+        Zenith.getInstance().getServer().getConsoleSender().sendMessage("§8[" + info_colors.get(type) + "z§8]§8 " + StringUtils.normalizeSpace(formattedMessage));
 
-        log.add(message);
+        log.add("[" + type.name() + "] " + formattedMessage.replaceAll("§[a-fA-F0-9klmnor]{1}", ""));
     }
 
     /**
@@ -150,6 +269,40 @@ public class PrintUtils
     public static void log(String message)
     {
         log(message, InfoType.INFO);
+    }
+
+    public static void logCondition(boolean condition, String message)
+    {
+        if (condition)
+            log(message);
+    }
+
+    public void logCondition(boolean condition, String trueMessage, String falseMessage)
+    {
+        if (condition)
+        {
+            log(trueMessage);
+            return;
+        }
+
+        log(falseMessage);
+    }
+
+    public static void logCondition(boolean condition, String message, InfoType type)
+    {
+        if (condition)
+            log(message, type);
+    }
+
+    public static void logCondition(boolean condition, String trueMessage, InfoType trueType, String falseMessage, InfoType falseType)
+    {
+        if (condition) 
+        {
+            log(trueMessage, trueType);
+            return;
+        }
+
+        log(falseMessage, falseType);
     }
 
     /**
@@ -182,5 +335,13 @@ public class PrintUtils
     public static String indicative(int value)
     {
         return value == 1 ? "was" : "were";
+    }
+
+    private static String formatLog(String input)
+    {
+        String buffer = input;
+        for (String regex : log_colors.keySet())
+            buffer = buffer.replaceAll(regex, log_colors.get(regex));
+        return buffer;
     }
 }

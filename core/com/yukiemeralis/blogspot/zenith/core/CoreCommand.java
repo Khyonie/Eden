@@ -1,29 +1,44 @@
+/*
+Copyright 2021 Yuki_emeralis https://yukiemeralis.blogspot.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+	or "LICENSE.txt" at the root of this project folder.
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package com.yukiemeralis.blogspot.zenith.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
-import com.yukiemeralis.blogspot.zenith.auth.Permissions;
-import com.yukiemeralis.blogspot.zenith.auth.SecurePlayerAccount;
+import com.yukiemeralis.blogspot.zenith.auth.PermissionGroup;
 import com.yukiemeralis.blogspot.zenith.auth.SecurityCore;
-import com.yukiemeralis.blogspot.zenith.auth.SecurePlayerAccount.AccountType;
+import com.yukiemeralis.blogspot.zenith.auth.ZenithPermissionManager;
 import com.yukiemeralis.blogspot.zenith.command.CommandManager;
 import com.yukiemeralis.blogspot.zenith.command.ZenithCommand;
-import com.yukiemeralis.blogspot.zenith.command.tabcomplete.*;
 import com.yukiemeralis.blogspot.zenith.core.modgui.ModuleGui;
 import com.yukiemeralis.blogspot.zenith.core.modgui.ModuleTracker;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
@@ -31,9 +46,15 @@ import com.yukiemeralis.blogspot.zenith.module.ZenithModule.ZenConfig;
 import com.yukiemeralis.blogspot.zenith.module.java.annotations.DefaultConfig;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.CallerToken;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.PreventUnload;
+import com.yukiemeralis.blogspot.zenith.permissions.PlayerData;
+import com.yukiemeralis.blogspot.zenith.utils.ChatUtils;
+import com.yukiemeralis.blogspot.zenith.utils.DataUtils;
 import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
+import com.yukiemeralis.blogspot.zenith.utils.HashUtils;
+import com.yukiemeralis.blogspot.zenith.utils.JsonUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.Result;
+import com.yukiemeralis.blogspot.zenith.utils.ChatUtils.ChatAction;
 import com.yukiemeralis.blogspot.zenith.utils.Result.UndefinedResultException;
 
 @PreventUnload(CallerToken.ZENITH)
@@ -43,69 +64,35 @@ public class CoreCommand extends ZenithCommand
     {
         super("zen", mod);
 
-        this.tabCompleteTree = new TabCompleteTree().attachRoot(
-            new TabCompleteRoot("zen")
-                .addBranches(
-                    new TabCompleteBranch("mods")
-                        .addBranches(
-                            new TabCompleteBranch("ENABLED_MODULES")
-                                .addBranches(
-                                    new TabCompleteBranch("readconfig"),
-                                    new TabCompleteBranch("saveconfig"),
-                                    new TabCompleteBranch("reloadconfig"),
-                                    new TabCompleteBranch("config")
-                                        .addBranches(
-                                            new TabCompleteBranch("<key>")
-                                                .addBranches(
-                                                    new TabCompleteBranch("<value>")
-                                                )
-                                        )
-                                )
-                        ),
-                    new TabCompleteBranch("logging")
-                        .addBranches(
-                            new TabCompleteBranch("export"),
-                            new TabCompleteBranch("verbose")
-                        ),
-                    new TabCompleteBranch("auth")
-                        .addBranches(
-                            new TabCompleteBranch("login")
-                                .addBranches(
-                                    new TabCompleteBranch("<username>")
-                                ),
-                            new TabCompleteBranch("logout"),
-                            new TabCompleteBranch("autologin"),
-                            new TabCompleteBranch("create")
-                                .addBranches(
-                                    new TabCompleteBranch("user", "staff", "admin", "superadmin")
-                                        .addBranches(
-                                            new TabCompleteBranch("<username>")
-                                        )
-                                )
-                        ),
-                    new TabCompleteBranch("requests")
-                        .addBranches(
-                            new TabCompleteBranch("view"),
-                            new TabCompleteBranch("rejectall"),
-                            new TabCompleteBranch("approve", "reject")
-                                .addBranches(
-                                    new TabCompleteBranch("<username>")
-                                )
-                        ),
-                    new TabCompleteBranch("mm")
-                        .addBranches(
-                            new TabCompleteBranch("enable", "disable", "unload")
-                                .addBranches(
-                                    new TabCompleteBranch("GATHERED_MODULES")
-                                ),
-                            new TabCompleteBranch("load")
-                                .addBranches(
-                                    new TabCompleteBranch("<module file>")
-                                )
-                        ),
-                    new TabCompleteBranch("helpall")
-                )
-        );
+        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "sudo");
+
+        this.getBranch("^perms").addBranch("specific", "group");
+        this.getBranch("^perms").getBranch("specific").addBranch("<ALL_PLAYERS>").addBranch("add", "remove");
+        this.getBranch("^perms").getBranch("specific").getBranch("<ALL_PLAYERS>").getBranch("add").addBranch("<PERMISSION>").addBranch("<BOOLEAN>");
+        this.getBranch("^perms").getBranch("specific").getBranch("<ALL_PLAYERS>").getBranch("remove").addBranch("<PERMISSION>").addBranch("<BOOLEAN>");
+        this.getBranch("^perms").getBranch("group").addBranch("<GROUP>").addBranch("add", "remove", "create", "delete", "assign", "unassign");
+        this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("add").addBranch("<PERMISSION>");
+        this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("remove").addBranch("<PERMISSION>");
+        this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("create").addBranch("<BASE>");
+        this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("delete");
+        this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("assign").addBranch("<ALL_PLAYERS>");
+        this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("unassign").addBranch("<ALL_PLAYERS>");
+
+        this.getBranch("^mm").addBranch("load", "unload", "enable", "disable", "download");
+        this.getBranch("^mm").getBranch("load").addBranch("<FILENAME>");
+        this.getBranch("^mm").getBranch("enable").addBranch("<DISABLED_MODULES>");
+        this.getBranch("^mm").getBranch("unload").addBranch("<DISABLED_MODULES>");
+        this.getBranch("^mm").getBranch("disable").addBranch("<ENABLED_MODULES>");
+        this.getBranch("^mm").getBranch("download").addBranch("<URL>");
+
+        this.getBranch("^mods").addBranch("<ALL_MODULES>").addBranch("config", "reloadconfig", "saveconfig", "readconfig", "clean");
+        this.getBranch("^mods").getBranch("<ALL_MODULES>").getBranch("config").addBranch("<KEY>").addBranch("<VALUE>");
+
+        this.getBranch("data").addBranch("<ALL_PLAYERS>").addBranch("^reset", "password", "^approve", "^clearpassword");
+
+        this.getBranch("^logging").addBranch("verbose", "export");
+
+        this.getBranch("sudo").addBranch("<ALL_PLAYERS>");
     }
 
     private static LocalDate time = LocalDate.now();
@@ -114,7 +101,7 @@ public class CoreCommand extends ZenithCommand
     private File logFile;
     private ZenithModule module;
     
-    @ZenCommandHandler(usage = "zen mods <Module name> <config | readconfig>", description = "View and configure Zenith modules.", argsCount = 1, minAuthorizedRank = 2)
+    @ZenCommandHandler(usage = "zen mods <Module name> <config | readconfig>", description = "View and configure Zenith modules.", argsCount = 1)
     public void zcommand_mods(CommandSender sender, String commandLabel, String[] args)
     {
         if (args.length == 1)
@@ -223,13 +210,236 @@ public class CoreCommand extends ZenithCommand
                 PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
                 break;
             default:
-                this.sendErrorMessage(sender, args[2], "<Module>");
+                this.sendErrorMessage(sender, args[2], "<MODULE>");
                 break;
         }
         return;
     }
 
-    @ZenCommandHandler(usage = "zen logging <verbose | export>", description = "Toggle verbose logging or export the current log to a file.", argsCount = 2, minAuthorizedRank = 2)
+    @ZenCommandHandler(usage = "zen perms <specific | group> <add | remove | assign | create>", description = "Change permissions for users and groups.", argsCount = 4)
+    public void zcommand_perms(CommandSender sender, String commandLabel, String[] args)
+    {
+        Player player;
+        PermissionGroup group;
+        boolean bool;
+        PlayerData account;
+
+        switch (args[1])
+        {
+            case "group":
+                // Generate group from argument 2
+                if (!(Zenith.getPermissionsManager() instanceof ZenithPermissionManager))
+                {
+                    PrintUtils.sendMessage(sender, "§cThis command does not support editing groups for third-party permissions managers.");
+                    return;
+                }
+
+                group = ((ZenithPermissionManager) Zenith.getPermissionsManager()).getAllGroups().get(args[2]);
+
+                if (group == null && !args[3].equals("create"))
+                {
+                    PrintUtils.sendMessage(sender, "§cUnknown group \"" + args[2] + "\".");
+                    return;
+                }
+
+                if (args[3].equals("create") && group != null)
+                {
+                    PrintUtils.sendMessage(sender, "§cA group with that name already exists.");
+                }
+
+                switch (args[3])
+                {
+                    case "add": // zen perms group <GROUP> add <PERMISSION>
+                        if (!ensureArgsCount(args, 5, "add", sender))
+                            return;
+
+                        group.addPermission(args[4]);
+                        PrintUtils.sendMessage(sender, "Added permission \"" + args[4] + "\" to group \"" + args[2] + "\".");
+                        break;
+                    case "remove": // zen perms group <GROUP> add <PERMISSION>
+                        if (!ensureArgsCount(args, 5, "remove", sender))
+                            return;
+
+                        if (group.removePermission(args[4]))
+                        {
+                            PrintUtils.sendMessage(sender, "Removed permission \"" + args[4] + "\" from group \"" + args[2] + "\".");
+                            break;
+                        }
+
+                        PrintUtils.sendMessage(sender, "§cGroup \"" + args[2] + "\" does not possess the permission \"" + args[4] + "\".");
+                        break;
+                    case "assign": // zen perms group <GROUP> assign <PlAYER>
+                        if (!ensureArgsCount(args, 5, "assign", sender))
+                            return;
+
+                        player = Bukkit.getPlayer(args[4]);
+
+                        // Player is not online, attempt to find them in the cache
+                        if (player == null)
+                        {
+                            if (!Zenith.getUuidCache().containsKey(args[4]))
+                            {
+                                PrintUtils.sendMessage(sender, "§cCould not find a player by that name.");
+                                return;
+                            }
+
+                            account = JsonUtils.fromJsonFile("./plugins/Zenith/playerdata/" + Zenith.getUuidCache().get(args[4]) + ".json", PlayerData.class);
+
+                            if (account == null)
+                            {
+                                PrintUtils.sendMessage(sender, "§cPlayer data is corrupt! Cannot add group.");
+                                return;
+                            }
+
+                            if (account.getPermissionGroups().contains(group.getName()))
+                            {
+                                PrintUtils.sendMessage(sender, "§cGroup \"" + group.getName() + "\" has already been assigned to offline player \"" + args[4] + "\".");
+                                return;
+                            }
+
+                            account.addPermissionGroup(group.getName());
+                            JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + Zenith.getUuidCache().get(args[4]) + ".json", account);
+
+                            PrintUtils.sendMessage(sender, "Assigned group \"" + group.getName() + "\" to offline player \"" + args[4] + "\".");
+                            return;
+                        }
+
+                        account = Zenith.getPermissionsManager().getPlayerData(player);
+
+                        if (account.getPermissionGroups().contains(group.getName()))
+                        {
+                            PrintUtils.sendMessage(sender, "§cGroup \"" + group.getName() + "\" has already been assigned to player \"" + args[4] + "\".");
+                            return;
+                        }
+
+                        account.addPermissionGroup(group.getName());
+
+                        PrintUtils.sendMessage(sender, "Assigned group \"" + group.getName() + "\" to player \"" + args[4] + "\".");
+
+                        break;
+                    case "unassign":
+                        if (!ensureArgsCount(args, 5, "unassign", sender))
+                            return;
+
+                        player = Bukkit.getPlayer(args[4]);
+
+                        // Player is not online, attempt to find them in the cache
+                        if (player == null)
+                        {
+                            if (!Zenith.getUuidCache().containsKey(args[4]))
+                            {
+                                PrintUtils.sendMessage(sender, "§cCould not find a player by that name.");
+                                return;
+                            }
+
+                            account = JsonUtils.fromJsonFile("./plugins/Zenith/playerdata/" + Zenith.getUuidCache().get(args[4]) + ".json", PlayerData.class);
+
+                            if (account == null)
+                            {
+                                PrintUtils.sendMessage(sender, "§cPlayer data is corrupt! Cannot remove group.");
+                                return;
+                            }
+
+                            account.removePermissionGroup(group.getName());
+                            JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + Zenith.getUuidCache().get(args[4]) + ".json", account);
+
+                            PrintUtils.sendMessage(sender, "Removed group \"" + group.getName() + "\" from offline player \"" + args[4] + "\".");
+                            return;
+                        }
+
+                        account = Zenith.getPermissionsManager().getPlayerData(player);
+                        account.removePermissionGroup(group.getName());
+
+                        PrintUtils.sendMessage(sender, "Removed group \"" + group.getName() + "\" from player \"" + args[4] + "\".");
+                        break;
+                    case "create": // zen perms group <GROUP>* create <BASE>** | *Where "GROUP" is an unused group label, **Optional
+                        group = new PermissionGroup(args[2], new String[0]);
+
+                        // TODO Handle bases
+                        ((ZenithPermissionManager) Zenith.getPermissionsManager()).addGroup(group);
+                        PrintUtils.sendMessage(sender, "Created new permissions group \"" + group.getName() + "\" successfully.");
+                        
+                        break;
+                    case "delete":
+                        ((ZenithPermissionManager) Zenith.getPermissionsManager()).deleteGroup(group);
+                        PrintUtils.sendMessage(sender, "Deleted group \"" + group.getName() + "\" successfully.");
+                        break;
+                    default:
+                        this.sendErrorMessage(sender, args[3], "group");
+                        break;
+                }
+
+                break;
+            case "specific":
+                if (!ensureArgsCount(args, 6, "specific", sender))
+                    return;
+
+                // Generate player from argument 2
+                player = Bukkit.getPlayer(args[2]);
+
+                if (player != null)
+                {
+                    account = Zenith.getPermissionsManager().getPlayerData(player);
+                } else {
+                    if (!Zenith.getUuidCache().containsKey(args[2]))
+                    {
+                        PrintUtils.sendMessage(sender, "§cCould not find a player by that name.");
+                        return;
+                    }
+
+                    account = JsonUtils.fromJsonFile("./plugins/Zenith/playerdata/" + Zenith.getUuidCache().get(args[2]) + ".json", PlayerData.class);
+                }
+
+                if (!args[5].toLowerCase().equals("true") && !args[5].toLowerCase().equals("false"))
+                {
+                    PrintUtils.sendMessage(sender, "§cInvalid boolean value for \"revoked\". Expected \"true\" or \"false\", received \"" + args[5] + "\".");
+                    return;
+                }
+
+                bool = Boolean.parseBoolean(args[5]);
+
+                switch (args[3])
+                {
+                    case "add": // zen perms specific <PLAYER> add <PERMISSION> <REVOKED> 
+                        if (bool)
+                        {
+                            account.addRevokedPermission(args[4]);
+                            PrintUtils.sendMessage(sender, "Added specific revoked permission \"" + args[4] + "\".");
+                            break;
+                        }
+
+                        account.addPermission(args[4]);
+                        PrintUtils.sendMessage(sender, "Added specific permission \"" + args[4] + "\".");
+
+                        break;
+                    case "remove": // zen perms specific <PLAYER> remove <PERMISSION> <REVOKED> 
+                        if (bool)
+                        {
+                            account.removeRevokedPermission(args[4]);
+                            PrintUtils.sendMessage(sender, "Removed specific revoked permission \"" + args[4] + "\".");
+                            break;
+                        }
+
+                        account.removePermission(args[4]);
+                        PrintUtils.sendMessage(sender, "Removed specific permission \"" + args[4] + "\".");
+
+                        break;
+                    default:
+                        this.sendErrorMessage(sender, args[3], "specific");
+                        break;
+                }
+
+                if (player == null)
+                    JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + Zenith.getUuidCache().get(args[2]) + ".json", account);
+
+                break;
+            default:
+                this.sendErrorMessage(sender, args[1], commandLabel);
+                break;
+        }
+    }
+
+    @ZenCommandHandler(usage = "zen logging <verbose | export>", description = "Toggle verbose logging or export the current log to a file.", argsCount = 2)
     @ZenCommandRedirect(labels = {"logs", "log"}, command = "zen logging args")
     public void zcommand_logging(CommandSender sender, String commandLabel, String[] args)
     {
@@ -273,179 +483,8 @@ public class CoreCommand extends ZenithCommand
                 break;
         }
     }
-    
-    @ZenCommandHandler(usage = "zen auth <login | logout | create | autologin>", description = "Login in, logout of, or create a SecurePlayerAccount.", argsCount = 2, minAuthorizedRank = 0)
-    @ZenCommandRedirect(labels = {"login", "logout", "create"}, command = "zen auth label args")
-    public void zcommand_auth(CommandSender sender, String commandLabel, String[] args)
-    {
-        switch (args[1])
-        {
-            case "login":
-                if (!ensureArgsCount(args, 3, "login", sender))
-                    break;
 
-                if (sender instanceof ConsoleCommandSender)
-                {
-                    PrintUtils.sendMessage(
-                        sender, 
-                        "Console users cannot log into an account. Please try \"/sudo " + args[2] + " <command>\" to run a command as an account."
-                    );
-                    break;
-                }
-
-                if (!Permissions.accountExists(args[2]))
-                {
-                    PrintUtils.sendMessage(sender, "No account exists by the name \"" + args[2] + "\".");
-                    break;
-                }
-
-                Permissions.expectPassword((Player) sender, args[2]);
-                break;
-            case "logout":
-                if (Permissions.logout(sender))
-                {
-                    PrintUtils.sendMessage(sender, "Logged out from account.");
-                    break;
-                }
-
-                PrintUtils.sendMessage(sender, "Cannot log out, as you are not logged into an account.");
-                break;
-            case "create":
-                if (!ensureArgsCount(args, 4, "create", sender))
-                {
-                    PrintUtils.sendMessage(sender, "Usage: /zen auth create <user | staff | admin | superadmin> <username>");
-                    PrintUtils.sendMessage(sender, "Note that upon creating an account that is of rank \"staff\" or higher, a request will be sent for a superadmin to approve.");
-                    break;
-                }
-
-                AccountType type = null;
-            
-                try {
-                    type = AccountType.valueOf(args[2].toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    PrintUtils.sendMessage(sender, "Usage: /zen auth create <user | staff | admin | superadmin> <username>");
-                    PrintUtils.sendMessage(sender, "Note that upon creating an account that is of rank \"staff\" or higher, a request will be sent for a superadmin to approve.");
-                    break;
-                }
-
-                String name = args[3];
-
-                if (Permissions.accountExists(name))
-                {
-                    PrintUtils.sendMessage(sender, "An account named \"" + name + "\" already exists. Please contact an administrator if you think this is a mistake.");
-                    break;
-                }
-
-                PrintUtils.sendMessage(sender, "Please enter a password for \"" + name + "\":");
-                Permissions.createNewAccount(sender, type, name);
-                break;
-            case "autologin":
-                if (sender instanceof ConsoleCommandSender)
-                    break;
-
-                if (SecurityCore.getPlayerData((Player) sender).isAutoLogin())
-                {
-                    SecurityCore.getPlayerData((Player) sender).disableAutoLogin();
-                    PrintUtils.sendMessage(sender, "Disabled automatic login.");
-                    break;
-                }
-
-                if (!Permissions.isLoggedIn(sender))
-                {
-                    PrintUtils.sendMessage(sender, "You must be logged into an account to enable auto-login.");
-                    break;
-                }
-
-                SecurePlayerAccount account = Permissions.getLoggedInAccount(sender);
-                PrintUtils.sendMessage(sender, "Enabled automatic login for account \"" + account.getUsername() + "\".");
-                SecurityCore.getPlayerData((Player) sender).enableAutoLogin((Player) sender, account.getUsername(), account.getPassword());
-                break;
-            default:
-                sendErrorMessage(sender, args[1], "auth");
-                break;
-        }
-    }
-
-    @ZenCommandHandler(usage = "zen requests <view | approve | reject | rejectall> <name>", description = "View, approve, and reject account requests.", argsCount = 2, minAuthorizedRank = 3)
-    public void zcommand_requests(CommandSender sender, String commandLabel, String[] args)
-    {
-        SecurePlayerAccount spaccount;
-        File f;
-        switch (args[1])
-        {
-            case "view":
-                SecurityCore.getAccountRequests().forEach((username, account) -> {
-                    PrintUtils.sendMessage(sender, "Request from player §a" + username + "§7 | Username: §b" + account.getUsername() + "§7, type: §b" + account.getAccountType().name());
-                });
-                break;
-            case "approve":
-                if (!ensureArgsCount(args, 3, 1, "approve", sender))
-                    break;
-
-                f = new File("./plugins/Zenith/account-requests/" + args[2] + ".json");
-                if (!f.exists())
-                {
-                    PrintUtils.sendMessage(sender, "No request has been made by this player!");
-                    break;
-                }
-
-                spaccount = Permissions.getAccountRequest(args[2]);
-
-                if (!Permissions.registerAccount(spaccount))
-                {
-                    PrintUtils.sendMessage(sender, "Failed to approve account. One may already exist under the name \"" + spaccount.getUsername() + "\".");
-                    SecurityCore.getAccountRequests().remove(args[2]);
-                    break;
-                }
-
-                try {
-                    Files.deleteIfExists(f.toPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                PrintUtils.sendMessage(sender, "Approved account request.");
-                break;
-            case "reject":
-                if (!ensureArgsCount(args, 3, 1, "approve", sender))
-                    break;
-
-                f = new File("./plugins/Zenith/account-requests/" + args[2] + ".json");
-                if (!f.exists())
-                {
-                    PrintUtils.sendMessage(sender, "No request has been made by this player!");
-                    break;
-                }
-
-                SecurityCore.getAccountRequests().remove(args[2]);
-                PrintUtils.sendMessage(sender, "Rejected account request.");
-
-                try {
-                    Files.deleteIfExists(f.toPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                break;
-            case "rejectall":
-                for (File file : new File("./plugins/Zenith/account-requests/").listFiles())
-                {
-                    try {
-                        Files.deleteIfExists(file.toPath());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                PrintUtils.sendMessage(sender, "Rejected all account requests.");
-                break;
-            default:
-                sendErrorMessage(sender, args[1], "requests");
-                break;
-        }
-    }
-
-    @ZenCommandHandler(usage = "zen helpall", description = "Provides a list of all parent commands.", argsCount = 1, minAuthorizedRank = 0)
+    @ZenCommandHandler(usage = "zen helpall", description = "Provides a list of all parent commands.", argsCount = 1)
     public void zcommand_helpall(CommandSender sender, String commandLabel, String[] args)
     {
         PrintUtils.sendMessage(sender, "§6----[ §eRegistered Zenith Commands §6]----");
@@ -459,10 +498,10 @@ public class CoreCommand extends ZenithCommand
             }
         }
 
-        PrintUtils.sendMessage(sender, "- Every Zenith command has a \"help\" subcommand, to display a list of subcommands.");
+        PrintUtils.sendMessage(sender, "- Every Zenith command has a \"help\" subcommand, which displays a list of subcommands.");
     }
 
-    @ZenCommandHandler(usage = "zen mm <load | unload | enable | disable | download> <module name | URL>", description = "Command interface for the Zenith module manager.", argsCount = 3, minAuthorizedRank = 3)
+    @ZenCommandHandler(usage = "zen mm <load | unload | enable | disable | download> <module name | URL>", description = "Command interface for the Zenith module manager.", argsCount = 3)
     public void zcommand_mm(CommandSender sender, String commandLabel, String[] args)
     {
         ZenithModule module;
@@ -529,7 +568,7 @@ public class CoreCommand extends ZenithCommand
                     Zenith.getModuleManager().enableModule(module);
                     module.setEnabled();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    PrintUtils.printPrettyStacktrace(e);
                 }
 
                 if (Zenith.getModuleManager().getEnabledModuleByName(module.getName()) != null)
@@ -578,9 +617,9 @@ public class CoreCommand extends ZenithCommand
                     PrintUtils.sendMessage(sender, "Done! File has been saved as " + finalPortion + ".");
                 } catch (InvocationTargetException e) {
                     PrintUtils.sendMessage(sender, "Failed to download file. Ensure that the given URL is correct.");
-                    e.printStackTrace();
+                    PrintUtils.printPrettyStacktrace(e);
                 } catch (NoSuchMethodException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    PrintUtils.printPrettyStacktrace(e);
                 }
                 break;
             default:
@@ -589,37 +628,350 @@ public class CoreCommand extends ZenithCommand
         }
     }
 
-    @ZenCommandHandler(usage = "zen data <user> <subcommand>", description = "View and repair player data.", argsCount = 2, minAuthorizedRank = 3)
+    @ZenCommandHandler(usage = "zen sudo [user]", description = "Elevate yourself, or elevate as another user.", argsCount = 1)
+    public void zcommand_sudo(CommandSender sender, String commandLabel, String[] args)
+    {
+        if (!(sender instanceof Player))
+        {
+            PrintUtils.sendMessage(sender, "§cConsole is elevated by default, sudo is ineffective.");
+            return;
+        }
+
+        PlayerData account;
+
+        if (args.length == 1) // Elevate self
+        {
+            account = Zenith.getPermissionsManager().getPlayerData((Player) sender);
+            if (!account.hasPassword())
+            {
+                PrintUtils.sendMessage(sender, "§cYou do not have a password set up for this account. Please contact an administrator.");
+                return;
+            }
+
+            ChatAction action = new ChatAction()
+            {
+                @Override
+                public void run()
+                {
+                    String result = ChatUtils.receiveResult(sender);
+                    ChatUtils.deleteResult(sender);   
+
+                    if (result.toLowerCase().equals("cancel"))
+                    {
+                        PrintUtils.sendMessage(sender, "Exitted password-entry mode. It is no longer safe to enter your password.");
+                        return;
+                    }
+
+                    if (!account.comparePassword(result))
+                    {
+                        PrintUtils.sendMessage(sender, "§cIncorrect password. It is no longer safe to enter your password.");
+                        return;
+                    }
+
+                    Zenith.getPermissionsManager().addElevatedUser((Player) sender);
+                    PrintUtils.sendMessage(sender, "<#A9EED1>You are now elevated. With great power comes great responsibility.");
+                }
+            };
+
+            PrintUtils.sendMessage(sender, "It is now safe to enter your password. Password for your account:");
+            ChatUtils.expectChat(sender, action);
+
+            return;
+        }
+
+        // Elevate as other account
+        if (!Zenith.getUuidCache().containsKey(args[1]))
+        {
+            PrintUtils.sendMessage(sender, "§cCannot find user \"" + args[1] + "\".");
+            return;
+        }
+
+        if (args[1].equals(((Player) sender).getName()))
+        {
+            ((Player) sender).chat("/zen sudo"); // Resend command without player argument
+            return;
+        }
+
+        account = Zenith.getPermissionsManager().getOfflinePlayerData(Zenith.getUuidCache().get(args[1]));
+        
+        if (!account.hasPassword())
+        {
+            PrintUtils.sendMessage(sender, "§cUser \"" + args[1] + "\" does not have a password associated with their account! Cannot elevate as them.");
+            return;
+        }
+
+        ChatAction action = new ChatAction()
+        {
+            @Override
+            public void run()
+            {
+                String result = ChatUtils.receiveResult(sender);
+                ChatUtils.deleteResult(sender);   
+
+                if (result.toLowerCase().equals("cancel"))
+                {
+                    PrintUtils.sendMessage(sender, "Exitted password-entry mode. It is no longer safe to enter a password.");
+                    return;
+                }
+
+                if (!account.comparePassword(result))
+                {
+                    PrintUtils.sendMessage(sender, "§cIncorrect password for user \"" + args[1] + "\". It is no longer safe to enter a password.");
+                    return;
+                }
+
+                Zenith.getPermissionsManager().addElevatedUser((Player) sender);
+                PrintUtils.sendMessage(sender, "<#A9EED1>You are now elevated. With great power comes great responsibility.");
+            }
+        };
+
+        PrintUtils.sendMessage(sender, "It is now safe to enter password. Password for user \"" + args[1] + "\":");
+        ChatUtils.expectChat(sender, action);
+    }
+
+    private final Map<String, String> cachedPasswords = new HashMap<>(); 
+
+    @ZenCommandHandler(usage = "zen data <user> <subcommand>", description = "View and repair player data.", argsCount = 2)
     public void zcommand_data(CommandSender sender, String commandLabel, String[] args)
     {
         Player p = Zenith.getInstance().getServer().getPlayerExact(args[1]);
+        String uuid;
 
         if (p == null)
         {
-            PrintUtils.sendMessage(sender, "No player named \"" + args[1] + "\" is online.");
-            return;
+            uuid = Zenith.getUuidCache().get(args[1]);
+
+            if (uuid == null)
+            {
+                PrintUtils.sendMessage(sender, "No data exists for a player named \"" + args[1] + "\".") ;
+                return;
+            }
+        } else {
+            uuid = p.getUniqueId().toString();
         }
 
         if (args.length == 2)
         {   
+            if (p == null)
+            {
+                PrintUtils.sendMessage(sender, "No player named \"" + args[1] + "\" is online.");
+                return;
+            }
+
             PrintUtils.sendMessage(sender, "Player information about user \"§b" + args[1] + "§7\":");
             PrintUtils.sendMessage(sender, "UUID: §a" + p.getUniqueId().toString());
             PrintUtils.sendMessage(sender, "Current IP: §a" + p.getAddress().getAddress().getHostAddress());
-            PrintUtils.sendMessage(sender, "Has data? §a" + (SecurityCore.getPlayerData(p) != null));
-            PrintUtils.sendMessage(sender, "Is logged into an SPA? §a" + (Permissions.isLoggedIn(p)));
+            PrintUtils.sendMessage(sender, "Has data? §a" + (Zenith.getPermissionsManager().getPlayerData(p) != null));
             return;
         }
 
+        PlayerData account;
+
         switch (args[2])
         {
-            case "repair":
+            case "reset":
+                if (p != null)
+                {
+                    if (Zenith.getPermissionsManager().getPlayerData(p).hasPassword())
+                        SecurityCore.log("Potentially concerning action: player data containing a password, belonging to user \"" + p.getName() + "\" has been wiped and reset. See caller above.", true);
+
+                    Zenith.getPermissionsManager().getAllData().put(p, new PlayerData());
+                    Zenith.getPermissionsManager().getPlayerData(p).addPermissionGroup("default");
+                    PrintUtils.sendMessage(sender, "Successfully reset data for player \"" + p.getName() + "\".");
+                    return;
+                }
+
+                account = JsonUtils.fromJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", PlayerData.class);
+                if (account.hasPassword())
+                    SecurityCore.log("Potentially concerning action: player data containing a password, belonging to UUID \"" + uuid + "\" has been wiped and reset. See caller above.", true);
+                
+                account = new PlayerData();
+                account.addPermissionGroup("default");
+                JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", account);
+                PrintUtils.sendMessage(sender, "Successfully reset data for UUID \"" + uuid + "\".");
                 break;
-            case "replace":
+            case "clearpassword":
+                if (p != null)
+                {
+                    Zenith.getPermissionsManager().getPlayerData(p).removePassword();
+                    PrintUtils.sendMessage(sender, "Successfully removed password for player \"" + p.getName() + "\".");
+                    return;
+                }
+
+                account = JsonUtils.fromJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", PlayerData.class);
+                account.removePassword();
+                JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", account);
+                PrintUtils.sendMessage(sender, "Successfully removed password for UUID \"" + uuid + "\".");
+                break;
+            case "password":
+                if (!(sender instanceof Player))
+                {
+                    PrintUtils.sendMessage(sender, "Only players can set an account password.");
+                    return;
+                }
+
+                if (!((Player) sender).getName().equals(args[1]))
+                {
+                    PrintUtils.sendMessage(sender, "You may only set your own password.");
+                    return;
+                }
+
+                ChatAction action = new ChatAction()
+                {
+                    @Override
+                    public void run()
+                    {
+                        String result = ChatUtils.receiveResult(sender);
+                        ChatUtils.deleteResult(sender);
+
+                        if (result.equals("cancel"))
+                        {
+                            PrintUtils.sendMessage(sender, "Exitted password entry mode.");
+                            return;
+                        }
+
+                        cachedPasswords.put(((Player) sender).getName(), result);
+                        PrintUtils.log("Received new password request. Estimated strength: [" + DataUtils.estimatePasswordStrength(result) + "]");
+                        PrintUtils.sendMessage(sender, "Sent password for approval.");
+                    }
+                };
+
+                account = Zenith.getPermissionsManager().getPlayerData((Player) sender);
+                PlayerData faccount = account; // Java is a fun language.
+                if (account.hasPassword())
+                {
+                    PrintUtils.sendMessage(sender, "This account already has a password. Enter your current password to confirm replacement request:");
+                    
+                    ChatUtils.expectChat(sender, new ChatAction()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            String result = ChatUtils.receiveResult(sender);
+                            ChatUtils.deleteResult(sender);
+
+                            if (result.equals("cancel"))
+                            {
+                                PrintUtils.sendMessage(sender, "Exitted password entry mode.");
+                                return;
+                            }
+
+                            if (!faccount.comparePassword(result))
+                            {
+                                PrintUtils.sendMessage(sender, "§cIncorrect password. You may request a password reset from an administrator.");
+                                return;
+                            }
+
+                            ChatUtils.expectChat(sender, action);
+                            PrintUtils.sendMessage(sender, "Please enter a new password. Type \"cancel\" to leave password entry mode.");
+                        }
+                    });
+                    return;
+                }
+
+                ChatUtils.expectChat(sender, action);
+                PrintUtils.sendMessage(sender, "Please enter a new password. Type \"cancel\" to leave password entry mode.");
+
+                break;
+            case "approve":
+                if (!cachedPasswords.containsKey(args[1]))
+                {
+                    PrintUtils.sendMessage(sender, "This player has not submitted a password.");
+                    return;
+                }
+
+                if (sender instanceof ConsoleCommandSender)
+                {
+                    if (p == null)
+                    {
+                        // Offline player
+                        account = JsonUtils.fromJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", PlayerData.class);
+
+                        account.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+                        JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", account);
+
+                        PrintUtils.sendMessage(sender, "Approved offline password request.");
+                        cachedPasswords.remove(args[2]);
+
+                        return;
+                    }
+
+                    account = Zenith.getPermissionsManager().getPlayerData(p);
+                    
+                    account.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+
+                    PrintUtils.sendMessage(sender, "Approved password request.");
+                    PrintUtils.sendMessage(p, "Your password has been approved. You may now access elevated resources with \"/zen sudo\".");
+                    cachedPasswords.remove(args[1]);
+
+                    return;
+                }
+
+                ChatAction approveAction = new ChatAction()
+                {
+                    @Override
+                    public void run()
+                    {
+                        String result = ChatUtils.receiveResult(sender).toLowerCase();
+                        ChatUtils.deleteResult(sender);
+
+                        if (result.equals("cancel"))
+                        {
+                            PrintUtils.sendMessage(sender, "Ignored request. Please re-evaluate this request later.");
+                            return;
+                        }
+
+                        PlayerData paccount;
+
+                        switch (result)
+                        {
+                            case "yes":
+                                if (p == null)
+                                {
+                                    // Offline player
+                                    paccount = JsonUtils.fromJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", PlayerData.class);
+
+                                    paccount.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+                                    JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + uuid + ".json", paccount);
+
+                                    PrintUtils.sendMessage(sender, "Approved offline password request.");
+                                    cachedPasswords.remove(args[2]);
+
+                                    return;
+                                }
+
+                                paccount = Zenith.getPermissionsManager().getPlayerData(p);
+                                
+                                paccount.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+
+                                PrintUtils.sendMessage(sender, "Approved password request.");
+                                PrintUtils.sendMessage(p, "Your password has been approved. You may now access elevated resources with \"/zen sudo\".");
+                                cachedPasswords.remove(args[1]);
+
+                                break;
+                            case "no":
+                                cachedPasswords.remove(args[1]);
+                                PrintUtils.sendMessage(sender, "Rejected password request.");
+                                break;
+                            default:
+                                PrintUtils.sendMessage(sender, "Unrecognized input. Please enter one of the following: [yes/no/cancel].");
+                                ChatUtils.expectChat(sender, this);
+                                break;
+                        }
+                    }
+                };
+
+                ChatUtils.expectChat(sender, approveAction);
+                PrintUtils.sendMessage(sender, "Approve password for user \"" + args[2] + "\"? Estimated strength: " + DataUtils.estimatePasswordStrength(cachedPasswords.get(args[1])) + ", [yes|no|cancel].");
+
+                break;
+            default:
+                sendErrorMessage(sender, args[2], "data");
                 break;
         }
     }
 
-    @ZenCommandHandler(usage = "zen", description = "Provides the user with Zenith's version, and a module count.", argsCount = 0, minAuthorizedRank = 0)
+    @ZenCommandHandler(usage = "zen", description = "Provides the user with Zenith's version and a module count.", argsCount = 0)
     public void zcommand_nosubcmd(CommandSender sender, String commandLabel, String[] args)
     {
         String buffer = "┌§m";
@@ -647,7 +999,7 @@ public class CoreCommand extends ZenithCommand
         buffer = buffer.replace("┌", "└").replace("┐", "┘");
         PrintUtils.sendMessage(sender, buffer);
 
-        PrintUtils.sendMessage(sender, "§oWith love from Yuki_emeralis §r§c❤");
+        PrintUtils.sendMessage(sender, "§oWith love from Yuki_emeralis §r§c:heart:");
         PrintUtils.sendMessage(sender, "Project is maintained here: §9https://github.com/YukiEmeralis/Zenith");
 
         PrintUtils.sendMessage(sender, 

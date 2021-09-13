@@ -14,13 +14,16 @@ import java.util.Map;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.util.StringUtil;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
 import com.yukiemeralis.blogspot.zenith.command.tabcomplete.TabCompleteBranch;
 import com.yukiemeralis.blogspot.zenith.command.tabcomplete.TabCompleteTree;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
+import com.yukiemeralis.blogspot.zenith.utils.ChatUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
+import com.yukiemeralis.blogspot.zenith.utils.ChatUtils.ChatAction;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
 /**
@@ -30,34 +33,16 @@ import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 public abstract class ZenithCommand extends Command implements TabCompleter
 {
     private Map<String, String> redirects = new HashMap<>();
-
     private ZenithModule parent_module = null;
-    protected TabCompleteTree tabCompleteTree = null;
 
-    private static Class<?> permissions;
-    private static Method isAuthorized = null;
-
-    /**
-     * Initializes some static variables, and thus should only be run once.
-     */
-    public void init()
-    {
-        if (permissions == null)
-        {
-            permissions = Zenith.getModuleManager().getCachedClass("com.yukiemeralis.blogspot.zenith.auth.Permissions");
-
-            try {
-                isAuthorized = permissions.getMethod("isAuthorized", CommandSender.class, int.class);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    private TabCompleteTree tree = new TabCompleteTree();
 
     /**
      * A Zenith command with the specified name.
      * @param name The name of the command, as in "/name".
+     * @deprecated All commands must specify their parent module, for the sake of permission generation. Will be removed on release.
      */
+    @Deprecated(forRemoval = true)
     public ZenithCommand(String name) 
     {
         super(name, "ZenithCommand: " + name, "ZenithCommand: " + name, new ArrayList<>());
@@ -100,28 +85,21 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         this.parent_module = parent_module;
     }
 
-    /**
-     * Obtains a TabCompleteTree for this command. TabCompleteTrees must be specified in your command's constructor.
-     * @return This command's TabCompleteTree
-     */
-    public TabCompleteTree getTabCompleteTree()
-    {
-        return this.tabCompleteTree;
-    }
-
     private void generateRedirects()
     {
-        for (Method m : this.getClass().getMethods())
+        // Go over each method in this class to check if the method contains a redirect annotation
+        for (Method m : this.getClass().getDeclaredMethods())
         {
             if (m.isAnnotationPresent(ZenCommandRedirect.class))
             {
+                // Redirect is present, check for validity
                 ZenCommandRedirect a = m.getAnnotation(ZenCommandRedirect.class);
                 
                 for (String label : a.labels())
                 {
                     if (redirects.containsKey(label))
                     {
-                        PrintUtils.log("Command " + this.getName() + "(" + this.getClass().getName() + ") contains multiple redirects for redirect label \"" + label + "\"!", InfoType.WARN);
+                        PrintUtils.log("(Command " + this.getName() + " \\\\(" + this.getClass().getName() + "\\\\) contains multiple redirects for redirect label \"" + label + "\")!", InfoType.WARN);
                         continue;
                     }
 
@@ -146,7 +124,7 @@ public abstract class ZenithCommand extends Command implements TabCompleter
             }
 
             try {
-                cmd_method = this.getClass().getMethod("zcommand_" + args[0].toLowerCase(), CommandSender.class, String.class, String[].class);
+                cmd_method = this.getClass().getDeclaredMethod("zcommand_" + args[0].toLowerCase(), CommandSender.class, String.class, String[].class);
 
                 invokeCommand(
                     cmd_method, // The command method name
@@ -155,7 +133,6 @@ public abstract class ZenithCommand extends Command implements TabCompleter
                 );
             } catch (NoSuchMethodException e) {
                 PrintUtils.sendMessage(sender, "§cUnknown subcommand \"" + args[0] + "\" of parent \"/" + commandLabel + "\".");
-                
             }
         } else { // If no subcommand is specified, attempt to find a blank command
             try {
@@ -185,11 +162,11 @@ public abstract class ZenithCommand extends Command implements TabCompleter
 
             if (!isBlankCommand)
             {
-                PrintUtils.log("Command \"/" + args[0] + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.", InfoType.ERROR);
+                PrintUtils.log("(Command \"/" + args[0] + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.)", InfoType.ERROR);
                 return;
             }
             
-            PrintUtils.log("Command \"/" + commandLabel + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.", InfoType.ERROR);
+            PrintUtils.log("(Command \"/" + commandLabel + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.)", InfoType.ERROR);
             return;
         }
 
@@ -203,23 +180,35 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         }
 
         // Check permissions
+        String permission = generatePermission(this.parent_module, commandLabel, args);
         
-        try {
-            if (!((boolean) isAuthorized.invoke(permissions, sender, cmd_info.minAuthorizedRank())))
+        if (!ensurePermission(sender, permission.replace("^", "")))
+            return;
+
+        // Check if any component of the command requires elevation
+
+        if (permission.contains("^") && sender instanceof Player)
+        {
+            if (!Zenith.getPermissionsManager().isElevated((Player) sender))
             {
-                PrintUtils.sendMessage(sender, "§cYou do not have permission to use this command.");
+                if (!Zenith.getPermissionsManager().getPlayerData((Player) sender).hasPassword())
+                {
+                    PrintUtils.sendMessage(sender, "§cThis command requires elevated access, however you do not have a password set up for this account. Please contact an administrator.");
+                    return;
+                }
+
+                handleElevatedCommand(cmd_method, sender, commandLabel, args);
                 return;
             }
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
         }
 
+        // Run the command
         try {
             cmd_method.invoke(this, sender, commandLabel, args);
         } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
-            PrintUtils.sendMessage(sender, "An internal error occurred. Please contact an administrator.");
-            PrintUtils.log("Failed to execute a command! See below for details and a stacktrace.", InfoType.ERROR);
-            e.printStackTrace();
+            PrintUtils.sendMessage(sender, "§cAn internal error occurred. Please contact an administrator.");
+            PrintUtils.log("§cFailed to execute a command! See below for details and a stacktrace.", InfoType.ERROR);
+            PrintUtils.printPrettyStacktrace(e);
         }
     }
 
@@ -229,7 +218,7 @@ public abstract class ZenithCommand extends Command implements TabCompleter
      * @param commandLabel The label used for this command.
      * @param args A list of arguments in string format.
      */
-    @ZenCommandHandler(usage = "<parent command> help", description = "Provides a list of subcommands tied to this parent command.", argsCount = 1, minAuthorizedRank = 0)
+    @ZenCommandHandler(usage = "<parent command> help", description = "Provides a list of subcommands tied to this parent command.", argsCount = 1)
     public void zcommand_help(CommandSender sender, String commandLabel, String[] args)
     {
         PrintUtils.sendMessage(sender, "§6----[ §eSubcommands for " + commandLabel + " §6]----");
@@ -243,43 +232,56 @@ public abstract class ZenithCommand extends Command implements TabCompleter
                 continue;
             }
 
-            // Make sure the player has permission to use the command
-            try {
-                if (!((boolean) isAuthorized.invoke(permissions, sender, m.getAnnotation(ZenCommandHandler.class).minAuthorizedRank())))
-                    continue;
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-                continue;
-            }
-
             PrintUtils.sendMessage(sender, "§7/§a" + commandLabel + "§e " + m.getName().replaceAll("zcommand_|nosubcmd", "") + " §7- " + m.getAnnotation(ZenCommandHandler.class).description());
         }
     }
 
-    /**
-     * A shared debug command to print trees.
-     * @param sender The command sender.
-     * @param commandLabel The label used for this command.
-     * @param args A list of arguments in string format.
-     */
-    @ZenCommandHandler(usage = "/parent tree <args>", description = "View suggestions from this command's tabcomplete tree.", argsCount = 2, minAuthorizedRank = 3)
-    public void zcommand_tree(CommandSender sender, String commandLabel, String[] args)
+    private void handleElevatedCommand(Method cmd_method, CommandSender sender, String commandLabel, String[] args)
     {
-        String[] treeArgs = new String[args.length - 1];
+        ChatAction action = new ChatAction()
+        {
+            @Override
+            public void run()
+            {
+                String input = ChatUtils.receiveResult(sender);
+                ChatUtils.deleteResult(sender);
 
-        // Copy args to a format we can use
-        for (int i = 1; i < args.length; i++)
-            treeArgs[i - 1] = args[i];
+                if (input.toLowerCase().equals("cancel"))
+                {
+                    PrintUtils.sendMessage(sender, "Exitted password entry mode. It is no longer safe to enter your password.");
+                    return;
+                }
+                    
+                if (!Zenith.getPermissionsManager().getPlayerData((Player) sender).comparePassword(input))
+                {
+                    PrintUtils.sendMessage(sender, "§cIncorrect password. Please try again later.");
+                    return;
+                }
 
-        for (int i = 0; i < treeArgs.length; i++)
-            PrintUtils.sendMessage(sender, "Argument " + i + ": " + treeArgs[i]);
+                // Synchronize with ticks, since downstream code isn't guaranteed to be async
+                new BukkitRunnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        try {
+                            cmd_method.invoke(getInstance(), sender, commandLabel, args);
+                        } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
+                            PrintUtils.sendMessage(sender, "§cAn internal error occurred. Please contact an administrator.");
+                            PrintUtils.log("(Failed to execute a command! See below for details and a stacktrace.)", InfoType.ERROR);
+                            PrintUtils.printPrettyStacktrace(e);
+                        }
+                    }
+                }.runTask(Zenith.getInstance());
 
-        List<TabCompleteBranch> branches = tabCompleteTree.traverse(treeArgs);
+                // Mark user as elevated
+                Zenith.getPermissionsManager().addElevatedUser((Player) sender);
+                PrintUtils.sendMessage(sender, "<#A9EED1>You are now elevated. With great power comes great responsibility.");
+            }
+        };
 
-        for (TabCompleteBranch b : branches)
-            b.getOptions().forEach(label -> {
-                PrintUtils.sendMessage(sender, "Branch: " + label + " (" + b.getBranches().size() + " branch(es) from here)");
-            });
+        PrintUtils.sendMessage(sender, "This command requires elevation, please enter your password:");
+        ChatUtils.expectChat(sender, action);
     }
 
     /**
@@ -322,7 +324,7 @@ public abstract class ZenithCommand extends Command implements TabCompleter
             newCommand = newCommand.replace(" args", "");
         }
 
-        PrintUtils.logVerbose("Redirect command | " + oldCommand + " > " + newCommand, InfoType.INFO);
+        PrintUtils.logVerbose("Redirect command | " + oldCommand + " \\\\> " + newCommand, InfoType.INFO);
         
         Zenith.getInstance().getServer().dispatchCommand(sender, newCommand);
     }
@@ -350,20 +352,23 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         return false;
     }
 
-    protected boolean ensurePermission(CommandSender sender, int minRank)
+    protected boolean ensurePermission(CommandSender sender, String permission)
     {
-        try {
-            if ((boolean) isAuthorized.invoke(permissions, sender, minRank))
-                return true;
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            PrintUtils.sendMessage(sender, "An exception occurred when attempting to check permissions. Please contact an administrator.");
+        if (!Zenith.getPermissionsManager().isAuthorized(sender, permission))
+        {
+            PrintUtils.sendMessage(sender, "§cYou do not have permission to use this command.");
             return false;
         }
 
-        PrintUtils.sendMessage(sender, "§cYou do not have permission to use this command.");
-        return false;
+        return true;
     }
 
+    /**
+     * Sends a commandsender an error message about an invalid subcommand.
+     * @param sender The sender to notify
+     * @param input The input given by the sender
+     * @param cmdLabel The base command 
+     */
     protected void sendErrorMessage(CommandSender sender, String input, String cmdLabel)
     {
         PrintUtils.sendMessage(sender, "§cUnknown subcommand \"" + input + "\" of parent \"" + cmdLabel + "\".");
@@ -372,23 +377,133 @@ public abstract class ZenithCommand extends Command implements TabCompleter
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String commandLabel, String[] args)
     {
-        List<String> suggestions = new ArrayList<>();
+        if (args.length == 0)
+            return tree.getBranchesFromHere();
 
-        if (this.tabCompleteTree == null || args.length == 0)
-            return suggestions;
-        
-        List<TabCompleteBranch> branches = tabCompleteTree.traverse(args);
-        List<String> fullSuggestions = new ArrayList<>();
-        
-        branches.forEach(branch -> {
-            fullSuggestions.addAll(branch.getOptions());
-        });
+        TabCompleteBranch branch = tree.getBranch(args[0]);
+        for (int i = 1; i < args.length; i++)
+        {
+            branch = branch.getBranch(args[i]);
 
-        // Prune
-        StringUtil.copyPartialMatches(args[args.length - 1], fullSuggestions, suggestions);
-
-        return suggestions;
+            if (branch == null)
+                return new ArrayList<>(); // Branch doesn't exist
+        }
+            
+        return branch.getBranchesFromHere();
     }
+
+    //
+    // Permissions
+    //
+
+    protected String generatePermission(ZenithModule module, String base, String[] args)
+    {
+        // Start with a base permission, with the module and command label
+        String permission = module.getName() + "." + base;
+
+        // No args are present, return the base as-is
+        if (args.length == 0)
+            return permission;
+
+        // Traverse tree to see if any given arg is a parameter, or elevated
+        List<Integer> paramIndexes = new ArrayList<>();
+        List<Integer> elevatedIndexes = new ArrayList<>();
+
+        // Start at a branch matching the given subcommand
+        TabCompleteBranch branch = this.getBranch(args[0]);
+
+        if (branch == null)
+            return permission; // Command is likely invalid, which is a situation that is handled
+
+        if (branch.getLabel().startsWith("^"))
+        {
+            elevatedIndexes.add(0);
+        }
+
+        // Start at the first command argument
+        for (int i = 1; i < args.length; i++)
+        {
+            // Ignore branches that go nowhere
+            if (branch.isLeaf())
+                break;
+
+            // Check for user argument
+            if (branch.getBranchesFromHere().size() == 1) // Possibly a user argument, lets check some more
+            {
+                if (branch.getBranchesFromHere().get(0).startsWith("<") && branch.getBranchesFromHere().get(0).endsWith(">"))
+                {
+                    paramIndexes.add(i);
+
+                    branch = branch.getBranch(branch.getBranchesFromHere().get(0));
+                    continue;
+                }
+            }
+
+            branch = branch.getBranch(args[i]);
+
+            if (branch == null)
+            {
+                break;
+            }
+
+            // Check for elevation
+            if (branch.getLabel().startsWith("^"))
+            {
+                elevatedIndexes.add(i);
+            }
+        }
+
+        String marker = "";
+        int index = -1;
+        for (String str : args)
+        {
+            index++;
+            marker = "";
+            if (elevatedIndexes.contains(index))
+                marker = "^";
+            if (!paramIndexes.contains(index))
+                permission = permission + "." + marker + str;
+        }
+
+        return permission;
+    }
+
+    /**
+     * Gets the TabCompleteTree associated with this command.
+     * @return This command's TabCompleteTree.
+     */
+    public TabCompleteTree getTree()
+    {
+        return this.tree;
+    }
+
+    protected TabCompleteBranch addBranch(String... labels)
+    {
+        tree.addBranch(labels);
+
+        if (labels.length == 1)
+            return tree.getBranch(labels[0]);
+        return null;
+    }
+
+    /**
+     * Obtains a first-level branch for this command's TabCompleteTree.
+     * @param label The full label for an existing branch.
+     * @return A branch from this command's TabCompleteTree.
+     */
+    public TabCompleteBranch getBranch(String label)
+    {
+        return tree.getBranch(label);
+    }
+
+    private ZenithCommand getInstance()
+    {
+        return this;
+    }
+
+    //
+    // Annotations
+    //
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
@@ -397,7 +512,6 @@ public abstract class ZenithCommand extends Command implements TabCompleter
         String usage();
         String description();
         int argsCount();
-        int minAuthorizedRank();
     }
 
     @Retention(RetentionPolicy.RUNTIME)

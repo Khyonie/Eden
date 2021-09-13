@@ -18,16 +18,21 @@ limitations under the License.
 package com.yukiemeralis.blogspot.zenith;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
 import com.yukiemeralis.blogspot.zenith.module.java.ModuleManager;
 import com.yukiemeralis.blogspot.zenith.module.java.annotations.Branch;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.BranchType;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.CallerToken;
+import com.yukiemeralis.blogspot.zenith.permissions.PermissionsManager;
 import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
 import com.yukiemeralis.blogspot.zenith.utils.JsonUtils;
+import com.yukiemeralis.blogspot.zenith.utils.Option;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
+import com.yukiemeralis.blogspot.zenith.utils.Option.OptionState;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
 import org.bukkit.Bukkit;
@@ -42,10 +47,14 @@ public class Zenith extends JavaPlugin
 {
 	private static Zenith server_instance;
 	private static ModuleManager module_manager;
+	private static PermissionsManager permissions_manager; 
 
 	private static String nms_version;
 
 	private static boolean isBeingDisabled = false;
+	private static boolean isBeingEnabled = true;
+
+	private static Map<String, String> uuidMap = new HashMap<>();
 
 	private static Map<String, String> config = new HashMap<>();
 	private static Map<String, String> defaultConfig = new HashMap<>() {{
@@ -62,7 +71,7 @@ public class Zenith extends JavaPlugin
 		String bukkitPackage = Bukkit.getServer().getClass().getPackage().getName();
 		nms_version = bukkitPackage.substring(bukkitPackage.lastIndexOf('.') + 1);
 
-		PrintUtils.log("Server version is determined to be \"" + nms_version + "\"", InfoType.INFO);
+		PrintUtils.log("Server version is determined to be \"[" + nms_version + "]\"", InfoType.INFO);
 
 		module_manager = new ModuleManager();
 
@@ -84,17 +93,31 @@ public class Zenith extends JavaPlugin
 		if (!zenconfig.exists())
 			JsonUtils.toJsonFile(zenconfig.getAbsolutePath(), defaultConfig);
 
-		try {
-			config = (Map<String, String>) JsonUtils.fromJsonFile(zenconfig.getAbsolutePath(), HashMap.class);
-
-			if (config == null)
-				throw new ClassCastException();
-		} catch (Exception e) {
-			PrintUtils.log("Zenith configuration file is corrupt! Moving to lost and found...", InfoType.ERROR);
+		// Attempt to load config
+		config = (Map<String, String>) JsonUtils.fromJsonFile(zenconfig.getAbsolutePath(), HashMap.class);
+		if (config == null) 
+		{
+			PrintUtils.log("(Zenith configuration file is corrupt! Moving to lost and found...)", InfoType.ERROR);
 			FileUtils.moveToLostAndFound(zenconfig);
 
 			config = new HashMap<>(defaultConfig);
 			JsonUtils.toJsonFile(zenconfig.getAbsolutePath(), config);
+		}
+
+		// UUID cache
+		File uuidCacheFile = new File("./plugins/Zenith/uuidcache.json");
+		if (!uuidCacheFile.exists())
+			JsonUtils.toJsonFile(uuidCacheFile.getAbsolutePath(), uuidMap);
+
+		// Attempt to load cache
+		uuidMap = (Map<String, String>) JsonUtils.fromJsonFile(uuidCacheFile.getAbsolutePath(), HashMap.class);
+		if (uuidMap == null)
+		{
+			PrintUtils.log("(Player UUID cache file is corrupt! Moving to lost and found...)", InfoType.ERROR);
+			FileUtils.moveToLostAndFound(uuidCacheFile);
+
+			uuidMap = new HashMap<>();
+			JsonUtils.toJsonFile(uuidCacheFile.getAbsolutePath(), uuidMap);
 		}
 
 		if (Boolean.valueOf(config.get("verboseLogging")))
@@ -109,7 +132,8 @@ public class Zenith extends JavaPlugin
 		module_manager.performFullLoad();
 		module_manager.enableAllModules();
 
-		PrintUtils.log("Loading and enabling took " + (System.currentTimeMillis() - time) + " ms.", InfoType.INFO);
+		PrintUtils.log("Loading and enabling took [" + (System.currentTimeMillis() - time) + "] ms.", InfoType.INFO);
+		isBeingEnabled = false;
 	}
 	
 	@Override
@@ -119,6 +143,12 @@ public class Zenith extends JavaPlugin
 		module_manager.getEnabledModules().forEach(module -> {
 			module_manager.disableModule(module.getName(), CallerToken.ZENITH);
 		});
+
+		Bukkit.getOnlinePlayers().forEach(player -> {
+			JsonUtils.toJsonFile("./plugins/Zenith/playerdata/" + player.getUniqueId().toString() + ".json", permissions_manager.getPlayerData(player));
+		});
+
+		JsonUtils.toJsonFile("./plugins/Zenith/uuidcache.json", uuidMap);
 	}
 
 	/**
@@ -146,6 +176,65 @@ public class Zenith extends JavaPlugin
 	public static ModuleManager getModuleManager()
 	{
 		return module_manager;
+	}
+
+	/**
+	 * Obtains the permissions manager in use for the server.
+	 * @return The current permissions manager.
+	 */
+	public static PermissionsManager getPermissionsManager()
+	{
+		return permissions_manager;
+	}
+
+	/**
+	 * Obtains the UUID cache in use by Zenith.
+	 * @return The Zenith UUID cache.
+	 */
+	public static Map<String, String> getUuidCache()
+	{
+		return uuidMap;
+	}
+
+	
+	/**
+	 * Sets the server's permissions manager. Calling this method will notify the console of the change.
+	 * @param manager The manager to set.
+	 */
+	public static void setPermissionsManager(PermissionsManager manager)
+	{
+		String managerName = "None";
+		if (permissions_manager != null)
+		{
+			managerName = permissions_manager.getClass().getSimpleName();
+
+			// Copy revelant fields
+			Field target; 
+			try {
+				target = PermissionsManager.class.getDeclaredField("active_players");
+				target.set(manager, target.get(permissions_manager));
+
+				target = PermissionsManager.class.getDeclaredField("elevated_users");
+				target.set(manager, target.get(permissions_manager));
+			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+				PrintUtils.log("(Failed to switch permissions managers. Reason is below:)", InfoType.ERROR);
+				PrintUtils.printPrettyStacktrace(e);
+				return;
+			}
+		}
+
+		Option<ZenithModule> host = module_manager.getHostModule(manager.getClass());
+		String name = "Unknown module";
+		if (host.getState().equals(OptionState.SOME))
+			 if (host.unwrap() != null)
+				name = "from module \"{" + host.unwrap().getName() + "}\"";
+				
+		PrintUtils.log("Permissions manager: [" + managerName + "] -> {" + manager.getClass().getSimpleName() + "} \\(" + name + "\\)");
+
+		permissions_manager = manager;
+
+		if (!isBeingEnabled)
+			PrintUtils.log("Permissions manager has been set. If this is unexpected, perform an audit of installed modules immediately.", InfoType.INFO);
 	}
 
 	/**

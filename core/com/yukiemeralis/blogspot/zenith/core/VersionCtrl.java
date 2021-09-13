@@ -23,7 +23,7 @@ public class VersionCtrl
                 }
             }
 
-            PrintUtils.log("Failed to locate the Zenith plugin file! Version has been set to \"unknown\". Please ensure that the plugin starts with \"Zenith-\".", InfoType.WARN);
+            PrintUtils.log("(Failed to locate the Zenith plugin file! Version has been set to \"unknown\". Please ensure that the plugin starts with \"Zenith-\".)", InfoType.WARN);
             version = "Unknown";
         }
 

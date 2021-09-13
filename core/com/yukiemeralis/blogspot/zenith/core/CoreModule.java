@@ -18,7 +18,9 @@ package com.yukiemeralis.blogspot.zenith.core;
 
 import org.bukkit.Material;
 
+import com.yukiemeralis.blogspot.zenith.Zenith;
 import com.yukiemeralis.blogspot.zenith.core.modgui.ModuleTracker;
+import com.yukiemeralis.blogspot.zenith.listeners.UuidCacheListener;
 import com.yukiemeralis.blogspot.zenith.module.ModuleFamily;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
 import com.yukiemeralis.blogspot.zenith.module.ZenithModule.LoadBefore;
@@ -54,7 +56,7 @@ public class CoreModule extends ZenithModule
 {
     public CoreModule()
     {
-        //addCommand(new CoreCommand(this));
+        addListener(new UuidCacheListener());
     }
 
     @Override
@@ -76,5 +78,10 @@ public class CoreModule extends ZenithModule
     public void onDisable() 
     {
         
+    }
+
+    public static ZenithModule getModuleInstance()
+    {
+        return Zenith.getModuleManager().getModuleByName("Zenith");
     }
 }

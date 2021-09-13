@@ -13,7 +13,7 @@ public class DebugProjectile extends ZenithProjectile implements BlockDetonator,
 {
     public DebugProjectile()
     {
-        super(Arrow.class, ProjectileFlag.DESTROY_ON_COLLISION);
+        super(Arrow.class, ProjectileFlag.DESTROY_ON_COLLISION, ProjectileFlag.INVISIBLE);
     }
 
     @Override

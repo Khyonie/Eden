@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for modules that have an @ZenConfig annotation. Provides the keys and values for a default config.
- * @author Hailey
+ * @Author Yuki_emeralis
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

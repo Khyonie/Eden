@@ -5,13 +5,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Collection of utilities to manage .json files.
- * @author Hailey
+ * @Author Yuki_emeralis
  *
  */
 public class JsonUtils 
@@ -61,12 +63,29 @@ public class JsonUtils
 
     /**
      * Reads an object of type T from a file.
+     * @param <T>
      * @param <T> The type of the object to expect
      * @param path Filepath
      * @param type The type of the object to expect
      * @return An object from a .json file
      */
-    public static <T> Object fromJsonFile(String path, Class<T> type)
+    public static <T> T fromJsonFile(String path, Class<T> type)
+    {
+        File file = new File(path); 
+
+        try {
+            FileReader f = new FileReader(file);
+            T obj = gson.fromJson(f, type);
+
+            f.close();
+
+            return obj;
+        } catch (IOException | IllegalStateException | JsonSyntaxException error) {
+            return null;
+        }
+    }
+
+    public static <T> Object fromJsonFile(String path, Type type)
     {
         File file = new File(path);
 
@@ -77,7 +96,7 @@ public class JsonUtils
             f.close();
 
             return obj;
-        } catch (IOException error) {
+        } catch (IOException | IllegalStateException | JsonSyntaxException error) {
             return null;
         }
     }

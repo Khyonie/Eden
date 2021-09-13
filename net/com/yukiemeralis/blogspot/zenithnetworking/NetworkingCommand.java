@@ -5,24 +5,27 @@ import java.io.File;
 import org.bukkit.command.CommandSender;
 
 import com.yukiemeralis.blogspot.zenith.command.ZenithCommand;
+import com.yukiemeralis.blogspot.zenith.module.ZenithModule;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
 public class NetworkingCommand extends ZenithCommand
 {
-	public NetworkingCommand()
+	public NetworkingCommand(ZenithModule module) 
 	{
-		super("zendl");
+		super("zendl", module);
+
+		this.addBranch("tdl").addBranch("<URL>").addBranch("<filepath>"); 
 	}
 	
-	@ZenCommandHandler(usage = "zendl tdl <URL> <filepath>", description = "Download a file from a URL inside of a thread.", argsCount = 3, minAuthorizedRank = 3)
+	@ZenCommandHandler(usage = "zendl tdl <URL> <filepath>", description = "Download a file from a URL inside of a thread.", argsCount = 3)
 	public void zcommand_tdl(CommandSender sender, String commandLabel, String[] args)
 	{
 		if (!args[2].endsWith("/"))
 			args[2] = args[2] + "/";
 		
 		PrintUtils.sendMessage(sender, "Begun download...");
-		PrintUtils.log("[INFO]: Downloading to " + args[2] + NetworkingUtils.getFinalURLPortion(args[1]), InfoType.INFO);
+		PrintUtils.log("Downloading to [" + args[2] + NetworkingUtils.getFinalURLPortion(args[1]) + "]", InfoType.INFO);
 		Thread t = new Thread()
 		{
 			@Override

@@ -33,6 +33,11 @@ public class Option<T>
         this.contained = contained;
     }
 
+    public OptionState getState()
+    {
+        return this.state;
+    }
+
     public T unwrap()
     {
         if (state.equals(OptionState.NONE))

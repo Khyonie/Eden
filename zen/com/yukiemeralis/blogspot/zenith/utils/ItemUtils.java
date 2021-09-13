@@ -16,7 +16,7 @@ import com.yukiemeralis.blogspot.zenith.Zenith;
 
 /**
  * A collection of utilities to change an itemstack's metadata.
- * @author Hailey
+ * @Author Yuki_emeralis
  */
 public class ItemUtils 
 {

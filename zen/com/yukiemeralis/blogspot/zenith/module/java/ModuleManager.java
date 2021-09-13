@@ -2,8 +2,6 @@ package com.yukiemeralis.blogspot.zenith.module.java;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import com.yukiemeralis.blogspot.zenith.module.java.enums.CallerToken;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.zenith.utils.DataUtils;
 import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
+import com.yukiemeralis.blogspot.zenith.utils.Option;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 import com.yukiemeralis.blogspot.zenith.utils.Result.UndefinedResultException;
@@ -94,7 +93,7 @@ public class ModuleManager
 			{
 				if (!loader_cache.containsKey(str))
 				{
-					PrintUtils.log("Missing dependency \"" + str + "\" for module \"" + modname + "\"!", InfoType.ERROR);
+					PrintUtils.log("(Missing dependency \")[" + str + "](\" for module \"){" + modname + "}(\"!)", InfoType.ERROR);
 					valid = false;
 					continue;
 				}
@@ -116,8 +115,8 @@ public class ModuleManager
 				loader.finalizeLoading();
 				disabled_modules.add(loader.getModule());
 				
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException e) {
-				e.printStackTrace();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException | NullPointerException e) {
+				PrintUtils.printPrettyStacktrace(e);
 			}
 		}
 
@@ -127,7 +126,6 @@ public class ModuleManager
 				for (String modName : module.getClass().getAnnotation(LoadBefore.class).loadBefore())
 				{
 					getDisabledModuleByName(modName).addReliantModule(module);
-					PrintUtils.log("Module \"" + module.getClass().getAnnotation(ModInfo.class).modName() + "\" is marked as reliant on \"" + modName + "\".");
 				}
 		PrintUtils.logVerbose("Finished preload!", InfoType.INFO);
 	}
@@ -182,13 +180,13 @@ public class ModuleManager
 		try {
 			mcl = new ModuleClassLoader(this.getClass().getClassLoader(), this, f);
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			PrintUtils.printPrettyStacktrace(e);
 			return null;
 		}
 
 		if (mcl.getModuleClass() == null)
 		{
-			PrintUtils.log("Failed to load file \"" + f.getName() + "\"! Reason: invalid module class.", InfoType.ERROR);
+			PrintUtils.log("(Failed to load file \")[" + f.getName() + "](\"! Reason: invalid module class.)", InfoType.ERROR);
 			return null;
 		}
 
@@ -258,13 +256,13 @@ public class ModuleManager
 
 					moduleFiles.add(file);
 				} catch (IOException e) {
-					e.printStackTrace();
+					PrintUtils.printPrettyStacktrace(e);
 				}
 			});
 
 			jarFile.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			PrintUtils.printPrettyStacktrace(e);
 		}
 		
 		return moduleFiles;
@@ -305,7 +303,7 @@ public class ModuleManager
 		try {
 			mcl.finalizeLoading();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException e) {
-			e.printStackTrace();
+			PrintUtils.printPrettyStacktrace(e);
 			try { result.err("Module has invalid classes. Failed with error: " + e.getClass().getSimpleName()); } catch (UndefinedResultException e_) {}
 			return result;
 		}
@@ -318,7 +316,6 @@ public class ModuleManager
 			for (String modName : mcl.getModuleClass().getAnnotation(LoadBefore.class).loadBefore())
 			{
 				loader_cache.get(modName).getModule().addReliantModule(mcl.getModule());
-				PrintUtils.log("Module \"" + mcl.getModuleClass().getAnnotation(ModInfo.class).modName() + "\" is marked as reliant on \"" + modName + "\".");
 			}
 		}
 
@@ -355,7 +352,7 @@ public class ModuleManager
 			}
 		});
 
-		PrintUtils.log("Enabled " + enabled_modules.size() + "/" + getAllModules().size() + " module(s)!", InfoType.INFO);
+		PrintUtils.log("Enabled [" + enabled_modules.size() + "]/[" + getAllModules().size() + "] module\\(s\\)!", InfoType.INFO);
 	}
 
 	/**
@@ -364,6 +361,12 @@ public class ModuleManager
 	 */
 	public void enableModule(ZenithModule module)
 	{
+		if (module.getName() == null)
+		{
+			PrintUtils.log("(Module failed to load. Keeping as an unloaded module.)", InfoType.ERROR);
+			return;
+		}
+
 		PrintUtils.logVerbose("Checking if module \"" + module.getName() + "\" has already been loaded...", InfoType.INFO);
 		if (enabled_modules.contains(module)) // Don't load twice
 		{
@@ -404,13 +407,9 @@ public class ModuleManager
 			module.onEnable();
 			module.setEnabled();
 		} catch (Exception e) {
-			PrintUtils.log("Failed to enable module! Stacktrace is below...", InfoType.ERROR);
+			PrintUtils.log("(Failed to enable module! Stacktrace is below...)", InfoType.ERROR);
 
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-
-			e.printStackTrace(pw);
-			PrintUtils.log(sw.toString(), InfoType.ERROR);
+			PrintUtils.printPrettyStacktrace(e);
 
 			if (!disabled_modules.contains(module))
 				disabled_modules.add(module);
@@ -443,13 +442,13 @@ public class ModuleManager
 
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
-				PrintUtils.log("An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name(), InfoType.WARN);
+				PrintUtils.log("(An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ")", InfoType.WARN);
 				return false;
 			}	
 		}
 
 		// Start disabling
-		PrintUtils.log("Disabling " + module.getName(), InfoType.INFO);
+		PrintUtils.log("Disabling [" + module.getName() + "]", InfoType.INFO);
 
 		List<ZenithModule> disabledMods = new ArrayList<>();
 		// Disable reliant modules
@@ -458,7 +457,7 @@ public class ModuleManager
 			{
 				if (!disableModule(mod.getName(), caller)) // If we can't disable a reliant module, reload all disabled modules and abort
 				{
-					PrintUtils.log("Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.", InfoType.ERROR);
+					PrintUtils.log("(Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.)", InfoType.ERROR);
 					disabledMods.forEach(mod_ -> { 
 						enableModule(mod_);
 						mod_.setEnabled();
@@ -476,8 +475,8 @@ public class ModuleManager
 				PrintUtils.logVerbose("Saving config...", InfoType.INFO);
 				module.saveConfig();
 			} catch (Exception e) {
-				PrintUtils.log("Failed to save config! Stacktrace is below...", InfoType.ERROR);
-				e.printStackTrace();
+				PrintUtils.log("(Failed to save config! Stacktrace is below...)", InfoType.ERROR);
+				PrintUtils.printPrettyStacktrace(e);
 			}
 		}
 
@@ -512,8 +511,8 @@ public class ModuleManager
 				return true;
 			}
 		} catch (Exception e) {
-			PrintUtils.log("Failed to disable module! Stacktrace is below...", InfoType.ERROR);
-			e.printStackTrace();
+			PrintUtils.log("(Failed to disable module! Stacktrace is below...)", InfoType.ERROR);
+			PrintUtils.printPrettyStacktrace(e);
 		}
 
 		return false;
@@ -548,7 +547,7 @@ public class ModuleManager
 
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
-				PrintUtils.log("An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name(), InfoType.WARN);
+				PrintUtils.log("(An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ")", InfoType.WARN);
 				return;
 			}	
 		}
@@ -602,6 +601,38 @@ public class ModuleManager
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Finds the module a class is associated with. <p>
+	 * <b>Results:</b><p>
+	 * SOME - A module was found. Unwrap to obtain module. If null, class was not found anywhere.<p>
+	 * NONE - Class was found outside of a module. 
+	 * @param clazz The class to search with.
+	 */
+	public Option<ZenithModule> getHostModule(Class<?> clazz) 
+	{
+		Option<ZenithModule> option = new Option<>(ZenithModule.class);
+		try {
+			Class.forName(clazz.getName(), false, this.getClass().getClassLoader()); // Part of zenith, bukkit/spigot, or NMS
+			return option; // Option is none
+		} catch (ClassNotFoundException e) {}
+
+		for (String current : loader_cache.keySet())
+		{
+			ModuleClassLoader loader = loader_cache.get(current);
+
+			try {
+				loader.findClass(clazz.getName(), false);
+				option.some(loader.getModule()); // Class found
+				return option;
+			} catch (ClassNotFoundException e) {
+				continue;
+			}
+		}
+
+		option.some(null); // Class was not found anywhere
+		return option;
 	}
 
 	/**

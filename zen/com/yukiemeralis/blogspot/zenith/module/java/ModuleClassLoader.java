@@ -3,6 +3,7 @@ package com.yukiemeralis.blogspot.zenith.module.java;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -95,18 +96,18 @@ public class ModuleClassLoader extends URLClassLoader
 
 				if (!buffer.isAnnotationPresent(ModInfo.class))
 				{
-					PrintUtils.log("Module class \"" + clazz.getPackageName() + "\" does not specify any module information!", InfoType.ERROR);
-					PrintUtils.log("If you are a developer seeing this message, please attach an @ModInfo annotation to your module class.", InfoType.ERROR);
-					PrintUtils.log("If you are a server owner seeing this message, please either update this module, update Zenith, or contact this module's maintainer.", InfoType.ERROR);
-					PrintUtils.log("Offending file: " + file.getName(), InfoType.ERROR);
+					PrintUtils.log("(Module class \")[" + clazz.getPackageName() + "](\" does not specify any module information!)", InfoType.ERROR);
+					PrintUtils.log("(If you are a developer seeing this message, please attach an @ModInfo annotation to your module class.)", InfoType.ERROR);
+					PrintUtils.log("(If you are a server owner seeing this message, please either update this module, update Zenith, or contact this module's maintainer.)", InfoType.ERROR);
+					PrintUtils.log("(Offending file:) [" + file.getName() + "]", InfoType.ERROR);
 					return null;
 				}
 
 				if (!Arrays.asList(buffer.getAnnotation(ModInfo.class).supportedApiVersions()).contains(Zenith.getNMSVersion()))
 				{
-					PrintUtils.log("Module \"" + buffer.getAnnotation(ModInfo.class).modName() + "\" is declared as compatible with the following version(s): " + Arrays.toString(buffer.getAnnotation(ModInfo.class).supportedApiVersions()) + ",", InfoType.ERROR);
-					PrintUtils.log("however this server is running on version " + Zenith.getNMSVersion() + ".", InfoType.ERROR);
-					PrintUtils.log("Please upgrade or downgrade this module, or contact this module's maintainer.", InfoType.ERROR);
+					PrintUtils.log("(Module \")[" + buffer.getAnnotation(ModInfo.class).modName() + "](\" is declared as compatible with the following version(s):) {" + Arrays.toString(buffer.getAnnotation(ModInfo.class).supportedApiVersions()) + "}(,)", InfoType.ERROR);
+					PrintUtils.log("(however this server is running on version )[" + Zenith.getNMSVersion() + "](.)", InfoType.ERROR);
+					PrintUtils.log("(Please upgrade or downgrade this module, or contact this module's maintainer.)", InfoType.ERROR);
 					return null;
 				}
 
@@ -126,7 +127,9 @@ public class ModuleClassLoader extends URLClassLoader
 	void cacheCommandsAndEvents()
 	{
 		commandClasses.addAll(findSubclasses(true, ZenithCommand.class));
+		commandClasses.forEach(clazz -> { PrintUtils.logVerbose("Found command class \"" + clazz.getName() + "\"", InfoType.INFO); });
 		listenerClasses.addAll(findSubclasses(true, Listener.class));
+		listenerClasses.forEach(clazz -> { PrintUtils.logVerbose("Found listener class \"" + clazz.getName() + "\"", InfoType.INFO); });
 	}
 
 	void finalizeLoading() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException
@@ -135,6 +138,7 @@ public class ModuleClassLoader extends URLClassLoader
 		module = moduleClass.getConstructor().newInstance();
 		module.setInfo(moduleClass.getAnnotation(ModInfo.class));
 		
+		// Register commands and listeners
 		List<ZenithCommand> commands = new ArrayList<>();
 		List<Listener> listeners = new ArrayList<>();
 
@@ -151,10 +155,10 @@ public class ModuleClassLoader extends URLClassLoader
 					commandConstructor = clazz.getConstructor(ZenithModule.class);
 					command = commandConstructor.newInstance(module);
 				} catch (NoSuchMethodException e_) {
-					PrintUtils.log("Command class \"" + clazz.getPackageName() + "\" does not contain a valid constructor!", InfoType.ERROR);
-					PrintUtils.log("If you are a developer seeing this message, ensure your class contains a no-arg constructor, or one with a ZenithModule.", InfoType.ERROR);
-					PrintUtils.log("Alternatively, you may hide this command from automatic loading by annotating your class with an @HideFromCollector and adding it manually.", InfoType.ERROR);
-					PrintUtils.log("If you are a server owner seeing this message, please update this module \"" + module.getName() + "\", update Zenith, or contact this module's maintainer.", InfoType.ERROR);
+					PrintUtils.log("(Command class \")[" + clazz.getPackageName() + "](\" does not contain a valid constructor!)", InfoType.ERROR);
+					PrintUtils.log("(If you are a developer seeing this message, ensure your class contains a ZenithModule.)", InfoType.ERROR);
+					PrintUtils.log("(Alternatively, you may hide this command from automatic loading by annotating your class with an @HideFromCollector and adding it manually.)", InfoType.ERROR);
+					PrintUtils.log("(If you are a server owner seeing this message, please update this module \")[" + module.getName() + "](\", update Zenith, or contact this module's maintainer.)", InfoType.ERROR);
 					continue;
 				}
 			}
@@ -231,7 +235,6 @@ public class ModuleClassLoader extends URLClassLoader
 		while (entries.hasMoreElements())
 		{
 			entry = entries.nextElement();
-			//PrintUtils.log("Checking jar entry \"" + entry.getName() + "\".", InfoType.INFO);
 
 			if (entry.isDirectory() || !entry.getName().endsWith(".class"))
 				continue;

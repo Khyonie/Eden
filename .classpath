@@ -6,23 +6,20 @@
 	<classpathentry kind="src" path="gui"/>
 	<classpathentry kind="src" path="net"/>
 	<classpathentry kind="src" path="projectile"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-13">
+	<classpathentry kind="src" path="ench"/>
+	<classpathentry kind="src" path="events"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-1.16.5.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-1.17.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-api-1.17-R0.1-SNAPSHOT-shaded.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Server 1.17/plugins/Zenith/mods/ZenithNetworking.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/ZenithAuth.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/ZenithCore.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-1.17.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-api-1.17.1-R0.1-SNAPSHOT-shaded.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/bukkit/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-1.16.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

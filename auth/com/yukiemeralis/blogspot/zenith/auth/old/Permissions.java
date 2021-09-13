@@ -1,4 +1,4 @@
-package com.yukiemeralis.blogspot.zenith.auth;
+package com.yukiemeralis.blogspot.zenith.auth.old;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -15,12 +15,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
-import com.yukiemeralis.blogspot.zenith.auth.SecurePlayerAccount.AccountType;
+import com.yukiemeralis.blogspot.zenith.auth.SecurityCore;
+import com.yukiemeralis.blogspot.zenith.auth.old.SecurePlayerAccount.AccountType;
 import com.yukiemeralis.blogspot.zenith.utils.ChatUtils;
 import com.yukiemeralis.blogspot.zenith.utils.JsonUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.ChatUtils.ChatAction;
 
+/**
+ * @deprecated Permissions are now handled by permission groups.
+ */
+@Deprecated
 public class Permissions 
 {
     private static Map<String, SecurePlayerAccount> accounts = new HashMap<>();
@@ -31,9 +36,12 @@ public class Permissions
     private static Map<String, BukkitTask> login_attempts_timers = new HashMap<>();
     private static Map<String, Integer> login_attempts = new HashMap<>();
 
+
     /**
      * Loads all locally saved accounts into memory
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     static synchronized void populateAccountsList()
     {
         File accounts_file = new File("./plugins/Zenith/user-accounts");
@@ -41,7 +49,7 @@ public class Permissions
 
         for (File f : accounts_file.listFiles())
         {
-            account = (SecurePlayerAccount) JsonUtils.fromJsonFile(f.getAbsolutePath(), SecurePlayerAccount.class);
+            account = JsonUtils.fromJsonFile(f.getAbsolutePath(), SecurePlayerAccount.class);
             accounts.put(account.getUsername(), account);
         }
     }
@@ -50,7 +58,9 @@ public class Permissions
      * Registers an account into the accounts list. If it doesn't already exist as a file, one will be created.
      * @param account The account to register
      * @return If the account registration was successful
+     * @deprecated
      */
+    @Deprecated
     public static synchronized boolean registerAccount(SecurePlayerAccount account)
     {
         if (accounts.containsKey(account.getUsername()))
@@ -66,8 +76,10 @@ public class Permissions
 
     /**
      * Gets all loaded accounts
+     * @deprecated Permissions are now handled by permission groups.
      * @return
      */
+    @Deprecated
     static Map<String, SecurePlayerAccount> getAccounts()
     {
         return accounts;
@@ -78,7 +90,9 @@ public class Permissions
      * @param sender The user intending to create this account
      * @param type The rank of this account
      * @param username The username of this account
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static void createNewAccount(CommandSender sender, AccountType type, String username)
     {
         ChatAction password_action = new ChatAction()
@@ -121,26 +135,29 @@ public class Permissions
         ChatUtils.expectChat(sender, password_action);
     }
 
+    @Deprecated
     private static void storeAccountRequest(String key, SecurePlayerAccount account)
     {
         JsonUtils.toJsonFile("./plugins/Zenith/account-requests/" + key + ".json", account);
     }
 
+    @Deprecated
     public static Map<String, SecurePlayerAccount> getAccountRequests()
     {
         Map<String, SecurePlayerAccount> requests = new HashMap<>();
 
         for (File f : new File("./plugins/Zenith/account-requests/").listFiles())
         {
-            requests.put(f.getName().replaceAll(".json", ""), (SecurePlayerAccount) JsonUtils.fromJsonFile(f.getAbsolutePath(), SecurePlayerAccount.class));
+            requests.put(f.getName().replaceAll(".json", ""), JsonUtils.fromJsonFile(f.getAbsolutePath(), SecurePlayerAccount.class));
         }
 
         return requests;
     }
 
+    @Deprecated
     public static SecurePlayerAccount getAccountRequest(String key)
     {
-        SecurePlayerAccount account = (SecurePlayerAccount) JsonUtils.fromJsonFile("./plugins/Zenith/account-requests/" + key + ".json", SecurePlayerAccount.class);
+        SecurePlayerAccount account = JsonUtils.fromJsonFile("./plugins/Zenith/account-requests/" + key + ".json", SecurePlayerAccount.class);
 
         return account == null ? null : account;
     }
@@ -150,7 +167,9 @@ public class Permissions
      * @param sender The commandsender
      * @param minimum The minimum allowed account rank to access a given resource
      * @return True if the commandsender is authorized, false if not
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static boolean isAuthorized(CommandSender sender, AccountType minimum)
     {
         return isAuthorized(sender, minimum.getRank());
@@ -161,11 +180,17 @@ public class Permissions
      * @param sender The commandsender
      * @param minimum The minimum allowed account rank to access a given resource
      * @return True if the commandsender is authorized, false if not
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static boolean isAuthorized(CommandSender sender, int minimum)
     {
         if (sender instanceof ConsoleCommandSender) // Console users always have access. Maybe change this?
             return true;
+
+        if (sender instanceof Player)
+            if (((Player) sender).isOp())
+                return true;
 
         int permission_level = 0;
 
@@ -173,14 +198,16 @@ public class Permissions
             permission_level = logged_in_users.get(sender).getAccountType().getRank();
         } catch (NullPointerException e) {}
 
-        return permission_level >= minimum ? true : false;
+        return permission_level >= minimum;
     }
 
     /**
      * Primes ChatUtils to expect a user's password in chat.
      * @param target The player to expect from
      * @param username The account to expect the password from
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static void expectPassword(Player target, String username)
     {
         if ((!Boolean.valueOf(Zenith.getModuleManager().getEnabledModuleByName("ZenithAuth").getConfig().get("allow_console_logins")) && username.equals("console")) ||
@@ -236,7 +263,9 @@ public class Permissions
      * @param account The account to check against
      * @param input The input to hash and check
      * @return True if the input, when hashed, matches the account's password hash, false if not
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static boolean comparePassword(SecurePlayerAccount account, String input)
     {
         return genHash(input).equals(account.getPassword()) ? true : false;
@@ -245,8 +274,10 @@ public class Permissions
     /**
      * Logs a player into a secure player account.
      * @param user The player to log in
-     * @param username The username of the account to log in to
+     * @param username The username of the account to log in to\
+     * @deprecated
      */
+    @Deprecated
     static void login(CommandSender user, String username)
     {
         SecurePlayerAccount account = accounts.get(username);
@@ -258,7 +289,9 @@ public class Permissions
      * @param user The commandsender to log in
      * @param username The username of the account to log into
      * @param password_plaintext The supposed password, in plaintext, for the given account
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static void login(CommandSender user, String username, String password_plaintext)
     {
         // We do our checking earlier, so we don't need to check if the accounts list contains the username
@@ -294,7 +327,9 @@ public class Permissions
      * Logs a user out of a secure account
      * @param user The user to logout
      * @return True if the user was successfully logged out, false if not
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static synchronized boolean logout(CommandSender user)
     {
         if (!logged_in_users.containsKey(user))
@@ -311,7 +346,9 @@ public class Permissions
      * Called when {@link #login(CommandSender, String, String)} fails due to an incorrect password
      * @param user The commandsender attempting to log in
      * @param username The username of the account
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     private static void onFailedLogin(CommandSender user, String username)
     {
         if (max_failed_login_attempts == -1)
@@ -367,7 +404,9 @@ public class Permissions
      * Returns if an account exists or not. Does NOT return the account itself
      * @param username The possible username of an account
      * @return If an account exists and has been loaded into memory
+     * @deprecated Permissions are now handled by permission groups.
      */
+    @Deprecated
     public static boolean accountExists(String username)
     {
         return accounts.containsKey(username);
@@ -378,6 +417,7 @@ public class Permissions
         return logged_in_users.containsKey(target);
     }
 
+    @Deprecated
     public static SecurePlayerAccount getLoggedInAccount(CommandSender target)
     {
         return logged_in_users.get(target);
