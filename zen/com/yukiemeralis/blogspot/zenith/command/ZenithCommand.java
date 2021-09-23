@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -30,7 +29,7 @@ import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
  * An instance of a Zenith command. Please look at the wiki @ https://github.com/YukiEmeralis/Zenith for documentation.
  * @author Yuki_emeralis
  */
-public abstract class ZenithCommand extends Command implements TabCompleter
+public abstract class ZenithCommand extends Command
 {
     private Map<String, String> redirects = new HashMap<>();
     private ZenithModule parent_module = null;
@@ -53,7 +52,9 @@ public abstract class ZenithCommand extends Command implements TabCompleter
      * A Zenith command with the specified name and a list of potential aliases.
      * @param name The name of the command, as in "/name".
      * @param aliases A list of potential aliases for this command.
+     * @deprecated All commands must specify their parent module, for the sake of permission generation. Will be removed on release.
      */
+    @Deprecated(forRemoval = true)
     public ZenithCommand(String name, List<String> aliases) 
     {
         super(name, "ZenithCommand: " + name, "ZenithCommand: " + name, aliases);
@@ -372,24 +373,6 @@ public abstract class ZenithCommand extends Command implements TabCompleter
     protected void sendErrorMessage(CommandSender sender, String input, String cmdLabel)
     {
         PrintUtils.sendMessage(sender, "§cUnknown subcommand \"" + input + "\" of parent \"" + cmdLabel + "\".");
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String commandLabel, String[] args)
-    {
-        if (args.length == 0)
-            return tree.getBranchesFromHere();
-
-        TabCompleteBranch branch = tree.getBranch(args[0]);
-        for (int i = 1; i < args.length; i++)
-        {
-            branch = branch.getBranch(args[i]);
-
-            if (branch == null)
-                return new ArrayList<>(); // Branch doesn't exist
-        }
-            
-        return branch.getBranchesFromHere();
     }
 
     //

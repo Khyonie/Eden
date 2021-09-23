@@ -132,6 +132,12 @@ public class ModuleManager
 
 	private void copyInternalModules()
 	{
+		if (Zenith.getZenithConfig().get("flyingSolo").equals("true"))
+		{
+			PrintUtils.log("{Zenith is now flying solo. Base modules will not be automatically installed.}");
+			return;
+		}
+		
 		List<File> internalMods = getInternalModules();
 
 		for (File f : internalMods)
@@ -147,6 +153,12 @@ public class ModuleManager
 
 		// Clear temp folder
 		File temp = new File("./plugins/Zenith/mods/temp/");
+
+		if (temp.listFiles() == null) // Nothing was copied
+		{
+			temp.delete();
+			return;
+		}
 
 		for (File f : temp.listFiles())
 			f.delete();
@@ -232,6 +244,8 @@ public class ModuleManager
 		File zenithFile = DataUtils.getZenithJar();
 		List<File> moduleFiles = new ArrayList<>();
 
+		File modsFolder = new File("./plugins/Zenith/mods/");
+
 		try {
 			JarFile jarFile = new JarFile(zenithFile);
 			Enumeration<JarEntry> iter = jarFile.entries();
@@ -244,6 +258,9 @@ public class ModuleManager
 				jarEntry = iter.nextElement();
 
 				if (!jarEntry.getName().startsWith("internalModules") || jarEntry.isDirectory() || !jarEntry.getName().endsWith(".jar"))
+					continue;
+
+				if (new File(modsFolder.getAbsolutePath() + "/" + jarEntry.getName().substring(16)).exists())
 					continue;
 
 				moduleEntries.add(jarEntry);
@@ -336,8 +353,9 @@ public class ModuleManager
 	{
 		PrintUtils.logVerbose("-----[ Enabling modules ]-----", InfoType.INFO);
 
-		// Core loads first
-		enableModule(getDisabledModuleByName("Zenith"));
+		// Core loads first, as long as we aren't flying solo
+		if (!Zenith.getZenithConfig().get("flyingSolo").equals("true"))
+			enableModule(getDisabledModuleByName("Zenith"));
 
 		// Load other modules
 		new ArrayList<>(disabled_modules).forEach(this::enableModule); // Construct a new list to avoid a ConcurrentModificationException

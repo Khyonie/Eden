@@ -27,6 +27,7 @@ import com.yukiemeralis.blogspot.zenith.module.java.ModuleManager;
 import com.yukiemeralis.blogspot.zenith.module.java.annotations.Branch;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.BranchType;
 import com.yukiemeralis.blogspot.zenith.module.java.enums.CallerToken;
+import com.yukiemeralis.blogspot.zenith.permissions.EmergencyPermissionsManager;
 import com.yukiemeralis.blogspot.zenith.permissions.PermissionsManager;
 import com.yukiemeralis.blogspot.zenith.utils.FileUtils;
 import com.yukiemeralis.blogspot.zenith.utils.JsonUtils;
@@ -57,10 +58,12 @@ public class Zenith extends JavaPlugin
 	private static Map<String, String> uuidMap = new HashMap<>();
 
 	private static Map<String, String> config = new HashMap<>();
-	private static Map<String, String> defaultConfig = new HashMap<>() {{
-		put("zColor", "FFB7C5");
-		put("verboseLogging", "false");
-	}};
+	private static Map<String, String> defaultConfig = new HashMap<>(Map.of(
+		"zColor", "FFB7C5", 
+		"verboseLogging", "false",
+		"flyingSolo", "false",
+		"hashSalt", "changeMe"
+	));
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -97,7 +100,7 @@ public class Zenith extends JavaPlugin
 		config = (Map<String, String>) JsonUtils.fromJsonFile(zenconfig.getAbsolutePath(), HashMap.class);
 		if (config == null) 
 		{
-			PrintUtils.log("(Zenith configuration file is corrupt! Moving to lost and found...)", InfoType.ERROR);
+			PrintUtils.log("<Zenith configuration file is corrupt! Moving to lost and found...>", InfoType.ERROR);
 			FileUtils.moveToLostAndFound(zenconfig);
 
 			config = new HashMap<>(defaultConfig);
@@ -113,7 +116,7 @@ public class Zenith extends JavaPlugin
 		uuidMap = (Map<String, String>) JsonUtils.fromJsonFile(uuidCacheFile.getAbsolutePath(), HashMap.class);
 		if (uuidMap == null)
 		{
-			PrintUtils.log("(Player UUID cache file is corrupt! Moving to lost and found...)", InfoType.ERROR);
+			PrintUtils.log("<Player UUID cache file is corrupt! Moving to lost and found...>", InfoType.ERROR);
 			FileUtils.moveToLostAndFound(uuidCacheFile);
 
 			uuidMap = new HashMap<>();
@@ -131,6 +134,13 @@ public class Zenith extends JavaPlugin
 
 		module_manager.performFullLoad();
 		module_manager.enableAllModules();
+
+		// Ensure a permissions manager is in play
+		if (permissions_manager == null)
+		{
+			PrintUtils.log("<No permission manager has been set. Emergency permissions manager will be used. Please install a module with a permissions manager.>", InfoType.WARN);
+			setPermissionsManager(new EmergencyPermissionsManager());
+		}
 
 		PrintUtils.log("Loading and enabling took [" + (System.currentTimeMillis() - time) + "] ms.", InfoType.INFO);
 		isBeingEnabled = false;
@@ -203,6 +213,9 @@ public class Zenith extends JavaPlugin
 	 */
 	public static void setPermissionsManager(PermissionsManager manager)
 	{
+		if (manager == null)
+			return;
+
 		String managerName = "None";
 		if (permissions_manager != null)
 		{
@@ -217,14 +230,14 @@ public class Zenith extends JavaPlugin
 				target = PermissionsManager.class.getDeclaredField("elevated_users");
 				target.set(manager, target.get(permissions_manager));
 			} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-				PrintUtils.log("(Failed to switch permissions managers. Reason is below:)", InfoType.ERROR);
+				PrintUtils.log("<Failed to switch permissions managers. Reason is below:>", InfoType.ERROR);
 				PrintUtils.printPrettyStacktrace(e);
 				return;
 			}
 		}
 
 		Option<ZenithModule> host = module_manager.getHostModule(manager.getClass());
-		String name = "Unknown module";
+		String name = "from Unknown module";
 		if (host.getState().equals(OptionState.SOME))
 			 if (host.unwrap() != null)
 				name = "from module \"{" + host.unwrap().getName() + "}\"";

@@ -277,7 +277,7 @@ public class PrintUtils
             log(message);
     }
 
-    public void logCondition(boolean condition, String trueMessage, String falseMessage)
+    public static void logCondition(boolean condition, String trueMessage, String falseMessage)
     {
         if (condition)
         {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern; 
+import java.util.regex.Pattern;
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
 
@@ -145,6 +145,28 @@ public class DataUtils
                 return "#" + buffer.substring(0, 5) + buffer.substring(4).repeat(1);
             default: // Probably fine to trim off anything extra, even though the regex "<#[a-fA-F0-9]{0,6}>" can't match anything extra
                 return "#" + buffer.substring(0, 6);
+        }
+    }
+
+    public static class KeyValuePair<K, V>
+    {
+        private K key;
+        private V value;
+
+        public KeyValuePair(K key, V value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey()
+        {
+            return key;
+        }
+
+        public V getValue()
+        {
+            return value;
         }
     }
 
