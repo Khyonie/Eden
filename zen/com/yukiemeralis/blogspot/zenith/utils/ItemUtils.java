@@ -103,6 +103,11 @@ public class ItemUtils
         return container.has(nskey, PersistentDataType.STRING) ? container.get(nskey, PersistentDataType.STRING) : null;
     }
 
+    public static PersistentDataContainer getDataContainer(ItemStack target)
+    {
+        return target.getItemMeta().getPersistentDataContainer();
+    }
+
     /**
      * Obtains whether or not an itemstack has a specific key in a persistent data container.
      * @param target
@@ -117,6 +122,31 @@ public class ItemUtils
         PersistentDataContainer container = meta.getPersistentDataContainer();
 
         return container.has(nskey, PersistentDataType.STRING);
+    }
+
+    public static List<String> getNamespacedKeysOfType(ItemStack target, PersistentDataType<?, ?> type)
+    {
+        return getNamespacedKeysOfType(target, type, "");
+    }
+
+    public static List<String> getNamespacedKeysOfType(ItemStack target, PersistentDataType<?, ?> type, String prefix)
+    {
+        List<String> buffer = new ArrayList<>();
+
+        PersistentDataContainer container = getDataContainer(target);
+
+        for (NamespacedKey key : container.getKeys())
+        {
+            if (!key.getKey().startsWith(prefix))
+                continue;
+
+            if (!container.has(key, type))
+                continue;
+
+            buffer.add(key.getKey());
+        }
+
+        return buffer;
     }
 
     /**

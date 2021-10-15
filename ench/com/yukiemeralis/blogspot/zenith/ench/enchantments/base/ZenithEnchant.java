@@ -165,7 +165,7 @@ public class ZenithEnchant
         enchant.setLevel(level);
 
         if (!ItemUtils.hasNamespacedKey(item, "hasZenithEnchant"))
-            ItemUtils.saveToNamespacedKey(item, "hasZenithEnchant", "0"); // Lore stack pointer
+            ItemUtils.saveToNamespacedKey(item, "hasZenithEnchant", "0"); // Lore pointer
 
         List<String> lore = item.getItemMeta().getLore();
 

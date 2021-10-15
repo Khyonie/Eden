@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.yukiemeralis.blogspot.zenith.Zenith;
@@ -148,6 +149,15 @@ public class DataUtils
         }
     }
 
+    public static <K, V> List<KeyValuePair<K, V>> toKeyValuePairSet(Map<K, V> map)
+    {
+        List<KeyValuePair<K, V>> buffer = new ArrayList<>();
+
+        map.forEach((key, value) -> buffer.add(new KeyValuePair<K, V>(key, value)));
+
+        return buffer;
+    }
+
     public static class KeyValuePair<K, V>
     {
         private K key;
@@ -187,5 +197,37 @@ public class DataUtils
         cachedJavaVersion = Integer.parseInt(version.split("\\.")[0]);
         // 9 or newer
         return cachedJavaVersion;
+    }
+
+    /**
+     * Gets the stacktrace element before the method that called this method.<p>
+     * <p>
+     * For example:
+     * <pre>
+     * <code>
+     * void methodA() {
+     *    methodB();
+     * }
+     * 
+     * void methodB() {
+     *    StackTraceElement element = getPreviousCaller(Thread.currentThread());
+     * 
+     *    // Obtain the stacktrace element for the previous method
+     *    assert element.getMethodName().equals("methodA");
+     * }
+     * </code>
+     * </pre>
+     * This method will fail and return {@code null} if there isn't a method called before the caller (such as {@code main} or {@link Thread#start()}).
+     * 
+     * @param thread The thread to obtain a stacktrace element from.
+     * @return A stacktrace element corresponding to the method prior to the caller of this method. May return null if no such element exists.
+     */
+    public static StackTraceElement getPreviousCaller(Thread thread)
+    {
+        try {
+            return thread.getStackTrace()[2];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
     }
 }
