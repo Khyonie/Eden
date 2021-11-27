@@ -21,5 +21,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-1.16.5.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar"/>
+	<classpathentry kind="src" path="rustls"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

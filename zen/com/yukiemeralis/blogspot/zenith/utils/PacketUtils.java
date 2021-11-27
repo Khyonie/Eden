@@ -38,7 +38,7 @@ public interface PacketUtils
             net.minecraft.world.entity.Entity entity_1_17 = ((org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity) e).getHandle();
 
             // Mojang slightly changed how packets work going between 1.16.5, 1.17, and 1.17.1, so we have to handle two different packet constructors
-            
+
             // Pain
 
             try {

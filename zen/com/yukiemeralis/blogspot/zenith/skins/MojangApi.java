@@ -10,9 +10,11 @@ public class MojangApi
 {
     private static int requests = 0;
 
-    public HttpsURLConnection testConnection(String urlString, boolean rateLimit) throws MalformedURLException, IOException
+    public HttpsURLConnection createConnection(String urlString, boolean rateLimit) throws MalformedURLException, IOException
     {
         URL url = new URL(urlString);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+        return connection;
     }  
 }

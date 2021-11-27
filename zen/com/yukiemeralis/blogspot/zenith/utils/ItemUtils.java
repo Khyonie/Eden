@@ -8,6 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -147,6 +148,11 @@ public class ItemUtils
         }
 
         return buffer;
+    }
+
+    public void applySkullMeta(ItemStack target, SkullMeta meta)
+    {
+
     }
 
     /**

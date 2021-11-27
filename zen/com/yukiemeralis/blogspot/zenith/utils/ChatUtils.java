@@ -219,7 +219,7 @@ public class ChatUtils implements Listener
         int delta = 0;
         String replacement, result;
 
-        for (MatchResult match : matcher.results().toList()) // Java 16 feature, not sure if 
+        for (MatchResult match : matcher.results().toList()) // Java 16 feature
         {
             result = match.group().replace(delimiter, "");
             if (!replacements.containsKey(result))
