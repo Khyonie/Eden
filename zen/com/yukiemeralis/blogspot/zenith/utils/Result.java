@@ -27,7 +27,6 @@ public class Result<T, E>
     /**
      * Represents the state of a {@code Result<T, E>} object.
      */
-    @SuppressWarnings("javadoc")
     public static enum ResultState
     {
         OK,

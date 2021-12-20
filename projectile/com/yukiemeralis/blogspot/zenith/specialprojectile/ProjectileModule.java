@@ -14,7 +14,7 @@ import com.yukiemeralis.blogspot.zenith.module.java.enums.PreventUnload;
     maintainer = "Yuki_emeralis",
     modIcon = Material.SPECTRAL_ARROW,
     modFamily = "Zenith base modules",
-    supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
 )
 @PreventUnload(CallerToken.ZENITH)
 public class ProjectileModule extends ZenithModule

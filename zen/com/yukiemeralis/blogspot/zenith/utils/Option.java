@@ -1,6 +1,6 @@
 package com.yukiemeralis.blogspot.zenith.utils;
 
-@SuppressWarnings("javadoc")
+/** Represents an option where the two states are SOME, where the value is defined, and NONE, where the value is null. */
 public class Option<T>
 {
     public static enum OptionState

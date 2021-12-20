@@ -20,7 +20,7 @@ import org.bukkit.event.Event;
     modFamily = "Zenith extra modules",
     modIcon = Material.ANVIL,
     version = "1.0",
-    supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
 )
 public class ZenithEvents extends ZenithModule
 {

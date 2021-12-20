@@ -13,7 +13,7 @@ import org.bukkit.Material;
     modIcon = Material.ENCHANTED_BOOK,
     maintainer = "Yuki_emeralis",
     version = "1.0",
-    supportedApiVersions = {"v1_17_R1"}
+    supportedApiVersions = {"v1_17_R1", "v1_18_R1"}
 )
 public class EnchantmentModule extends ZenithModule
 {

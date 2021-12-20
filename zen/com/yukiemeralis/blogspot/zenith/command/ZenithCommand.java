@@ -125,7 +125,7 @@ public abstract class ZenithCommand extends Command
             }
 
             try {
-                cmd_method = this.getClass().getDeclaredMethod("zcommand_" + args[0].toLowerCase(), CommandSender.class, String.class, String[].class);
+                cmd_method = this.getClass().getMethod("zcommand_" + args[0].toLowerCase(), CommandSender.class, String.class, String[].class);
 
                 invokeCommand(
                     cmd_method, // The command method name

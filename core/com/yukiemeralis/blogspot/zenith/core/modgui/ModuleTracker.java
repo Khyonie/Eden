@@ -1,5 +1,6 @@
 package com.yukiemeralis.blogspot.zenith.core.modgui;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,7 +17,7 @@ import org.bukkit.event.Listener;
 
 public class ModuleTracker implements Listener
 {
-    private static Map<String, GuiTab> moduleGuiTabs = new TreeMap<>();
+    private static Map<String, GuiTab> moduleGuiTabs = new TreeMap<>(Collections.reverseOrder());
 
     public static void update()
     {

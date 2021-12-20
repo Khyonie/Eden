@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -31,8 +32,9 @@ import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
 import com.yukiemeralis.blogspot.zenith.utils.PrintUtils.InfoType;
 
 /**
- * Special classloader that loads a module from a file.
+ * Special classloader that loads a Zenith module from a file.
  * @author Yuki_emeralis
+ * @since 2.0.0
  */
 @SuppressWarnings("unused")
 public class ModuleClassLoader extends URLClassLoader
@@ -54,6 +56,7 @@ public class ModuleClassLoader extends URLClassLoader
 	private final List<Class<? extends Listener>> listenerClasses = new ArrayList<>();
 	
 	/**
+	 * Classloader to load modules from a .jar file. Modules must contain a class that extends {@link ZenithModule} with the {@link ModInfo} class annotation.
 	 * @param parent Parent classloader
 	 * @param loader The module manager for the current Zenith context
 	 * @param file File to load from
@@ -210,7 +213,9 @@ public class ModuleClassLoader extends URLClassLoader
 
 	/**
 	 * Gets the module class inside the jar file associated with this module.
-	 * @return
+	 * If a module class has not already been found, one will be searched for. 
+	 * May return null if the given .jar does not contain a ZenithModule class.
+	 * @return Gets the module class found inside the given .jar.
 	 * @since 2.1.2
 	 */
 	public Class<? extends ZenithModule> getModuleClass()

@@ -13,11 +13,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-// TODO Move this to a dedicated module
-// TODO Create a subclass for RPGs, with level ranges, stats, and stat scaling
 /**
  * An instance of an entity, with equipment, potion effects, etc.
+ * @deprecated This will eventually move to a new module.
  */
+@Deprecated(forRemoval = true)
 public class ZenithEntity
 {
     private EntityEquipment equipment;

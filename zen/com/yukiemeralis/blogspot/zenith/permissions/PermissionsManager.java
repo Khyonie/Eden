@@ -181,6 +181,9 @@ public abstract class PermissionsManager
 
     public void removeElevatedUser(Player player)
     {
+        if (!elevated_users.contains(player))
+            return;
+
         PrintUtils.log("§aPlayer \"" + player.getName() + "\" is no longer elevated.");
         elevated_users.remove(player);
     }

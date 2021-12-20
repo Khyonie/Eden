@@ -6,6 +6,7 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+@SuppressWarnings("unused")
 public class MojangApi 
 {
     private static int requests = 0;

@@ -8,7 +8,8 @@
 	<classpathentry kind="src" path="projectile"/>
 	<classpathentry kind="src" path="ench"/>
 	<classpathentry kind="src" path="events"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16">
+	<classpathentry kind="src" path="rustls"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk-17.0.1">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
@@ -21,6 +22,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-1.16.5.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar"/>
-	<classpathentry kind="src" path="rustls"/>
+	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-1.18.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Hailey/Desktop/Zenith/Libraries/spigot-api-1.18-R0.1-SNAPSHOT-shaded.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

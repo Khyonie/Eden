@@ -12,8 +12,10 @@ import org.bukkit.Material;
     version = "1.0",
     modIcon = Material.CHAIN_COMMAND_BLOCK, 
 	maintainer = "Yuki_emeralis", 
-	supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
+	supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"},
+    modFamily = "Zenith extra modules"
 )
+@SuppressWarnings("unused")
 public class RustModule extends ZenithModule
 {
     private LanguageServer currentLanguageServer = null;

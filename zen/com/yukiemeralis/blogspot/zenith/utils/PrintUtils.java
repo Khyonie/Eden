@@ -271,12 +271,23 @@ public class PrintUtils
         log(message, InfoType.INFO);
     }
 
+    /**
+     * Outputs a log message on a condition. Logging level will always be "INFO".
+     * @param condition The condition to evaluate.
+     * @param message The message to print if and only if "condition" is true.
+     */
     public static void logCondition(boolean condition, String message)
     {
         if (condition)
             log(message);
     }
 
+    /**
+     * Outputs a log message on a condition, with a unique message for both outcomes. Logging level will always be "INFO".
+     * @param condition The condition to evaluate.
+     * @param trueMessage The message to print if and only if "condition" is true.
+     * @param falseMessage The message to print if and only if "condition" is false.
+     */
     public static void logCondition(boolean condition, String trueMessage, String falseMessage)
     {
         if (condition)
@@ -288,12 +299,26 @@ public class PrintUtils
         log(falseMessage);
     }
 
+    /**
+     * Outputs a log message on a condition.
+     * @param condition The condition to evaluate.
+     * @param message The message to print if and only if "condition" is true.
+     * @param type The logging level to use.
+     */
     public static void logCondition(boolean condition, String message, InfoType type)
     {
         if (condition)
             log(message, type);
     }
 
+    /**
+     * Outputs a log message on a condition, with a unique message for both outcomes.
+     * @param condition The condition to evaluate.
+     * @param trueMessage The message to print if and only if "condition" is true.
+     * @param trueType The logging level to use for a true output.
+     * @param falseMessage The message to print if and only if "condition" is false.
+     * @param falseType The logging level to use for a false output.
+     */
     public static void logCondition(boolean condition, String trueMessage, InfoType trueType, String falseMessage, InfoType falseType)
     {
         if (condition) 
@@ -337,6 +362,11 @@ public class PrintUtils
         return value == 1 ? "was" : "were";
     }
 
+    /**
+     * Formats a logging message.
+     * @param input A given message.
+     * @return A log message with Zenith's formatting.
+     */
     private static String formatLog(String input)
     {
         String buffer = input;

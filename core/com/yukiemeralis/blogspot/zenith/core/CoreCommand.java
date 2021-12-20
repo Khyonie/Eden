@@ -88,6 +88,8 @@ public class CoreCommand extends ZenithCommand
         this.getBranch("^mods").addBranch("<ALL_MODULES>").addBranch("config", "reloadconfig", "saveconfig", "readconfig", "clean");
         this.getBranch("^mods").getBranch("<ALL_MODULES>").getBranch("config").addBranch("<KEY>").addBranch("<VALUE>");
 
+        // TODO /zen disengage, which unloads ALL modules
+
         this.getBranch("data").addBranch("<ALL_PLAYERS>").addBranch("^reset", "password", "^approve", "^clearpassword");
 
         this.getBranch("^logging").addBranch("verbose", "export");

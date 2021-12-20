@@ -65,8 +65,8 @@ public class ModulePlayerData
     {
         if (!(this.data.get(key) instanceof Boolean))
             return false;
-        this.data.replace(key, !getValue(key, boolean.class));
-        return getValue(key, boolean.class);
+        this.data.replace(key, !getValue(key, Boolean.class));
+        return getValue(key, Boolean.class);
     }
 
     public Map<String, Object> getModuleData()

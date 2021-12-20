@@ -39,7 +39,7 @@ import com.yukiemeralis.blogspot.zenith.utils.PrintUtils;
     maintainer = "Yuki_emeralis",
     version = "72821-2.2.0",
     modIcon = Material.ENDER_EYE,
-    supportedApiVersions = {"v1_16_R3", "v1_17_R1"}
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
 )
 @LoadBefore(loadBefore = {"ZenithAuth", "ZenithGui"})
 @ZenConfig

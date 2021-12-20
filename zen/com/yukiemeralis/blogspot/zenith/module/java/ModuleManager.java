@@ -379,6 +379,13 @@ public class ModuleManager
 	 */
 	public void enableModule(ZenithModule module)
 	{
+		if (module == null)
+		{
+			// Can't load a module that doesn't exist
+			PrintUtils.log("(Attempted to load a null module! Aborting...)");
+			return;
+		}
+
 		if (module.getName() == null)
 		{
 			PrintUtils.log("(Module failed to load. Keeping as an unloaded module.)", InfoType.ERROR);
@@ -473,6 +480,7 @@ public class ModuleManager
 		if (!CallerToken.isEqualToOrHigher(caller, CallerToken.ZENITH))
 			for (ZenithModule mod : module.getReliantModules())
 			{
+				PrintUtils.sendMessage("Reliant module: " + mod.getName());
 				if (!disableModule(mod.getName(), caller)) // If we can't disable a reliant module, reload all disabled modules and abort
 				{
 					PrintUtils.log("(Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.)", InfoType.ERROR);

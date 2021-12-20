@@ -238,20 +238,20 @@ public class ChatUtils implements Listener
         return of(input, from, to, "");
     }
 
-    @SuppressWarnings("javadoc")
+    /** Contains an action to run when a player sends a chat message. */
     public static interface ChatAction
     {
         void run();
     }
 
-    @SuppressWarnings("javadoc")
+    /** Contains an action to run when a chat message is expected, but not received within a window. */
     public static interface TimeoutAction
     {
         void run();
     }
 
     @EventHandler
-    @SuppressWarnings("javadoc")
+    /** Listener method. */
     public void onChat(AsyncPlayerChatEvent event)
     {
         if (!active_threads.containsKey(event.getPlayer()))
