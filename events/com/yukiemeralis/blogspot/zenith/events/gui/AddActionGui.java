@@ -83,7 +83,7 @@ public class AddActionGui extends PagedDynamicGui
             put(Double.class, Double.TYPE);
             put(Boolean.class, Boolean.TYPE);
 
-            // Not primitives but 
+            // Not primitives 
             put(ArrayList.class, List.class);
             put(HashMap.class, Map.class);
         }};

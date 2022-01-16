@@ -11,5 +11,16 @@
         "**/internalModules/": true,
         "**/.idea/": true,
         "**Zenith.iml": true
-    }
+    },
+    "java.project.sourcePaths": [
+        "zen",
+        "rustls",
+        "projectile",
+        "net",
+        "events",
+        "ench",
+        "core",
+        "auth",
+        "gui"
+    ]
 }

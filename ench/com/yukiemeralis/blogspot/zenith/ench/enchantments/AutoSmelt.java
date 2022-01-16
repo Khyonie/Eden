@@ -25,7 +25,7 @@ public class AutoSmelt extends ZenithEnchant implements BlockBreakTrigger
         if (Zenith.getNMSVersion().equals("v1_16_R3")) {
             put(Material.IRON_ORE, Material.IRON_INGOT);
             put(Material.GOLD_ORE, Material.GOLD_INGOT);
-        } else if (Zenith.getNMSVersion().equals("v1_17_R1")) {
+        } else if (Zenith.getNMSVersion().equals("v1_17_R1") || Zenith.getNMSVersion().equals("v1_18_R1")) {
             put(Material.IRON_ORE, Material.IRON_INGOT);
             put(Material.GOLD_ORE, Material.GOLD_INGOT);
             put(Material.COPPER_ORE, Material.COPPER_INGOT);

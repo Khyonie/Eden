@@ -215,6 +215,8 @@ public abstract class ZenithCommand extends Command
 
     /**
      * A shared help command, always present with every Zenith command.
+     * <p><p>
+     * <b>Should not be invoked manually, unless linked to another command.</b>
      * @param sender The command sender.
      * @param commandLabel The label used for this command.
      * @param args A list of arguments in string format.
@@ -365,7 +367,7 @@ public abstract class ZenithCommand extends Command
     }
 
     /**
-     * Sends a commandsender an error message about an invalid subcommand.
+     * Sends a CommandSender an error message about an invalid subcommand.
      * @param sender The sender to notify
      * @param input The input given by the sender
      * @param cmdLabel The base command 

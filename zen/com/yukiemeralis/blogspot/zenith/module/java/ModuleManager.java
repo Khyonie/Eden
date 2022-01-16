@@ -769,7 +769,7 @@ public class ModuleManager
 	}
 
 	/**
-	 * Obtains a disabled  module whose name matches the given name.
+	 * Obtains a disabled module whose name matches the given name.
 	 * @param name The name of a module.
 	 * @return A module matching the given name. Returns null if no module matches the given name.
 	 * @see {@link ModuleManager#getDisabledModules()}

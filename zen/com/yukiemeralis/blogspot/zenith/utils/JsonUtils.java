@@ -13,8 +13,7 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * Collection of utilities to manage .json files.
- * @Author Yuki_emeralis
- *
+ * @author Yuki_emeralis
  */
 public class JsonUtils 
 {
@@ -63,8 +62,7 @@ public class JsonUtils
 
     /**
      * Reads an object of type T from a file.
-     * @param <T>
-     * @param <T> The type of the object to expect
+     * @param <T> <b>T</b>: The type of the object to expect
      * @param path Filepath
      * @param type The type of the object to expect
      * @return An object from a .json file
