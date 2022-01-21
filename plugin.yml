@@ -1,6 +1,6 @@
-name: Zenith
-main: com.yukiemeralis.blogspot.zenith.Zenith
-prefix: z
+name: Eden
+main: com.yukiemeralis.blogspot.eden.Eden
+prefix: e
 version: 1.0
 api-version: 1.16
 author: Yuki_emeralis (Hailey)
