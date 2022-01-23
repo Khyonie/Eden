@@ -86,7 +86,11 @@ public class CommandManager
                     knownEdenCommands.remove(getCommand(commandName));
                     ((org.bukkit.craftbukkit.v1_17_R1.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
                     break;
-                // TODO Add 1_18_R1 support
+                case "v1_18_R1":
+                    scm = (org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap) scmField.get(Bukkit.getServer());
+                    knownEdenCommands.remove(getCommand(commandName));
+                    ((org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
+                    break;
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             PrintUtils.printPrettyStacktrace(e);
