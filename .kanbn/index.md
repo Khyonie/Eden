@@ -5,7 +5,7 @@ completedColumns:
   - Done
 ---
 
-# Zenith
+# Eden
 
 ## Backlog
 

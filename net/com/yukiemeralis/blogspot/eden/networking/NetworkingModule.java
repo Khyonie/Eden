@@ -19,12 +19,12 @@ import com.yukiemeralis.blogspot.eden.utils.FileUtils;
 	supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
 )
 @LoadBefore(loadBefore = {"EdenAuth"})
-@PreventUnload(CallerToken.EDEN)
+@PreventUnload(CallerToken.PLAYER)
 public class NetworkingModule extends EdenModule
 {
 	public NetworkingModule()
 	{
-		//addCommand(new NetworkingCommand());
+		
 	}
 	
 	@Override

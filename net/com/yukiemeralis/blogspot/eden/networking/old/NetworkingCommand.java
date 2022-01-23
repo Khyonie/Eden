@@ -1,4 +1,4 @@
-package com.yukiemeralis.blogspot.eden.networking;
+package com.yukiemeralis.blogspot.eden.networking.old;
 
 import java.io.File;
 
@@ -6,9 +6,12 @@ import org.bukkit.command.CommandSender;
 
 import com.yukiemeralis.blogspot.eden.command.EdenCommand;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
+import com.yukiemeralis.blogspot.eden.module.java.annotations.Unimplemented;
+import com.yukiemeralis.blogspot.eden.networking.NetworkingUtils;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils.InfoType;
 
+@Unimplemented("Command is potentially dangerous, and generally unstable.")
 public class NetworkingCommand extends EdenCommand
 {
 	public NetworkingCommand(EdenModule module) 
