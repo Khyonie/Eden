@@ -148,7 +148,7 @@ public class CoreCommand extends EdenCommand
 
                 String oldValue = module.getConfig().get(args[3]);
 
-                module.getConfig().put(args[3], args[4]);
+                module.getConfig().put(args[3], args[4]); // TODO args[4] is not required, causes ArrayIndexOutOfBoundsException
 
                 // Call an event to notify anything that might want to listen for things like this
                 Eden.getInstance().getServer().getPluginManager().callEvent(new EdenConfigChangeEvent(module, args[3], oldValue, args[4]));
