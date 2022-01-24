@@ -42,7 +42,7 @@ public class EdenRepository implements GuiComponent
             @Override
             public void onIconInteract(InventoryClickEvent event) 
             {
-                // TODO Open repository details GUI   
+                
             }
         };
 

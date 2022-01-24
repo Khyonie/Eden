@@ -10,7 +10,8 @@
         "**/.vscode/": true,
         "**/internalModules/": true,
         "**/.idea/": true,
-        "**Zenith.iml": true
+        "**Zenith.iml": true,
+        "**/.kanbn/": true
     },
     "java.project.sourcePaths": [
         "zen",

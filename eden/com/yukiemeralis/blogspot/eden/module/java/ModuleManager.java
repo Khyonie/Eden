@@ -417,6 +417,9 @@ public class ModuleManager
 			case "v1_17_R1":
 				((org.bukkit.craftbukkit.v1_17_R1.CraftServer) Bukkit.getServer()).syncCommands();
 				break;
+			case "v1_18_R1":
+				((org.bukkit.craftbukkit.v1_18_R1.CraftServer) Bukkit.getServer()).syncCommands();
+				break;
 		}
 
 		if (module.getClass().isAnnotationPresent(EdenConfig.class))
