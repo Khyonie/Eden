@@ -65,7 +65,7 @@ public class ModuleClassLoader extends URLClassLoader
 	 */
 	public ModuleClassLoader(ClassLoader parent, ModuleManager loader, File file) throws MalformedURLException, NullPointerException
 	{
-		super(new URL[] { file.toURI().toURL() }, parent);
+		super(file.getName(), new URL[] { file.toURI().toURL() }, parent);
 		
 		this.loader = loader;
 		this.file = file;
@@ -280,6 +280,18 @@ public class ModuleClassLoader extends URLClassLoader
 
 		return true;
 	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null)
+			return false;
+		if (!(obj instanceof ModuleClassLoader))
+			return false;
+		if (obj.hashCode() == this.hashCode())
+			return true;
+		return false;
+	}
 	
 	Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException
 	{
@@ -309,5 +321,10 @@ public class ModuleClassLoader extends URLClassLoader
 		}
 
 		return result;
+	}
+
+	public String getModuleFileName()
+	{
+		return this.file.getName();
 	}
 }

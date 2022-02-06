@@ -32,6 +32,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.yukiemeralis.blogspot.eden.Eden;
 import com.yukiemeralis.blogspot.eden.auth.PermissionGroup;
@@ -39,6 +40,8 @@ import com.yukiemeralis.blogspot.eden.auth.SecurityCore;
 import com.yukiemeralis.blogspot.eden.auth.EdenPermissionManager;
 import com.yukiemeralis.blogspot.eden.command.CommandManager;
 import com.yukiemeralis.blogspot.eden.command.EdenCommand;
+import com.yukiemeralis.blogspot.eden.command.annotations.HideFromEdenHelpall;
+import com.yukiemeralis.blogspot.eden.core.CoreModule.DisableRequest;
 import com.yukiemeralis.blogspot.eden.core.modgui.ModuleGui;
 import com.yukiemeralis.blogspot.eden.core.modgui.ModuleTracker;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
@@ -493,6 +496,9 @@ public class CoreCommand extends EdenCommand
 
         for (EdenCommand parent : CommandManager.getKnownCommands())
         {
+            if (parent.getClass().isAnnotationPresent(HideFromEdenHelpall.class))
+                continue;
+
             try {
                 PrintUtils.sendMessage(sender, "§7/§a" + parent.getName() + " §7| from module §b" + parent.getParentModule().getName());
             } catch (NullPointerException e) {
@@ -545,6 +551,43 @@ public class CoreCommand extends EdenCommand
                     return;
                 }
 
+                if (module.getClass().isAnnotationPresent(PreventUnload.class) && sender instanceof ConsoleCommandSender)
+                {
+                    
+                    if (module.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
+                    {
+                        if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 1))
+                        {
+                            PrintUtils.sendMessage(sender, "§Already warned you about unloading this module, going ahead and unloading it...");
+                            Eden.getModuleManager().removeModuleFromMemory(module.getName(), CallerToken.EDEN);
+
+                            break;
+                        }
+                        
+                        PrintUtils.sendMessage(sender, "§cThis module has an @PreventUnload tag with a caller token of EDEN. Unloading it is probably a REALLY BAD IDEA.");
+                        PrintUtils.sendMessage(sender, "§cThis must be done very deliberately, and is not supported by the Eden devs. Do not report any bugs that arise.");
+                        PrintUtils.sendMessage(sender, "§cIf you're absolutely CERTAIN you wish to continue, enter \"§4iknowwhatimdoingiswear§c\".");
+                        PrintUtils.sendMessage(sender, "§cThis request will time out in 60 seconds.");
+
+                        CoreModule.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 1));
+
+                        new BukkitRunnable() 
+                        {
+                            @Override
+                            public void run() 
+                            {
+                                try {
+                                    CoreModule.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 1));
+                                } catch (Exception e) {
+                                    // In case CORE is our unload target, silently handle
+                                } 
+                            }
+                        }.runTaskLater(Eden.getInstance(), 60*20);
+
+                        break;
+                    }
+                }
+
                 Eden.getModuleManager().removeModuleFromMemory(module.getName(), CallerToken.fromCommandSender(sender));
 
                 if (Eden.getModuleManager().getDisabledModules().contains(module))
@@ -588,6 +631,40 @@ public class CoreCommand extends EdenCommand
                 {
                     PrintUtils.sendMessage(sender, "Failed to find a gathered module by that name. Ensure that the module you wish to enable has been loaded into memory.");
                     return;
+                }
+
+                if (module.getClass().isAnnotationPresent(PreventUnload.class) && sender instanceof ConsoleCommandSender)
+                {
+                    
+                    if (module.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
+                    {
+                        if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 0))
+                        {
+                            PrintUtils.sendMessage(sender, "§6Already warned you about disabling this module, going ahead and disabling it...");
+                            Eden.getModuleManager().disableModule(module.getName(), CallerToken.EDEN);
+                            break;
+                        }
+
+                        PrintUtils.sendMessage(sender, "§6This module has an @PreventUnload tag with a caller token of EDEN. Disabling it is probably a bad idea!");
+                        PrintUtils.sendMessage(sender, "§6If you're still sure you want to disable this module, enter \"§ciknowwhatimdoingiswear§6\".");
+                        PrintUtils.sendMessage(sender, "§6This request will time out in 60 seconds.");
+
+                        CoreModule.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 0));
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run()
+                            {
+                                try {
+                                    CoreModule.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 0));
+                                } catch (Exception e) {
+                                    // In cose CORE is our disable target, handle error silently
+                                }
+                            }                        
+                        }.runTaskLater(Eden.getInstance(), 60*20);
+                        
+                        break;
+                    }
                 }
 
                 Eden.getModuleManager().disableModule(module.getName(), CallerToken.fromCommandSender(sender));

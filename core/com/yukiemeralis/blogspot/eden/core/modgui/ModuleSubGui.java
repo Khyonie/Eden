@@ -20,6 +20,8 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+// TODO Update this to look better
+// Maybe add large (2x2 or 3x3) interactive buttons?
 public class ModuleSubGui extends DynamicGui
 {
     EdenModule module;
@@ -66,7 +68,11 @@ public class ModuleSubGui extends DynamicGui
                     return;
                 }
 
-                Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER);
+                if (!Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER))
+                {
+                    PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! See console for details.");
+                }
+
                 mod.setDisabled();
 
                 ModuleTracker.update();
@@ -91,8 +97,13 @@ public class ModuleSubGui extends DynamicGui
 
                 if (mod.getIsEnabled()) // Disable
                 {
-                    Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER);
-                    mod.setDisabled();
+                    if (Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER))
+                    {
+                        mod.setDisabled();
+                    } else {
+                        PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! See console for details.");
+                        return;
+                    }
                 }
 
                 Eden.getModuleManager().removeModuleFromMemory(mod.getName(), CallerToken.PLAYER);
