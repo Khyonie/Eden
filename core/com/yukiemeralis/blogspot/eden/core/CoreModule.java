@@ -18,6 +18,9 @@ package com.yukiemeralis.blogspot.eden.core;
 
 import org.bukkit.Material;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.yukiemeralis.blogspot.eden.Eden;
 import com.yukiemeralis.blogspot.eden.core.modgui.ModuleTracker;
 import com.yukiemeralis.blogspot.eden.listeners.UuidCacheListener;
@@ -54,6 +57,9 @@ import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 @PreventUnload(CallerToken.EDEN)
 public class CoreModule extends EdenModule
 {
+    static List<DisableRequest> EDEN_DISABLE_REQUESTS = new ArrayList<>();
+    static List<String> EDEN_WARN_DISABLE_REQUESTS = new ArrayList<>();
+
     public CoreModule()
     {
         addListener(new UuidCacheListener());
@@ -83,5 +89,39 @@ public class CoreModule extends EdenModule
     public static EdenModule getModuleInstance()
     {
         return Eden.getModuleManager().getModuleByName("Eden");
+    }
+
+    static class DisableRequest
+    {
+        private EdenModule module;
+        private int type; // 0 = disable, 1 = unload
+
+        public DisableRequest(EdenModule module, int type)
+        {
+            this.module = module;
+            this.type = type;
+        }
+
+        public EdenModule getModule()
+        {
+            return this.module;
+        }
+
+        public int getType()
+        {
+            return this.type;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == null)
+                return false;
+            if (!(obj instanceof DisableRequest))
+                return false;
+            if (this.module.equals(((DisableRequest) obj).getModule()) && this.type == ((DisableRequest) obj).getType())
+                return true;
+            return false;
+        }
     }
 }

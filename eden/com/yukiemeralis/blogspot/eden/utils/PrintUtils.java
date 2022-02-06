@@ -339,9 +339,9 @@ public class PrintUtils
     public static void logVerbose(String message, InfoType type)
     {
         if (verboseLogging)
-            Eden.getInstance().getServer().getConsoleSender().sendMessage("§8[§ae§8]§7 " + info_colors.get(type)  + "[" + type.name() + "] " + StringUtils.normalizeSpace(message));
+            Eden.getInstance().getServer().getConsoleSender().sendMessage("§8[§ae§8]§7 " + info_colors.get(type)  + StringUtils.normalizeSpace(message));
 
-        log.add(message);
+        log.add("[" + type.name() + "] " + message);
     }
 
     /**
