@@ -8,12 +8,14 @@ import com.google.gson.annotations.Expose;
 import com.yukiemeralis.blogspot.eden.Eden;
 import com.yukiemeralis.blogspot.eden.gui.GuiComponent;
 import com.yukiemeralis.blogspot.eden.gui.GuiItemStack;
+import com.yukiemeralis.blogspot.eden.networking.NetworkingUtils;
 import com.yukiemeralis.blogspot.eden.utils.ItemUtils;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+@SuppressWarnings("unused")
 public class EdenRepositoryEntry implements GuiComponent
 {
     @Expose
@@ -112,6 +114,13 @@ public class EdenRepositoryEntry implements GuiComponent
                 PrintUtils.sendMessage(event.getWhoClicked(), "§aAttempting to install " + name + " " + version + "...");
 
                 // TODO This
+                NetworkingUtils.downloadFileFromURLThreaded(url, MODULE_FOLDER + NetworkingUtils.getFinalURLPortion(url), new Thread() {
+                    @Override
+                    public void run()
+                    {
+                        PrintUtils.sendMessage(event.getWhoClicked(), "§aDownloaded " + name + "!");
+                    }
+                });
             }
         };
 

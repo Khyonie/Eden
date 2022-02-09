@@ -35,7 +35,6 @@ public class TabbedDynamicGui extends DynamicGui
         paint();
 
         // TODO Add "tab" paging for GUIs with more than 9 tabs
-        // TODO Add "scrolling" for tabs with more than 
 
         // Set tabs
         int index = this.getInventorySize() - 9;

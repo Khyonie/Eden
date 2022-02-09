@@ -182,7 +182,7 @@ public class ModuleClassLoader extends URLClassLoader
 		module.addCommand(commands.toArray(new EdenCommand[commands.size()]));
 		module.addListener(listeners.toArray(new Listener[listeners.size()]));
 
-		PrintUtils.logVerbose("Registered " + commands.size() + " command(s) and " + listeners.size() + " event(s) to " + module.getName() + ".", InfoType.INFO);
+		PrintUtils.logVerbose("Registered " + commands.size() + " " + PrintUtils.plural(commands.size(), "command", "commands") + " and " + listeners.size() + " " + PrintUtils.plural(listeners.size(), "event", "events") + " to " + module.getName() + ".", InfoType.INFO);
 
 		jar.close();
 	}

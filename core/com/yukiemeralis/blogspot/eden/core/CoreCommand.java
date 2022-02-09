@@ -208,7 +208,7 @@ public class CoreCommand extends EdenCommand
                         }
                     }
 
-                    PrintUtils.sendMessage(sender, "Cleaned " + removed + " key(s) from configuration file.");
+                    PrintUtils.sendMessage(sender, "Cleaned " + removed + " " + PrintUtils.plural(removed, "key", "keys") + " from configuration file.");
                     break;
                 }
 

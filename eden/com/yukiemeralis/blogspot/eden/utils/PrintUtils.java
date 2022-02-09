@@ -363,6 +363,11 @@ public class PrintUtils
         return value == 1 ? "was" : "were";
     }
 
+    public static String plural(int count, String singular, String plural)
+    {
+        return count == 1 ? singular : plural;
+    }
+
     /**
      * Formats a logging message.
      * @param input A given message.
