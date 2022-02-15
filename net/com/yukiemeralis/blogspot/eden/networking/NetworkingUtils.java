@@ -60,15 +60,14 @@ public class NetworkingUtils
 						bytes = Files.copy(in, f.toPath(), StandardCopyOption.REPLACE_EXISTING);
 					}
 					
-					PrintUtils.log("Downloaded [" + bytes + "] byte\\(s\\) from URL {\"" + url + "}\".", InfoType.INFO);
+					PrintUtils.log("Downloaded [" + bytes + "] " + PrintUtils.plural(bytes, "byte", "bytes") + " from URL {\"" + url + "}\".", InfoType.INFO);
 					thread.start();
 				} catch (IOException e) {
-					thread.start();
 					PrintUtils.printPrettyStacktrace(e);
-				}	
+				}
 			}
 		};
-		
+	
 		dl_thread.start();
 	}
 	

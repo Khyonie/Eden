@@ -394,7 +394,7 @@ public class ModuleManager
 			}
 		});
 
-		PrintUtils.log("Enabled [" + enabled_modules.size() + "]/[" + getAllModules().size() + "] module\\(s\\)!", InfoType.INFO);
+		PrintUtils.log("Enabled [" + enabled_modules.size() + "]/[" + getAllModules().size() + "] " + PrintUtils.plural(getAllModules().size(), "module", "modules") + "!", InfoType.INFO);
 	}
  
 	/**
@@ -845,5 +845,18 @@ public class ModuleManager
 		if (mod != null)
 			return mod;
 		return null;
+	}
+
+	public boolean isCompatible(String... versions)
+	{
+		for (String v : versions)
+			if (v.equals(Eden.getNMSVersion()))
+				return true;
+		return false;
+	}
+
+	public boolean isCompatible(List<String> versions)
+	{
+		return versions.contains(Eden.getNMSVersion());
 	}
 }

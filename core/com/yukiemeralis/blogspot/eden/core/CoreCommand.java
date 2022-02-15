@@ -1079,7 +1079,7 @@ public class CoreCommand extends EdenCommand
         PrintUtils.sendMessage(sender, buffer);
 
         PrintUtils.sendMessage(sender, "§oWith love from Yuki_emeralis §r§c:heart:");
-        PrintUtils.sendMessage(sender, "Project is maintained here: §9https://github.com/YukiEmeralis/Zenith");
+        PrintUtils.sendMessage(sender, "Project is maintained here: §9https://github.com/YukiEmeralis/Eden");
 
         PrintUtils.sendMessage(sender, 
             "Enabled modules: §a" + Eden.getModuleManager().getEnabledModules().size() + 

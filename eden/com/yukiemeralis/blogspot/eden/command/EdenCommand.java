@@ -26,7 +26,7 @@ import com.yukiemeralis.blogspot.eden.utils.ChatUtils.ChatAction;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils.InfoType;
 
 /**
- * An instance of an Eden command. Please look at the wiki @ https://github.com/YukiEmeralis/Zenith for documentation.
+ * An instance of an Eden command. Please look at the wiki @ https://github.com/YukiEmeralis/Eden for documentation.
  * @author Yuki_emeralis
  */
 public abstract class EdenCommand extends Command

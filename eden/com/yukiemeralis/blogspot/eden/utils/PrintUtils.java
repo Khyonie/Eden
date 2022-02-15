@@ -76,11 +76,17 @@ public class PrintUtils
         String header = "§c" + error.getClass().getName();
 
         if (error.getMessage() != null)
+        {
             header = header + " " + error.getMessage();
+            header = saveSpecialCharacters(header);
+        }
         
         PrintUtils.log(header, InfoType.ERROR);
+
         for (StackTraceElement ste : error.getStackTrace())
-            PrintUtils.log("§c §c §c §c §c §c §c at " + ste.getClassName() + "." + ste.getMethodName() + "\\\\(" + ste.getFileName() + ":" + ste.getLineNumber() + "\\\\)", InfoType.ERROR);
+        {
+            PrintUtils.log("§c §c §c §c §c §c §c at " + ste.getClassName() + "." + ste.getMethodName() + "\\(" + ste.getFileName() + ":" + ste.getLineNumber() + "\\)", InfoType.ERROR);
+        }
 
         if (error.getCause() != null)
             printPrettyStacktrace(error.getCause(), true);
@@ -93,14 +99,33 @@ public class PrintUtils
             header = header +  "Caused by: ";
         header = header + error.getClass().getName();
         if (error.getMessage() != null)
+        {
             header = header + " " + error.getMessage();
+            header = saveSpecialCharacters(header);
+        }
         
         PrintUtils.log(header, InfoType.ERROR);
+
         for (StackTraceElement ste : error.getStackTrace())
-            PrintUtils.log("§c §c §c §c §c §c §c at " + ste.getClassName() + "." + ste.getMethodName() + "\\\\(" + ste.getFileName() + ":" + ste.getLineNumber() + "\\\\)", InfoType.ERROR);
+        {
+            PrintUtils.log("§c §c §c §c §c §c §c at " + ste.getClassName() + "." + ste.getMethodName() + "\\(" + ste.getFileName() + ":" + ste.getLineNumber() + "\\)", InfoType.ERROR);
+        }
 
         if (error.getCause() != null)
             printPrettyStacktrace(error.getCause(), true);
+    }
+    
+    private static String saveSpecialCharacters(String input)
+    {
+        return input
+            .replace("(", "\\(")
+            .replace("[", "\\[")
+            .replace("{", "\\{")
+            .replace("<", "\\<")
+            .replace(")", "\\)")
+            .replace("]", "\\]")
+            .replace("}", "\\}")
+            .replace(">", "\\>");
     }
 
     /**
@@ -110,7 +135,7 @@ public class PrintUtils
      */
     public static void sendMessage(Entity target, String message)
     {
-        // TODO Investigate whether the following        (v) should be pulled from Eden's config
+        // TODO Investigate whether the following    (v) should be pulled from Eden's config
         sendComponent(target, buildComponents("&8[<#FFB7C5>e&8] &7" + message, true, true));
     }
 
@@ -364,6 +389,11 @@ public class PrintUtils
     }
 
     public static String plural(int count, String singular, String plural)
+    {
+        return count == 1 ? singular : plural;
+    }
+
+    public static String plural(long count, String singular, String plural)
     {
         return count == 1 ? singular : plural;
     }

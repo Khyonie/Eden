@@ -8,14 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.yukiemeralis.blogspot.eden.Eden;
 import com.yukiemeralis.blogspot.eden.core.CompletionsManager;
 import com.yukiemeralis.blogspot.eden.core.CompletionsManager.ObjectMethodPair;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
+import com.yukiemeralis.blogspot.eden.module.EdenModule.EdenConfig;
 import com.yukiemeralis.blogspot.eden.module.EdenModule.LoadBefore;
 import com.yukiemeralis.blogspot.eden.module.EdenModule.ModInfo;
+import com.yukiemeralis.blogspot.eden.module.java.annotations.DefaultConfig;
 import com.yukiemeralis.blogspot.eden.module.java.enums.CallerToken;
 import com.yukiemeralis.blogspot.eden.module.java.enums.PreventUnload;
+import com.yukiemeralis.blogspot.eden.networking.enums.ModuleStatus;
 import com.yukiemeralis.blogspot.eden.networking.repos.EdenRepository;
+import com.yukiemeralis.blogspot.eden.networking.repos.EdenRepositoryEntry;
 import com.yukiemeralis.blogspot.eden.utils.FileUtils;
 import com.yukiemeralis.blogspot.eden.utils.JsonUtils;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
@@ -31,10 +36,16 @@ import com.yukiemeralis.blogspot.eden.utils.PrintUtils.InfoType;
 	supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
 )
 @LoadBefore(loadBefore = {"EdenAuth"})
+@EdenConfig
+@DefaultConfig(
+	keys =   { "defaultDownloadBehavior" },
+	values = { "LOAD_ENABLE" }
+)
 @PreventUnload(CallerToken.PLAYER)
 public class NetworkingModule extends EdenModule
 {
 	private static Map<String, EdenRepository> KNOWN_REPOSITORIES = new HashMap<>();
+	private static NetworkingModule instance;
 
 	public NetworkingModule()
 	{
@@ -44,6 +55,7 @@ public class NetworkingModule extends EdenModule
 	@Override
 	public void onEnable()
 	{
+		instance = this;
 		FileUtils.ensureFolder("./plugins/Eden/dlcache");
 
 		for (File f : FileUtils.ensureFolder("./plugins/Eden/repos").listFiles())
@@ -64,7 +76,7 @@ public class NetworkingModule extends EdenModule
 			PrintUtils.printPrettyStacktrace(e);
 		}
 
-		PrintUtils.log("Loaded [" + KNOWN_REPOSITORIES.size() + "] repositories.");
+		PrintUtils.log("Loaded [" + KNOWN_REPOSITORIES.size() + "] " + PrintUtils.plural(KNOWN_REPOSITORIES.size(), "repository", "repositories") + ".");
 	}
 	
 	@Override
@@ -76,6 +88,29 @@ public class NetworkingModule extends EdenModule
 	public static Map<String, EdenRepository> getKnownRepositories()
 	{
 		return KNOWN_REPOSITORIES;
+	}
+
+	public static ModuleStatus getModuleUpgradeStatus(String name, EdenRepositoryEntry entry)
+	{
+		if (!Eden.getModuleManager().isModulePresent(name))
+		{
+			return Eden.getModuleManager().isCompatible(entry.getSupportedApiVersions()) ? ModuleStatus.NOT_INSTALLED : ModuleStatus.INCOMPATIBLE_SERVER;
+		}
+	
+		if (Eden.getModuleManager().isCompatible(entry.getSupportedApiVersions()))
+		{
+			if (Eden.getModuleManager().getModuleByName(name).getVersion().equals(entry.getVersion()))
+			{
+				return Eden.getModuleManager().getModuleByName(name).getVersion().equals(entry.getVersion()) ? ModuleStatus.SAME_VERSION : ModuleStatus.UPGRADABLE;
+			}
+		}
+
+		return ModuleStatus.UPGRADABLE_INCOMPATIBLE_SERVER;
+	}
+
+	public static EdenModule getModuleInstance()
+	{
+		return instance;
 	}
 
 	public List<String> getKnownRepoNames()

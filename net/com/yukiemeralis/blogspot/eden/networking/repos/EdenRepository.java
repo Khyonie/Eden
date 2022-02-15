@@ -1,6 +1,8 @@
 package com.yukiemeralis.blogspot.eden.networking.repos;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,11 @@ public class EdenRepository implements GuiComponent
     @Expose
     private String hostUrl;
 
-    // TODO Consider adding a "lastSynced" time to skip repos that were synchronized very recently
+    /**
+     * Current time in unix seconds. Used to compare upstream and installed versions.
+     */
+    @Expose
+    private long timestamp;
 
     /**
      * A list of the modules this repository contains
@@ -40,9 +46,11 @@ public class EdenRepository implements GuiComponent
     @Expose
     private List<EdenRepositoryEntry> entries; 
 
-    public EdenRepository(String name)
+    public EdenRepository(String name, String hostUrl, long timestamp)
     {
         this.name = name;
+        this.hostUrl = hostUrl;
+        this.timestamp = timestamp;
         this.entries = new ArrayList<>();
     }
 
@@ -59,6 +67,11 @@ public class EdenRepository implements GuiComponent
     public String getHostUrl()
     {
         return this.hostUrl;
+    }
+
+    public long getTimestamp()
+    {
+        return this.timestamp;
     }
 
     public static enum RepoSyncResult
@@ -90,6 +103,7 @@ public class EdenRepository implements GuiComponent
                 }
                 
                 EdenRepository repo = JsonUtils.fromJsonFile(f.getAbsolutePath(), EdenRepository.class);
+                String oldName = null;
 
                 if (repo == null)
                 {
@@ -108,18 +122,30 @@ public class EdenRepository implements GuiComponent
                     }
                 
                     // Fix name
+                    oldName = f.getName();
                     File target = new File(f.getParentFile().getAbsolutePath() + "/" + repo.getName() + ".json");
                     if (target.exists())
                         target.delete();
                     f.renameTo(target);
-
+                    
                     PrintUtils.sendMessage(feedbackViewer, "§aFixed repository name.");
                 }
-
+                
                 if (f.exists())
                     f.delete();
-
+                
                 JsonUtils.toJsonFile(f.getAbsolutePath(), repo);
+
+                // If we fixed the name, delete the old copy
+                if (oldName != null)
+                {
+                    try {
+                        File oldFile = new File(f.getParentFile().getCanonicalPath() + "/" + oldName);
+                        Files.delete(oldFile.toPath());
+                    } catch (IOException e) {
+                        PrintUtils.printPrettyStacktrace(e);
+                    }
+                }
                 NetworkingModule.getKnownRepositories().put(repo.getName(), repo);
 
                 PrintUtils.sendMessage(feedbackViewer, "§aSuccessfully downloaded and synced repository \"§b" + repo.getName() + "§a\"!");
