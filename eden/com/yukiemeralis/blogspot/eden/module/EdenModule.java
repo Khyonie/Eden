@@ -185,7 +185,7 @@ public abstract class EdenModule
     {
         // For some unholy reason this is faster than Thread.getCurrentThread().getCurrentStacktrace()
         StackTraceElement current = new Throwable().getStackTrace()[1];
-        PrintUtils.log("(Method) [" + current.getMethodName() + "] in [" + current.getClassName() + "] (requested instance from a module, however this module does not hide EdenModule#getInstance\\\\(\\\\)!)", InfoType.ERROR);
+        PrintUtils.log("<Method> [" + current.getMethodName() + "] <in> [" + current.getClassName() + "] <requested instance from a module, however this module does not hide EdenModule#getInstance\\\\(\\\\)!>", InfoType.ERROR);
         return null;
     }
 
@@ -338,7 +338,7 @@ public abstract class EdenModule
         {
             if (!this.getClass().isAnnotationPresent(DefaultConfig.class))
             {
-                PrintUtils.log("(Module \")[" + this.modName + "](\" requests a configuration file, but one doesn't exist nor is a default config specified!)", InfoType.ERROR);
+                PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but one doesn't exist nor is a default config specified!>", InfoType.ERROR);
                 return;
             }
 
@@ -357,7 +357,7 @@ public abstract class EdenModule
             if (this.config == null)
                 throw new ClassCastException();
         } catch (Exception e) {
-            PrintUtils.log("(Configuration file for module \")<" + this.modName + ">(\" is corrupt! Moving to lost and found...)", InfoType.ERROR);
+            PrintUtils.log("<Configuration file for module \">(" + this.modName + ")<\" is corrupt! Moving to lost and found...>", InfoType.ERROR);
             FileUtils.moveToLostAndFound(file);
 
             DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);

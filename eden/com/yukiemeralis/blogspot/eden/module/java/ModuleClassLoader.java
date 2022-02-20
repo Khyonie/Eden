@@ -99,18 +99,18 @@ public class ModuleClassLoader extends URLClassLoader
 
 				if (!buffer.isAnnotationPresent(ModInfo.class))
 				{
-					PrintUtils.log("(Module class \")[" + clazz.getPackageName() + "](\" does not specify any module information!)", InfoType.ERROR);
-					PrintUtils.log("(If you are a developer seeing this message, please attach an @ModInfo annotation to your module class.)", InfoType.ERROR);
-					PrintUtils.log("(If you are a server owner seeing this message, please either update this module, update Eden, or contact this module's maintainer.)", InfoType.ERROR);
-					PrintUtils.log("(Offending file:) [" + file.getName() + "]", InfoType.ERROR);
+					PrintUtils.log("<Module class \">[" + clazz.getPackageName() + "]<\" does not specify any module information!>", InfoType.ERROR);
+					PrintUtils.log("<If you are a developer seeing this message, please attach an @ModInfo annotation to your module class.>", InfoType.ERROR);
+					PrintUtils.log("<If you are a server owner seeing this message, please either update this module, update Eden, or contact this module's maintainer.>", InfoType.ERROR);
+					PrintUtils.log("<Offending file:> [" + file.getName() + "]", InfoType.ERROR);
 					return null;
 				}
 
 				if (!Arrays.asList(buffer.getAnnotation(ModInfo.class).supportedApiVersions()).contains(Eden.getNMSVersion()))
 				{
-					PrintUtils.log("(Module \")[" + buffer.getAnnotation(ModInfo.class).modName() + "](\" is declared as compatible with the following version(s):) {" + Arrays.toString(buffer.getAnnotation(ModInfo.class).supportedApiVersions()) + "}(,)", InfoType.ERROR);
-					PrintUtils.log("(however this server is running on version )[" + Eden.getNMSVersion() + "](.)", InfoType.ERROR);
-					PrintUtils.log("(Please upgrade or downgrade this module, or contact this module's maintainer.)", InfoType.ERROR);
+					PrintUtils.log("<Module \">[" + buffer.getAnnotation(ModInfo.class).modName() + "]<\" is declared as compatible with the following version(s):> {" + Arrays.toString(buffer.getAnnotation(ModInfo.class).supportedApiVersions()) + "}<,>", InfoType.ERROR);
+					PrintUtils.log("<however this server is running on version >[" + Eden.getNMSVersion() + "]<.>", InfoType.ERROR);
+					PrintUtils.log("<Please upgrade or downgrade this module, or contact this module's maintainer.>", InfoType.ERROR);
 					return null;
 				}
 
@@ -158,10 +158,10 @@ public class ModuleClassLoader extends URLClassLoader
 					commandConstructor = clazz.getConstructor(EdenModule.class);
 					command = commandConstructor.newInstance(module);
 				} catch (NoSuchMethodException e_) {
-					PrintUtils.log("(Command class \")[" + clazz.getPackageName() + "](\" does not contain a valid constructor!)", InfoType.ERROR);
-					PrintUtils.log("(If you are a developer seeing this message, ensure your class contains an EdenModule.)", InfoType.ERROR);
-					PrintUtils.log("(Alternatively, you may hide this command from automatic loading by annotating your class with an @HideFromCollector and adding it manually.)", InfoType.ERROR);
-					PrintUtils.log("(If you are a server owner seeing this message, please update this module \")[" + module.getName() + "](\", update Eden, or contact this module's maintainer.)", InfoType.ERROR);
+					PrintUtils.log("<Command class \">[" + clazz.getPackageName() + "]<\" does not contain a valid constructor!>", InfoType.ERROR);
+					PrintUtils.log("<If you are a developer seeing this message, ensure your class contains an EdenModule.>", InfoType.ERROR);
+					PrintUtils.log("<Alternatively, you may hide this command from automatic loading by annotating your class with an @HideFromCollector and adding it manually.>", InfoType.ERROR);
+					PrintUtils.log("<If you are a server owner seeing this message, please update this module \">[" + module.getName() + "]<\", update Eden, or contact this module's maintainer.>", InfoType.ERROR);
 					continue;
 				}
 			}

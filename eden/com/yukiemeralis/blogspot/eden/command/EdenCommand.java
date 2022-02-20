@@ -163,11 +163,11 @@ public abstract class EdenCommand extends Command
 
             if (!isBlankCommand)
             {
-                PrintUtils.log("(Command \"/" + args[0] + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.)", InfoType.ERROR);
+                PrintUtils.log("<Command \"/" + args[0] + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.>", InfoType.ERROR);
                 return;
             }
             
-            PrintUtils.log("(Command \"/" + commandLabel + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.)", InfoType.ERROR);
+            PrintUtils.log("<Command \"/" + commandLabel + "\" inside " + this.getClass().getName() + " does not specify a handler! Please contact this module's maintainer.>", InfoType.ERROR);
             return;
         }
 
@@ -272,7 +272,7 @@ public abstract class EdenCommand extends Command
                             cmd_method.invoke(getInstance(), sender, commandLabel, args);
                         } catch (InvocationTargetException | IllegalArgumentException | IllegalAccessException e) {
                             PrintUtils.sendMessage(sender, "§cAn internal error occurred. Please contact an administrator.");
-                            PrintUtils.log("(Failed to execute a command! See below for details and a stacktrace.)", InfoType.ERROR);
+                            PrintUtils.log("<Failed to execute a command! See below for details and a stacktrace.>", InfoType.ERROR);
                             PrintUtils.printPrettyStacktrace(e);
                         }
                     }

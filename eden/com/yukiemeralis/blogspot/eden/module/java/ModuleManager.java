@@ -93,7 +93,7 @@ public class ModuleManager
 			{
 				if (!loader_cache.containsKey(str))
 				{
-					PrintUtils.log("(Missing dependency \")[" + str + "](\" for module \"){" + modname + "}(\"!)", InfoType.ERROR);
+					PrintUtils.log("<Missing dependency \">[" + str + "]<\" for module \">{" + modname + "}<\"!>", InfoType.ERROR);
 					valid = false;
 					continue;
 				}
@@ -198,7 +198,7 @@ public class ModuleManager
 
 		if (mcl.getModuleClass() == null)
 		{
-			PrintUtils.log("(Failed to load file \")[" + f.getName() + "](\"! Reason: invalid module class.)", InfoType.ERROR);
+			PrintUtils.log("<Failed to load file \">[" + f.getName() + "]<\"! Reason: invalid module class.>", InfoType.ERROR);
 			return null;
 		}
 
@@ -379,7 +379,7 @@ public class ModuleManager
 
 		// Core loads first, as long as we aren't flying solo
 		if (!Eden.getEdenConfig().get("flyingSolo").equals("true"))
-			enableModule(getDisabledModuleByName("Eden"));
+			enableModule(getDisabledModuleByName("Rosetta"));
 
 		// Load other modules
 		new ArrayList<>(disabled_modules).forEach(this::enableModule); // Construct a new list to avoid a ConcurrentModificationException
@@ -406,13 +406,13 @@ public class ModuleManager
 		if (module == null)
 		{
 			// Can't load a module that doesn't exist
-			PrintUtils.log("(Attempted to load a null module! Aborting...)");
+			PrintUtils.log("<Attempted to load a null module! Aborting...>");
 			return;
 		}
 
 		if (module.getName() == null)
 		{
-			PrintUtils.log("(Module failed to load. Keeping as an unloaded module.)", InfoType.ERROR);
+			PrintUtils.log("<Module failed to load. Keeping as an unloaded module.>", InfoType.ERROR);
 			return;
 		}
 
@@ -459,7 +459,7 @@ public class ModuleManager
 			module.onEnable();
 			module.setEnabled();
 		} catch (Exception e) {
-			PrintUtils.log("(Failed to enable module! Stacktrace is below...)", InfoType.ERROR);
+			PrintUtils.log("<Failed to enable module! Stacktrace is below...>", InfoType.ERROR);
 
 			PrintUtils.printPrettyStacktrace(e);
 
@@ -495,7 +495,7 @@ public class ModuleManager
 
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
-				PrintUtils.log("(An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ")", InfoType.WARN);
+				PrintUtils.log("<An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ">", InfoType.WARN);
 				return false;
 			}	
 		}
@@ -521,7 +521,7 @@ public class ModuleManager
 
 				if (!disableModule(mod.getName(), caller)) // If we can't disable a reliant module, reload all disabled modules and abort
 				{
-					PrintUtils.log("(Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.)", InfoType.ERROR);
+					PrintUtils.log("<Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.>", InfoType.ERROR);
 					disabledMods.forEach(mod_ -> { 
 						enableModule(mod_);
 						mod_.setEnabled();
@@ -543,7 +543,7 @@ public class ModuleManager
 				PrintUtils.logVerbose("Saving config...", InfoType.INFO);
 				module.saveConfig();
 			} catch (Exception e) {
-				PrintUtils.log("(Failed to save config! Stacktrace is below...)", InfoType.ERROR);
+				PrintUtils.log("<Failed to save config! Stacktrace is below...>", InfoType.ERROR);
 				PrintUtils.printPrettyStacktrace(e);
 			}
 		}
@@ -580,7 +580,7 @@ public class ModuleManager
 				return true;
 			}
 		} catch (Exception e) {
-			PrintUtils.log("(Failed to disable module! Stacktrace is below...)", InfoType.ERROR);
+			PrintUtils.log("<Failed to disable module! Stacktrace is below...>", InfoType.ERROR);
 			PrintUtils.printPrettyStacktrace(e);
 		}
 
@@ -616,7 +616,7 @@ public class ModuleManager
 
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
-				PrintUtils.log("(An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ")", InfoType.WARN);
+				PrintUtils.log("<An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ">", InfoType.WARN);
 				return;
 			}	
 		}
