@@ -5,7 +5,7 @@ completedColumns:
   - Done
 ---
 
-# Zenith
+# Eden
 
 ## Backlog
 
@@ -13,8 +13,8 @@ completedColumns:
 
 ## Todo
 
-- [unfinished-features](tasks/unfinished-features.md)
 - [audit-non-user-command-readiness](tasks/audit-non-user-command-readiness.md)
+- [unfinished-features](tasks/unfinished-features.md)
 
 ## In Progress
 

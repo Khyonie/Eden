@@ -206,7 +206,7 @@ public class ChatUtils implements Listener
         {
             if (!outdatedWarning)
             {
-                PrintUtils.log("(Java version is )[" + DataUtils.getJavaVersion() + "](. Must be on Java )[16]( or newer to use unicode chat replacements.))", InfoType.ERROR);
+                PrintUtils.log("<Java version is >[" + DataUtils.getJavaVersion() + "]<. Must be on Java >[16]< or newer to use unicode chat replacements.>", InfoType.ERROR);
                 outdatedWarning = true;
             }
                 

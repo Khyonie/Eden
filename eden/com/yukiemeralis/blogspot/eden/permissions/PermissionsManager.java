@@ -57,7 +57,7 @@ public abstract class PermissionsManager
 
         if (account == null)
         {
-            PrintUtils.log("(Account file for " + uuid + " is corrupt! Moving to " + FileUtils.moveToLostAndFound(accountFile).getAbsolutePath() + ")", InfoType.ERROR);
+            PrintUtils.log("<Account file for " + uuid + " is corrupt! Moving to " + FileUtils.moveToLostAndFound(accountFile).getAbsolutePath() + ">", InfoType.ERROR);
             accountFile.delete();
 
             account = new PlayerData();
@@ -94,7 +94,7 @@ public abstract class PermissionsManager
         
         if (account == null)
         {
-            PrintUtils.log("(Account file for " + player.getName() + " is corrupt! Moving to " + (FileUtils.moveToLostAndFound(accountFile).getAbsolutePath().replace('\\', '/')) + " )", InfoType.ERROR);
+            PrintUtils.log("<Account file for " + player.getName() + " is corrupt! Moving to " + (FileUtils.moveToLostAndFound(accountFile).getAbsolutePath().replace('\\', '/')) + ">", InfoType.ERROR);
             accountFile.delete();
 
             account = new PlayerData();

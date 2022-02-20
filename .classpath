@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="core"/>
-	<classpathentry kind="src" path="auth"/>
-	<classpathentry kind="src" path="gui"/>
-	<classpathentry kind="src" path="net"/>
+	<classpathentry kind="src" path="rosetta"/>
+	<classpathentry kind="src" path="checkpoint"/>
+	<classpathentry kind="src" path="surface"/>
+	<classpathentry kind="src" path="flock"/>
 	<classpathentry kind="src" path="projectile"/>
 	<classpathentry kind="src" path="ench"/>
 	<classpathentry kind="src" path="events"/>

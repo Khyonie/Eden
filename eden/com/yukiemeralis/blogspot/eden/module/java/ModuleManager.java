@@ -93,7 +93,7 @@ public class ModuleManager
 			{
 				if (!loader_cache.containsKey(str))
 				{
-					PrintUtils.log("(Missing dependency \")[" + str + "](\" for module \"){" + modname + "}(\"!)", InfoType.ERROR);
+					PrintUtils.log("<Missing dependency \">[" + str + "]<\" for module \">{" + modname + "}<\"!>", InfoType.ERROR);
 					valid = false;
 					continue;
 				}
@@ -181,7 +181,7 @@ public class ModuleManager
 		// Cache all classes in order of dependency
 		for (ModuleClassLoader mcl : loader_cache.values())
 		{
-			precacheModuleClasses(mcl);
+			precacheModuleClasses(mcl, false);
 		}
 	}
 
@@ -198,7 +198,7 @@ public class ModuleManager
 
 		if (mcl.getModuleClass() == null)
 		{
-			PrintUtils.log("(Failed to load file \")[" + f.getName() + "](\"! Reason: invalid module class.)", InfoType.ERROR);
+			PrintUtils.log("<Failed to load file \">[" + f.getName() + "]<\"! Reason: invalid module class.>", InfoType.ERROR);
 			return null;
 		}
 
@@ -211,11 +211,29 @@ public class ModuleManager
 	}
 
 	private List<ModuleClassLoader> preloadedModules = new ArrayList<>();
-	private void precacheModuleClasses(ModuleClassLoader mcl)
+	private List<ModuleClassLoader> preloadedRecursiveList = new ArrayList<>();
+	private void precacheModuleClasses(ModuleClassLoader mcl, boolean recursive)
 	{
 		if (preloadedModules.contains(mcl))
+		{
 			return;
+		}
 
+		PrintUtils.logVerbose("Checking if " + mcl.getName() + " has been precached...", InfoType.INFO);
+
+		if (preloadedRecursiveList.contains(mcl) && recursive)
+		{
+			PrintUtils.log("<Cyclical dependency from module file " + preloadedRecursiveList.get(0).getName() + " detected! Skipping...>", InfoType.ERROR);
+			PrintUtils.logVerbose("This usually happens when two or more modules depend on each other, either directly (A -> B -> A) or indirectly (A -> B -> C... -> A).", InfoType.ERROR);
+			PrintUtils.logVerbose("If you are a developer seeing this message, please add a FIXME if you intend on releasing this module.", InfoType.ERROR);
+			PrintUtils.logVerbose("Related modules:", InfoType.ERROR);
+			for (ModuleClassLoader classLoader : preloadedRecursiveList)
+				PrintUtils.logVerbose("- " + classLoader.getModuleFileName(), InfoType.ERROR);
+			return;
+		}
+		
+		preloadedRecursiveList.add(mcl);
+	
 		if (mcl.getModuleClass().isAnnotationPresent(LoadBefore.class))
 		{
 			// Go over loadbefores with recursion
@@ -227,12 +245,18 @@ public class ModuleManager
 					continue;
 				}
 
-				precacheModuleClasses(loader_cache.get(lb));
+				ModuleClassLoader recursiveMcl = loader_cache.get(lb);
+
+				precacheModuleClasses(recursiveMcl, true);
 			}
 		}
 
 		mcl.cacheCommandsAndEvents();
+
+		preloadedRecursiveList.remove(mcl);
 		preloadedModules.add(mcl);
+
+		PrintUtils.logVerbose("Precached " + mcl.getName() + "!", InfoType.INFO);
 	}
 
 	/**
@@ -308,7 +332,7 @@ public class ModuleManager
 			return result;
 		}
 
-		precacheModuleClasses(mcl);
+		precacheModuleClasses(mcl, false);
 
 		if (mcl.getModuleClass().isAnnotationPresent(LoadBefore.class))
 			if (!isModuleListPresent(mcl.getModuleClass().getAnnotation(LoadBefore.class).loadBefore()))
@@ -355,7 +379,7 @@ public class ModuleManager
 
 		// Core loads first, as long as we aren't flying solo
 		if (!Eden.getEdenConfig().get("flyingSolo").equals("true"))
-			enableModule(getDisabledModuleByName("Eden"));
+			enableModule(getDisabledModuleByName("Rosetta"));
 
 		// Load other modules
 		new ArrayList<>(disabled_modules).forEach(this::enableModule); // Construct a new list to avoid a ConcurrentModificationException
@@ -370,9 +394,9 @@ public class ModuleManager
 			}
 		});
 
-		PrintUtils.log("Enabled [" + enabled_modules.size() + "]/[" + getAllModules().size() + "] module\\(s\\)!", InfoType.INFO);
+		PrintUtils.log("Enabled [" + enabled_modules.size() + "]/[" + getAllModules().size() + "] " + PrintUtils.plural(getAllModules().size(), "module", "modules") + "!", InfoType.INFO);
 	}
-
+ 
 	/**
 	 * Loads a module, calling it's onEnable() and registering its commands and listeners.
 	 * @param module The module to load.
@@ -382,13 +406,13 @@ public class ModuleManager
 		if (module == null)
 		{
 			// Can't load a module that doesn't exist
-			PrintUtils.log("(Attempted to load a null module! Aborting...)");
+			PrintUtils.log("<Attempted to load a null module! Aborting...>");
 			return;
 		}
 
 		if (module.getName() == null)
 		{
-			PrintUtils.log("(Module failed to load. Keeping as an unloaded module.)", InfoType.ERROR);
+			PrintUtils.log("<Module failed to load. Keeping as an unloaded module.>", InfoType.ERROR);
 			return;
 		}
 
@@ -417,6 +441,9 @@ public class ModuleManager
 			case "v1_17_R1":
 				((org.bukkit.craftbukkit.v1_17_R1.CraftServer) Bukkit.getServer()).syncCommands();
 				break;
+			case "v1_18_R1":
+				((org.bukkit.craftbukkit.v1_18_R1.CraftServer) Bukkit.getServer()).syncCommands();
+				break;
 		}
 
 		if (module.getClass().isAnnotationPresent(EdenConfig.class))
@@ -432,7 +459,7 @@ public class ModuleManager
 			module.onEnable();
 			module.setEnabled();
 		} catch (Exception e) {
-			PrintUtils.log("(Failed to enable module! Stacktrace is below...)", InfoType.ERROR);
+			PrintUtils.log("<Failed to enable module! Stacktrace is below...>", InfoType.ERROR);
 
 			PrintUtils.printPrettyStacktrace(e);
 
@@ -447,6 +474,7 @@ public class ModuleManager
 		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleEnableEvent(module, this.module_references.get(module.getName())));
 	}
 
+	private static List<Class<? extends EdenModule>> dependentModuleTree = new ArrayList<>();
 	/**
 	 * Disables a module, unregistering its commands and listeners.
 	 * @param name The expected name of a module.
@@ -467,33 +495,47 @@ public class ModuleManager
 
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
-				PrintUtils.log("(An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ")", InfoType.WARN);
+				PrintUtils.log("<An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ">", InfoType.WARN);
 				return false;
 			}	
 		}
 
 		// Start disabling
-		PrintUtils.log("Disabling [" + module.getName() + "]", InfoType.INFO);
+		PrintUtils.log("Disabling [" + module.getName() + "]...", InfoType.INFO);
 
 		List<EdenModule> disabledMods = new ArrayList<>();
+
+		dependentModuleTree.add(module.getClass());
+
 		// Disable reliant modules
 		if (!CallerToken.isEqualToOrHigher(caller, CallerToken.EDEN))
 			for (EdenModule mod : module.getReliantModules())
 			{
-				PrintUtils.sendMessage("Reliant module: " + mod.getName());
+				PrintUtils.sendMessage("Reliant module: " + mod.getName(), InfoType.INFO);
+
+				if (dependentModuleTree.contains(mod.getClass()))
+				{
+					PrintUtils.logVerbose("Cyclical dependency containing " + dependentModuleTree.size() + " modules detected. Stopping recursion here.", InfoType.WARN);
+					continue;
+				}
+
 				if (!disableModule(mod.getName(), caller)) // If we can't disable a reliant module, reload all disabled modules and abort
 				{
-					PrintUtils.log("(Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.)", InfoType.ERROR);
+					PrintUtils.log("<Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.>", InfoType.ERROR);
 					disabledMods.forEach(mod_ -> { 
 						enableModule(mod_);
 						mod_.setEnabled();
 					});
+					dependentModuleTree.remove(module.getClass());
+					return false;
 				}
 
 				mod.removeReliantModule(module);
 				disabledMods.add(mod);
-				mod.setDisabled();
+				mod.setDisabled();				
 			}
+
+		dependentModuleTree.remove(module.getClass());
 
 		if (module.getClass().isAnnotationPresent(EdenConfig.class))
 		{
@@ -501,7 +543,7 @@ public class ModuleManager
 				PrintUtils.logVerbose("Saving config...", InfoType.INFO);
 				module.saveConfig();
 			} catch (Exception e) {
-				PrintUtils.log("(Failed to save config! Stacktrace is below...)", InfoType.ERROR);
+				PrintUtils.log("<Failed to save config! Stacktrace is below...>", InfoType.ERROR);
 				PrintUtils.printPrettyStacktrace(e);
 			}
 		}
@@ -534,10 +576,11 @@ public class ModuleManager
 
 				Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
 
+				PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
 				return true;
 			}
 		} catch (Exception e) {
-			PrintUtils.log("(Failed to disable module! Stacktrace is below...)", InfoType.ERROR);
+			PrintUtils.log("<Failed to disable module! Stacktrace is below...>", InfoType.ERROR);
 			PrintUtils.printPrettyStacktrace(e);
 		}
 
@@ -548,9 +591,9 @@ public class ModuleManager
 	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
 	 * @param name The expected name of a module.
 	 */
-	public void disableModule(String name)
+	public boolean disableModule(String name)
 	{
-		disableModule(name, CallerToken.PLAYER);
+		return disableModule(name, CallerToken.PLAYER);
 	}
 
 	/**
@@ -573,7 +616,7 @@ public class ModuleManager
 
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
-				PrintUtils.log("(An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ")", InfoType.WARN);
+				PrintUtils.log("<An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ">", InfoType.WARN);
 				return;
 			}	
 		}
@@ -802,5 +845,18 @@ public class ModuleManager
 		if (mod != null)
 			return mod;
 		return null;
+	}
+
+	public boolean isCompatible(String... versions)
+	{
+		for (String v : versions)
+			if (v.equals(Eden.getNMSVersion()))
+				return true;
+		return false;
+	}
+
+	public boolean isCompatible(List<String> versions)
+	{
+		return versions.contains(Eden.getNMSVersion());
 	}
 }
