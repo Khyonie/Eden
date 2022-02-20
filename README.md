@@ -1,2 +1,2 @@
 # Eden
- A Spigot minecraft plugin API with a focus on three key principles: modularity, security, flexibility.
+A Spigot minecraft plugin API with a focus on three key principles: modularity, security, flexibility.

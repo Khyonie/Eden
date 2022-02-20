@@ -1,0 +1,27 @@
+{
+    "files.exclude": {
+        "**/bin/": true,
+        "**/doc/": true,
+        "**/.gitattributes": true,
+        "**/LICENSE": true,
+        "**/README.md": true,
+        "**/.gitignore": true,
+        "**/plugin.yml": true,
+        "**/.vscode/": true,
+        "**/internalModules/": true,
+        "**/.idea/": true,
+        "**Zenith.iml": true,
+        "**/.kanbn/": true
+    },
+    "java.project.sourcePaths": [
+        "zen",
+        "rustls",
+        "projectile",
+        "net",
+        "events",
+        "ench",
+        "core",
+        "auth",
+        "gui"
+    ]
+}
