@@ -47,13 +47,18 @@ public class CommandManager
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
             PrintUtils.printPrettyStacktrace(e);
         }
-    } 
+    }
+    
+    public static void unregisterCommand(String commandName)
+    {
+        unregisterCommand(commandName, false);
+    }
 
     /**
      * Removes a command from the commandmap
      * @param commandName The name of the command to remove
      */
-    public static void unregisterCommand(String commandName)
+    public static void unregisterCommand(String commandName, boolean force)
     {
         Command target = getCommand(commandName);
 
@@ -62,7 +67,7 @@ public class CommandManager
             return;
         }
 
-        if (target.getClass().isAnnotationPresent(PreventUnload.class))
+        if (target.getClass().isAnnotationPresent(PreventUnload.class) && !force)
         {
             PrintUtils.logVerbose("Attempted to unregister command \"[/" + commandName + "]\" but this command cannot be unregistered!" , InfoType.INFO);
             return;
@@ -90,6 +95,11 @@ public class CommandManager
                     scm = (org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap) scmField.get(Bukkit.getServer());
                     knownEdenCommands.remove(getCommand(commandName));
                     ((org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
+                    break;
+                case "v1_18_R2":
+                    scm = (org.bukkit.craftbukkit.v1_18_R2.command.CraftCommandMap) scmField.get(Bukkit.getServer());
+                    knownEdenCommands.remove(getCommand(commandName));
+                    ((org.bukkit.craftbukkit.v1_18_R2.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
                     break;
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {

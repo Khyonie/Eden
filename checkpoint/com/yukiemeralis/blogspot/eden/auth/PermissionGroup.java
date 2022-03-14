@@ -2,6 +2,7 @@ package com.yukiemeralis.blogspot.eden.auth;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -49,6 +50,17 @@ public class PermissionGroup
     public void addPermission(String perm) 
     {
         this.associatedPermissions.add(perm);
+    }
+
+    public void addPermissions(String... perms)
+    {
+        for (String perm : perms)
+            addPermission(perm);
+    }
+
+    public void addPermissions(Collection<String> perms)
+    {
+        this.associatedPermissions.addAll(perms);
     }
 
     // public void addRevokedPermission(String perm)

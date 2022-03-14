@@ -9,10 +9,20 @@ public interface PacketUtils
 {
     public static void hideEntity(Entity e, Player player)
     {
-        if (Eden.getNMSVersion().equals("v1_16_R3")) {
-            new PacketUtils_v1_16_R3().hideEntityInternal(e, player);
-        } else if (Eden.getNMSVersion().equals("v1_17_R1")) {
-            new PacketUtils_v1_17_R1().hideEntityInternal(e, player);
+        switch (Eden.getNMSVersion())
+        {
+            case "v1_16_R3":
+                new PacketUtils_v1_16_R3().hideEntityInternal(e, player);
+                break;
+            case "v1_17_R1":
+                new PacketUtils_v1_17_R1().hideEntityInternal(e, player);
+                break;
+            case "v1_18_R1":
+                new PacketUtils_v1_18_R1().hideEntityInternal(e, player);
+                break;
+            case "v1_18_R2":
+                new PacketUtils_v1_18_R2().hideEntityInternal(e, player);
+                break;
         }
     }
 
@@ -39,11 +49,6 @@ public interface PacketUtils
 
             // Mojang slightly changed how packets work going between 1.16.5, 1.17, and 1.17.1, so we have to handle two different packet constructors
             // Pain
-
-            // TODO This needs to use the obfuscated names
-            // TODO Check if this still works (getId() -> ae()?)
-
-            // Double pain              
             
             try {
                 net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy.class.getConstructor(int.class); // 1.17, but not 1.17.1
@@ -54,5 +59,27 @@ public interface PacketUtils
         }
     }
 
-    // TODO Add v1_18_R1 support
+    public static class PacketUtils_v1_18_R1 implements PacketUtils
+    {
+        @Override
+        public void hideEntityInternal(Entity e, Player player) 
+        {
+            net.minecraft.server.network.PlayerConnection connection_1_18 = ((org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer) player).getHandle().b;
+            net.minecraft.world.entity.Entity entity_1_18 = ((org.bukkit.craftbukkit.v1_18_R1.entity.CraftEntity) e).getHandle();
+            
+            connection_1_18.a(new net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy(entity_1_18.ae()));
+        }
+    }
+
+    public static class PacketUtils_v1_18_R2 implements PacketUtils
+    {
+        @Override
+        public void hideEntityInternal(Entity e, Player player) 
+        {
+            net.minecraft.server.network.PlayerConnection connection_1_18 = ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) player).getHandle().b;
+            net.minecraft.world.entity.Entity entity_1_18 = ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity) e).getHandle();
+            
+            connection_1_18.a(new net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy(entity_1_18.ae()));
+        }
+    }
 }

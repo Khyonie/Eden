@@ -1,0 +1,8 @@
+# Checkpoint module
+
+name:Checkpoint
+source:checkpoint
+secondarysource:
+output:./../../../Servers/Minecraft/Minecraft\ 1.18/plugins/Eden/mods/Checkpoint.jar
+classpath:@.classpaths/rosetta.classes
+input:LICENSE

@@ -1,0 +1,8 @@
+# Config file for Eden main plugin
+
+name:Eden
+source:eden
+secondarysource:
+output:./../../../Servers/Minecraft/Minecraft\ 1.18/plugins/Eden-{MM}{DD}{YY}-{ASKME}.jar
+classpath:@.classpaths/eden.classes
+input:LICENSE,plugin.yml,internalModules/

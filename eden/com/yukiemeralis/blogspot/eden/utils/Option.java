@@ -24,13 +24,20 @@ public class Option<T>
         return this.tClass;
     }
 
-    public void some(T contained)
+    public Option<T> some(T contained)
     {
         if (contained == null)
-            return;
+            return this;
 
         this.state = OptionState.SOME;
         this.contained = contained;
+
+        return this;
+    }
+
+    public Option<T> none()
+    {
+        return this;
     }
 
     public OptionState getState()

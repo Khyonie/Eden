@@ -12,13 +12,16 @@ import com.google.gson.JsonSyntaxException;
 import com.yukiemeralis.blogspot.eden.Eden;
 import com.yukiemeralis.blogspot.eden.command.EdenCommand;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
+import com.yukiemeralis.blogspot.eden.module.java.ModuleDisableFailureData;
 import com.yukiemeralis.blogspot.eden.module.java.enums.CallerToken;
+import com.yukiemeralis.blogspot.eden.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.eden.networking.enums.ModuleUpgradeStatus;
 import com.yukiemeralis.blogspot.eden.networking.repos.EdenRepository;
 import com.yukiemeralis.blogspot.eden.networking.repos.EdenRepositoryEntry;
 import com.yukiemeralis.blogspot.eden.networking.repos.GlobalRepositoryGui;
 import com.yukiemeralis.blogspot.eden.networking.repos.RepositoryGui;
 import com.yukiemeralis.blogspot.eden.utils.JsonUtils;
+import com.yukiemeralis.blogspot.eden.utils.Option;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 import com.yukiemeralis.blogspot.eden.utils.Result;
 
@@ -27,17 +30,18 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+@PreventUnload(CallerToken.EDEN)
 public class RepoCommand extends EdenCommand 
 {
     public RepoCommand(EdenModule parent_module) 
     {
         super("edenmr", parent_module);
 
-        this.addBranch("sync", "upgrade", "add", "remove", "open", "exportblank", "synctimestamps", "gentimestamp");
-        this.getBranch("add").addBranch("<URL>");
-        this.getBranch("remove").addBranch("<ALL_REPOSITORIES>");
-        this.getBranch("open").addBranch("<ALL_REPOSITORIES>");
-        this.getBranch("exportblank").addBranch("<NAME>");
+        this.addBranch("^sync", "^upgrade", "^add", "^remove", "^open", "^exportblank", "^synctimestamps", "gentimestamp");
+        this.getBranch("^add").addBranch("<URL>");
+        this.getBranch("^remove").addBranch("<ALL_REPOSITORIES>");
+        this.getBranch("^open").addBranch("<ALL_REPOSITORIES>");
+        this.getBranch("^exportblank").addBranch("<NAME>");
     }
 
     @EdenCommandHandler(usage = "edenmr sync", description = "Synchronizes all added repos with their upstream repos.", argsCount = 1)
@@ -73,16 +77,39 @@ public class RepoCommand extends EdenCommand
                 boolean enabled = target.getIsEnabled(); // Keep enabled modules enabled and disabled modules disabled
 
                 if (enabled)
-                    Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
+                {
+                    Option<ModuleDisableFailureData> result = Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
 
-                // TODO Keep track of recursive disabled modules to re-enable related modules
+                    data: switch (result.getState())
+                    {
+                        case NONE: // Don't need to do anything
+                            break data;
+                        case SOME: // Disable failed, reload given modules
+                            PrintUtils.sendMessage(sender, "§cFailed to disable module! Attempting to perform rollback on " + result.unwrap().getDownstreamModules().size() + " " + PrintUtils.plural(result.unwrap().getDownstreamModules().size(), "module", "modules") + "...");
+                            PrintUtils.sendMessage(sender, "§c§oTechnical failure reason: " + result.unwrap().getReason().name());
+
+                            if (result.unwrap().performRollback())
+                            {
+                                PrintUtils.sendMessage(sender, "§cRollback complete.");
+                                return;
+                            }
+
+                            PrintUtils.sendMessage(sender, "§cRollback failed.");
+                            return;
+                    }
+                }
+                
                 Eden.getModuleManager().removeModuleFromMemory(target.getName(), CallerToken.EDEN);
 
                 // Delete the module file
                 File f = new File(Eden.getModuleManager().getReferences().get(name));
-                f.delete();
+                boolean success = f.delete();
 
-                // TODO Make sure that the file actually got deleted
+                if (!success)
+                {
+                    PrintUtils.sendMessage(sender, "§cFailed to delete module file for this module! Please delete manually.");
+                    return;
+                }
                 
                 NetworkingUtils.downloadFileFromURLThreaded(entry.getUrl(), EdenRepositoryEntry.MODULE_FOLDER + upstreamFilename, new Thread() {
                     @Override
@@ -229,7 +256,7 @@ public class RepoCommand extends EdenCommand
     public void edencommand_exportblank(CommandSender sender, String commandLabel, String[] args)
     {
         EdenRepository repo = new EdenRepository(args[1], "https://google.com", System.currentTimeMillis() / 1000L);
-        repo.getEntries().add(new EdenRepositoryEntry("Dummy", "https://google.com/", "0.0", "N/A", System.currentTimeMillis() / 1000L, "v1_18_R1"));
+        repo.getEntries().add(new EdenRepositoryEntry("Dummy", "https://google.com/", "0.0", "N/A", System.currentTimeMillis() / 1000L, "v1_18_R2"));
 
         JsonUtils.toJsonFile("./plugins/Eden/dlcache/" + args[1] + ".json", repo);
 

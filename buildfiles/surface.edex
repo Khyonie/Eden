@@ -1,0 +1,8 @@
+# Surface module
+
+name:Surface
+source:surface
+secondarysource:
+output:./../../../Servers/Minecraft/Minecraft\ 1.18/plugins/Eden/mods/Surface.jar
+classpath:@.classpaths/rosetta.classes
+input:LICENSE
