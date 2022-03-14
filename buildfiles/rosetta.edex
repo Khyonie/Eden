@@ -1,0 +1,8 @@
+# Rosetta module
+
+name:Rosetta
+source:rosetta
+secondarysource:
+output:./../../../Servers/Minecraft/Minecraft\ 1.18/plugins/Eden/mods/Rosetta.jar
+classpath:@.classpaths/rosetta.classes
+input:LICENSE

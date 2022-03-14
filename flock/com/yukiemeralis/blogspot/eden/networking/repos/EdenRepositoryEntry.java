@@ -11,12 +11,15 @@ import com.yukiemeralis.blogspot.eden.gui.GuiComponent;
 import com.yukiemeralis.blogspot.eden.gui.GuiItemStack;
 import com.yukiemeralis.blogspot.eden.gui.base.DynamicGui;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
+import com.yukiemeralis.blogspot.eden.module.java.ModuleDisableFailureData;
 import com.yukiemeralis.blogspot.eden.module.java.enums.CallerToken;
+import com.yukiemeralis.blogspot.eden.module.java.enums.ModuleDisableFailure;
 import com.yukiemeralis.blogspot.eden.networking.NetworkingModule;
 import com.yukiemeralis.blogspot.eden.networking.NetworkingUtils;
 import com.yukiemeralis.blogspot.eden.networking.enums.DefaultDownloadBehavior;
 import com.yukiemeralis.blogspot.eden.utils.FileUtils;
 import com.yukiemeralis.blogspot.eden.utils.ItemUtils;
+import com.yukiemeralis.blogspot.eden.utils.Option;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 import com.yukiemeralis.blogspot.eden.utils.Result;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils.InfoType;
@@ -119,9 +122,6 @@ public class EdenRepositoryEntry implements GuiComponent
             @Override
             public void onIconInteract(InventoryClickEvent event) 
             {
-                // TODO This
-                // Also maybe show dependencies?
-
                 String upstreamFilename = null;
 
                 switch (NetworkingModule.getModuleUpgradeStatus(getName(), getInstance()))
@@ -246,16 +246,38 @@ public class EdenRepositoryEntry implements GuiComponent
                         boolean enabled = target.getIsEnabled(); // Keep enabled modules enabled and disabled modules disabled
 
                         if (enabled)
-                            Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
+                        {
+                            Option<ModuleDisableFailureData> result = Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
 
-                        // TODO Keep track of recursive disabled modules to re-enable related modules
+                            data: switch (result.getState())
+                            {
+                                case NONE: // Don't need to do anything
+                                    break data;
+                                case SOME: // Disable failed, reload given modules
+                                    PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! Attempting to perform rollback on " + result.unwrap().getDownstreamModules().size() + " " + PrintUtils.plural(result.unwrap().getDownstreamModules().size(), "module", "modules") + "...");
+                                    PrintUtils.sendMessage(event.getWhoClicked(), "§c§oTechnical failure reason: " + result.unwrap().getReason().name());
+
+                                    if (result.unwrap().performRollback())
+                                    {
+                                        PrintUtils.sendMessage(event.getWhoClicked(), "§cRollback complete.");
+                                        return;
+                                    }
+
+                                    PrintUtils.sendMessage(event.getWhoClicked(), "§cRollback failed.");
+                                    return;
+                            }
+                        }
+
                         Eden.getModuleManager().removeModuleFromMemory(target.getName(), CallerToken.EDEN);
 
                         // Delete the module file
                         File f = new File(Eden.getModuleManager().getReferences().get(name));
-                        f.delete();
-
-                        // TODO Make sure that the file actually got deleted
+                        
+                        if (!f.delete())
+                        {
+                            PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to delete module file! Please delete manually.");
+                            return;
+                        }                        
                         
                         NetworkingUtils.downloadFileFromURLThreaded(url, MODULE_FOLDER + upstreamFilename, new Thread() {
                             @Override

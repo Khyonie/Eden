@@ -152,7 +152,7 @@ public class Eden extends JavaPlugin
 	{
 		isBeingDisabled = true;
 		module_manager.getEnabledModules().forEach(module -> {
-			module_manager.disableModule(module.getName(), CallerToken.EDEN);
+			module_manager.disableModule(module.getName(), CallerToken.EDEN, true);
 		});
 
 		Bukkit.getOnlinePlayers().forEach(player -> {

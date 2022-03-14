@@ -1,0 +1,8 @@
+# Flock module
+
+name:Flock
+source:flock
+secondarysource:
+output:./../../../Servers/Minecraft/Minecraft\ 1.18/plugins/Eden/mods/Flock.jar
+classpath:@.classpaths/rosetta.classes
+input:LICENSE

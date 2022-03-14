@@ -30,12 +30,14 @@ import com.yukiemeralis.blogspot.eden.module.EdenModule.ModInfo;
 import com.yukiemeralis.blogspot.eden.module.EdenModule.EdenConfig;
 import com.yukiemeralis.blogspot.eden.module.event.*;
 import com.yukiemeralis.blogspot.eden.module.java.enums.CallerToken;
+import com.yukiemeralis.blogspot.eden.module.java.enums.ModuleDisableFailure;
 import com.yukiemeralis.blogspot.eden.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.eden.utils.DataUtils;
 import com.yukiemeralis.blogspot.eden.utils.FileUtils;
 import com.yukiemeralis.blogspot.eden.utils.Option;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 import com.yukiemeralis.blogspot.eden.utils.Result;
+import com.yukiemeralis.blogspot.eden.utils.Option.OptionState;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils.InfoType;
 import com.yukiemeralis.blogspot.eden.utils.Result.UndefinedResultException;
 
@@ -54,6 +56,7 @@ public class ModuleManager
 	private final Map<String, ModuleClassLoader> loader_cache = new LinkedHashMap<>();
 
 	private final Map<String, String> module_references = new HashMap<>();
+	private final Map<String, Long> load_times = new HashMap<>();
 
 	private List<EdenModule> enabled_modules = new ArrayList<>();
 	private List<EdenModule> disabled_modules = new ArrayList<>();
@@ -114,7 +117,6 @@ public class ModuleManager
 			try {
 				loader.finalizeLoading();
 				disabled_modules.add(loader.getModule());
-				
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException | NullPointerException e) {
 				PrintUtils.printPrettyStacktrace(e);
 			}
@@ -444,6 +446,9 @@ public class ModuleManager
 			case "v1_18_R1":
 				((org.bukkit.craftbukkit.v1_18_R1.CraftServer) Bukkit.getServer()).syncCommands();
 				break;
+			case "v1_18_R2":
+				((org.bukkit.craftbukkit.v1_18_R2.CraftServer) Bukkit.getServer()).syncCommands();
+				break;
 		}
 
 		if (module.getClass().isAnnotationPresent(EdenConfig.class))
@@ -481,12 +486,13 @@ public class ModuleManager
 	 * @param caller The token of the requestee.
 	 * @return Whether or not disabling was successful.
 	 */
-	public boolean disableModule(String name, CallerToken caller)
+	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean force)
 	{
+		Option<ModuleDisableFailureData> result = new Option<>(ModuleDisableFailureData.class);
 		EdenModule module = getEnabledModuleByName(name);
 
 		if (module == null)
-			return false; // Can't disable a module that doesn't exist
+			return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.NULL_MODULE));; // Can't disable a module that doesn't exist
 
 		// Check for a required caller token
 		if (module.getClass().isAnnotationPresent(PreventUnload.class))
@@ -496,7 +502,7 @@ public class ModuleManager
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
 				PrintUtils.log("<An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ">", InfoType.WARN);
-				return false;
+				return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNAUTHORIZED_CALLERTOKEN));
 			}	
 		}
 
@@ -508,10 +514,10 @@ public class ModuleManager
 		dependentModuleTree.add(module.getClass());
 
 		// Disable reliant modules
-		if (!CallerToken.isEqualToOrHigher(caller, CallerToken.EDEN))
+		if (!force)
 			for (EdenModule mod : module.getReliantModules())
 			{
-				PrintUtils.sendMessage("Reliant module: " + mod.getName(), InfoType.INFO);
+				PrintUtils.log("- Reliant module: [" + mod.getName() + "]", InfoType.INFO);
 
 				if (dependentModuleTree.contains(mod.getClass()))
 				{
@@ -519,16 +525,23 @@ public class ModuleManager
 					continue;
 				}
 
-				if (!disableModule(mod.getName(), caller)) // If we can't disable a reliant module, reload all disabled modules and abort
+				if (!disableModule(mod.getName(), caller, disabledModuleList, force).getState().equals(OptionState.NONE)) // If we can't disable a reliant module, reload all disabled modules and abort
 				{
 					PrintUtils.log("<Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.>", InfoType.ERROR);
-					disabledMods.forEach(mod_ -> { 
-						enableModule(mod_);
-						mod_.setEnabled();
-					});
+					
+					// This is now the job of downstream code
+					
+					// disabledMods.forEach(mod_ -> { 
+					// 	enableModule(mod_);
+					// 	mod_.setEnabled();
+					// });
+					
 					dependentModuleTree.remove(module.getClass());
-					return false;
+					return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.DOWNSTREAM_DISABLE_FAILURE));
 				}
+
+				if (!disabledModuleList.contains(mod))
+					disabledModuleList.add(mod);
 
 				mod.removeReliantModule(module);
 				disabledMods.add(mod);
@@ -577,23 +590,48 @@ public class ModuleManager
 				Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
 
 				PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
-				return true;
+				return result.none();
 			}
 		} catch (Exception e) {
 			PrintUtils.log("<Failed to disable module! Stacktrace is below...>", InfoType.ERROR);
 			PrintUtils.printPrettyStacktrace(e);
+
+			return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.JAVA_ERROR));
 		}
 
-		return false;
+		return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNKNOWN_ERROR));
 	}
 
 	/**
 	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
 	 * @param name The expected name of a module.
 	 */
-	public boolean disableModule(String name)
+	public Option<ModuleDisableFailureData> disableModule(String name)
 	{
-		return disableModule(name, CallerToken.PLAYER);
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false);
+	}
+
+	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken token)
+	{
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, token, disabledModuleList, false);
+	}
+
+	/**
+	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * @param name The expected name of a module.
+	 */
+	public Option<ModuleDisableFailureData> disableModule(String name, boolean force)
+	{
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, CallerToken.PLAYER, disabledModuleList, force);
+	}
+
+	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken token, boolean force)
+	{
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, token, disabledModuleList, force);
 	}
 
 	/**
@@ -702,6 +740,41 @@ public class ModuleManager
 
 		option.some(null); // Class was not found anywhere
 		return option;
+	}
+
+	/**
+	 * @return
+	 */
+	public List<EdenModule> getReliantModules(EdenModule target)
+	{
+		List<EdenModule> reliant = new ArrayList<>();
+		List<EdenModule> processed = new ArrayList<>();
+
+		if (target.getReliantModules().size() == 0)
+			return reliant;
+
+		return getReliantModulesRecursive(target, reliant, processed);
+	}
+
+	private List<EdenModule> getReliantModulesRecursive(EdenModule target, List<EdenModule> host, List<EdenModule> processed)
+	{
+		if (processed.contains(target))
+			return host;
+
+		processed.add(target);
+
+		if (target.getReliantModules().size() == 0)
+			return host;
+
+		for (EdenModule reliant : target.getReliantModules())
+		{
+			if (!host.contains(reliant))
+				host.add(reliant);
+
+			getReliantModulesRecursive(reliant, host, processed);
+		}
+
+		return host;
 	}
 
 	/**
@@ -858,5 +931,22 @@ public class ModuleManager
 	public boolean isCompatible(List<String> versions)
 	{
 		return versions.contains(Eden.getNMSVersion());
+	}
+
+	void registerLoadTime(String name, long time)
+	{
+		load_times.put(name, time);
+	}
+
+	public long getLastLoadTime(String name)
+	{
+		if (!load_times.containsKey(name))
+			return 0;
+		return load_times.get(name);
+	}
+
+	public long getLastLoadTime(EdenModule mod)
+	{
+		return getLastLoadTime(mod.getName());
 	}
 }

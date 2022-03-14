@@ -16,10 +16,10 @@ import org.bukkit.Material;
     modName = "Surface",
     description = "Centralized system for static and dynamic inventory GUIs.",
     modFamily = "Eden base modules",
-    version = "1.0",
+    version = "1.0.1",
     maintainer = "Yuki_emeralis",
     modIcon = Material.CHEST,
-    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
 )
 @PreventUnload(CallerToken.EDEN)
 public class GuiModule extends EdenModule

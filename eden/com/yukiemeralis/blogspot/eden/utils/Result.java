@@ -50,7 +50,7 @@ public class Result<T, E>
      * @param t
      * @throws UndefinedResultException If T is null or is invalid.
      */
-    public void ok(T t) throws UndefinedResultException
+    public Result<T, E> ok(T t) throws UndefinedResultException
     {
         if (t == null)
             throw new UndefinedResultException(this);
@@ -60,6 +60,8 @@ public class Result<T, E>
         
         state = ResultState.OK;
         this.t = t;
+
+        return this;
     }
 
     /**
@@ -67,7 +69,7 @@ public class Result<T, E>
      * @param e
      * @throws UndefinedResultException If E is null or invalid.
      */
-    public void err(E e) throws UndefinedResultException
+    public Result<T, E> err(E e) throws UndefinedResultException
     {
         if (e == null)
             throw new UndefinedResultException(this);
@@ -77,6 +79,8 @@ public class Result<T, E>
 
         state = ResultState.ERR;
         this.e = e;
+
+        return this;
     }
 
     /**

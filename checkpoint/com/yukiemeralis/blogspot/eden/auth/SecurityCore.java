@@ -30,7 +30,7 @@ import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
     version = "1.4.1",
     modIcon = Material.IRON_BARS,
     maintainer = "Yuki_emeralis",
-    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
 )
 @PreventUnload(CallerToken.EDEN)
 @EdenConfig

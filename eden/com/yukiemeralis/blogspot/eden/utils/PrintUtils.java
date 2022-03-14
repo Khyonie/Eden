@@ -135,8 +135,7 @@ public class PrintUtils
      */
     public static void sendMessage(Entity target, String message)
     {
-        // TODO Investigate whether the following    (v) should be pulled from Eden's config
-        sendComponent(target, buildComponents("&8[<#FFB7C5>e&8] &7" + message, true, true));
+        sendComponent(target, buildComponents("&8[<#" + Eden.getInstance().getConfig().get("eColor") + ">e&8] &7" + message, true, true));
     }
 
     public static void sendComponent(Entity target, BaseComponent[] components)

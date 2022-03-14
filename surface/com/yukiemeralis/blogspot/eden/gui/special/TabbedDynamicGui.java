@@ -17,14 +17,28 @@ public class TabbedDynamicGui extends DynamicGui
     private final String currentTab;
     private final Map<String, GuiTab> tabData;
     private final int rowCount;
+    private final int tabPage;
 
-    public TabbedDynamicGui(int rowCount, String invName, Player player, Map<String, GuiTab> tabData, String currentTab, InventoryAction... allowedActions) 
+    public TabbedDynamicGui(int rowCount, int tabPage, String invName, Player player, Map<String, GuiTab> tabData, String currentTab, InventoryAction... allowedActions) 
     {
         super(9 + (rowCount * 9), invName, player, allowedActions);
 
         this.tabData = tabData;
         this.currentTab = currentTab;
         this.rowCount = rowCount;
+        this.tabPage = tabPage;
+
+        init();
+    }
+
+    public TabbedDynamicGui(int rowCount, String invName, Player player, Map<String, GuiTab> tabData, String currentTab, InventoryAction... allowedActions)
+    {
+        super(9 + (rowCount * 9), invName, player, allowedActions);
+
+        this.tabData = tabData;
+        this.currentTab = currentTab;
+        this.rowCount = rowCount;
+        this.tabPage = 0;
 
         init();
     }
@@ -116,5 +130,10 @@ public class TabbedDynamicGui extends DynamicGui
     public Map<String, GuiTab> getTabData()
     {
         return this.tabData;
+    }
+
+    public int getTabPage()
+    {
+        return this.tabPage;
     }
 }

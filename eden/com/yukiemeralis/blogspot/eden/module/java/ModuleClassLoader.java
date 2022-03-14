@@ -184,6 +184,8 @@ public class ModuleClassLoader extends URLClassLoader
 
 		PrintUtils.logVerbose("Registered " + commands.size() + " " + PrintUtils.plural(commands.size(), "command", "commands") + " and " + listeners.size() + " " + PrintUtils.plural(listeners.size(), "event", "events") + " to " + module.getName() + ".", InfoType.INFO);
 
+		Eden.getModuleManager().registerLoadTime(module.getName(), System.currentTimeMillis());
+
 		jar.close();
 	}
 	

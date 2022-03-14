@@ -7,10 +7,12 @@ import com.yukiemeralis.blogspot.eden.Eden;
 import com.yukiemeralis.blogspot.eden.gui.GuiItemStack;
 import com.yukiemeralis.blogspot.eden.gui.base.DynamicGui;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
+import com.yukiemeralis.blogspot.eden.module.java.ModuleDisableFailureData;
 import com.yukiemeralis.blogspot.eden.module.java.enums.CallerToken;
 import com.yukiemeralis.blogspot.eden.module.java.enums.PreventUnload;
 import com.yukiemeralis.blogspot.eden.utils.ChatUtils;
 import com.yukiemeralis.blogspot.eden.utils.ItemUtils;
+import com.yukiemeralis.blogspot.eden.utils.Option;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 
 import org.bukkit.Material;
@@ -20,7 +22,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-// TODO Update this to look better
 // Maybe add large (2x2 or 3x3) interactive buttons?
 public class ModuleSubGui extends DynamicGui
 {
@@ -68,9 +69,24 @@ public class ModuleSubGui extends DynamicGui
                     return;
                 }
 
-                if (!Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER))
+                Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER);
+                
+                switch (option.getState())
                 {
-                    PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! See console for details.");
+                    case NONE:
+                        PrintUtils.sendMessage(event.getWhoClicked(), "Successfully disabled module.");
+                        break;
+                    case SOME:
+                        PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! Performing rollback...");
+
+                        if (option.unwrap().performRollback())
+                        {
+                            PrintUtils.sendMessage(event.getWhoClicked(), "§cRollback complete.");
+                            return;
+                        }
+
+                        PrintUtils.sendMessage(event.getWhoClicked(), "§cRollback failed.");
+                        return;
                 }
 
                 mod.setDisabled();
@@ -97,12 +113,24 @@ public class ModuleSubGui extends DynamicGui
 
                 if (mod.getIsEnabled()) // Disable
                 {
-                    if (Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER))
+                    Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(mod.getName(), CallerToken.PLAYER);
+
+                    switch (option.getState())
                     {
-                        mod.setDisabled();
-                    } else {
-                        PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! See console for details.");
-                        return;
+                        case NONE:
+                            mod.setDisabled();
+                            break;
+                        case SOME:
+                            PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! Performing rollback...");
+
+                            if (option.unwrap().performRollback())
+                            {
+                                PrintUtils.sendMessage(event.getWhoClicked(), "§cRollback complete.");
+                                return;
+                            }
+
+                            PrintUtils.sendMessage(event.getWhoClicked(), "§cRollback failed.");
+                            return;
                     }
                 }
 

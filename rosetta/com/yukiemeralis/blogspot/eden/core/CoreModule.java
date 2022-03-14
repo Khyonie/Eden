@@ -40,9 +40,9 @@ import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
     description = "Eden's core module.",
     modFamily = "Eden base modules",
     maintainer = "Yuki_emeralis",
-    version = "1.6.0",
+    version = "1.6.2",
     modIcon = Material.ENDER_EYE,
-    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1"}
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
 )
 @LoadBefore(loadBefore = {"Checkpoint", "Surface"})
 @EdenConfig

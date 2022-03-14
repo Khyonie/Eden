@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -46,6 +47,7 @@ import com.yukiemeralis.blogspot.eden.core.modgui.ModuleGui;
 import com.yukiemeralis.blogspot.eden.core.modgui.ModuleTracker;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
 import com.yukiemeralis.blogspot.eden.module.EdenModule.EdenConfig;
+import com.yukiemeralis.blogspot.eden.module.java.ModuleDisableFailureData;
 import com.yukiemeralis.blogspot.eden.module.java.annotations.DefaultConfig;
 import com.yukiemeralis.blogspot.eden.module.java.enums.CallerToken;
 import com.yukiemeralis.blogspot.eden.module.java.enums.PreventUnload;
@@ -55,6 +57,7 @@ import com.yukiemeralis.blogspot.eden.utils.DataUtils;
 import com.yukiemeralis.blogspot.eden.utils.FileUtils;
 import com.yukiemeralis.blogspot.eden.utils.HashUtils;
 import com.yukiemeralis.blogspot.eden.utils.JsonUtils;
+import com.yukiemeralis.blogspot.eden.utils.Option;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
 import com.yukiemeralis.blogspot.eden.utils.Result;
 import com.yukiemeralis.blogspot.eden.utils.ChatUtils.ChatAction;
@@ -67,7 +70,7 @@ public class CoreCommand extends EdenCommand
     {
         super("eden", mod);
 
-        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "sudo");
+        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "sudo", "^disengage");
 
         this.getBranch("^perms").addBranch("specific", "group");
         this.getBranch("^perms").getBranch("specific").addBranch("<ALL_PLAYERS>").addBranch("add", "remove");
@@ -91,8 +94,6 @@ public class CoreCommand extends EdenCommand
         this.getBranch("^mods").addBranch("<ALL_MODULES>").addBranch("config", "reloadconfig", "saveconfig", "readconfig", "clean", "status");
         this.getBranch("^mods").getBranch("<ALL_MODULES>").getBranch("config").addBranch("<KEY>").addBranch("<VALUE>");
 
-        // TODO /eden disengage, which unloads ALL modules
-
         this.getBranch("data").addBranch("<ALL_PLAYERS>").addBranch("^reset", "password", "^approve", "^clearpassword");
 
         this.getBranch("^logging").addBranch("verbose", "export");
@@ -115,10 +116,15 @@ public class CoreCommand extends EdenCommand
             {
                 PrintUtils.sendMessage(sender, "§6-----[ §eModules §6]-----");
                 for (EdenModule m : Eden.getModuleManager().getEnabledModules())
-                    PrintUtils.sendMessage(sender, "§a" + m.getName());
+                    PrintUtils.sendMessage(sender, m.getName() + " [§aEnabled§7]");
 
                 for (EdenModule m : Eden.getModuleManager().getDisabledModules())
-                    PrintUtils.sendMessage(sender, "§c" + m.getName());
+                    PrintUtils.sendMessage(sender, m.getName() + " [§cDisabled§7]");
+
+                for (String str : Eden.getModuleManager().getReferences().keySet())
+                    if (Eden.getModuleManager().getDisabledModuleByName(str) == null && Eden.getModuleManager().getEnabledModuleByName(str) == null) 
+                        PrintUtils.sendMessage(sender, str + " [§fUnloaded§7]");
+
                 return;
             }
 
@@ -146,12 +152,12 @@ public class CoreCommand extends EdenCommand
         switch (args[2])
         {
             case "config":
-                if (!ensureArgsCount(args, 4, 2, "config", sender))
+                if (!ensureArgsCount(args, 5, 2, "config", sender))
                     break;
 
                 String oldValue = module.getConfig().get(args[3]);
 
-                module.getConfig().put(args[3], args[4]); // TODO args[4] is not required, causes ArrayIndexOutOfBoundsException
+                module.getConfig().put(args[3], args[4]);
 
                 // Call an event to notify anything that might want to listen for things like this
                 Eden.getInstance().getServer().getPluginManager().callEvent(new EdenConfigChangeEvent(module, args[3], oldValue, args[4]));
@@ -214,10 +220,11 @@ public class CoreCommand extends EdenCommand
 
                 PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
                 break;
-            case "status": // Query status of a module
+            case "status": // Query informmation of a module
                 PrintUtils.sendMessage(sender, "§e-----[§6" + module.getName() + "§e]-----");
-
-                // TODO This
+                PrintUtils.sendMessage(sender, "Name: " + module.getName());
+                PrintUtils.sendMessage(sender, "Commands: " + module.getCommands().size());
+                PrintUtils.sendMessage(sender, "Listeners: " + module.getListeners().size());
                 break;
             default:
                 this.sendErrorMessage(sender, args[2], "<MODULE>");
@@ -365,7 +372,24 @@ public class CoreCommand extends EdenCommand
                     case "create": // eden perms group <GROUP>* create <BASE>** | *Where "GROUP" is an unused group label, **Optional
                         group = new PermissionGroup(args[2], new String[0]);
 
-                        // TODO Handle bases
+                        if (args.length > 4)
+                        {
+                            PermissionGroup baseGroup = ((EdenPermissionManager) Eden.getPermissionsManager()).getGroup(args[4]);
+
+                            if (baseGroup == null)
+                            {
+                                PrintUtils.sendMessage(sender, "§cUnknown permissions group \"" + args[4] + "\".");
+                                return;
+                            }
+
+                            group.addPermissions(baseGroup.getPermissions());
+
+                            ((EdenPermissionManager) Eden.getPermissionsManager()).addGroup(group);
+
+                            PrintUtils.sendMessage(sender, "Created new permissions group \"" + group.getName() + "\" successfully.");
+                            return;
+                        }
+
                         ((EdenPermissionManager) Eden.getPermissionsManager()).addGroup(group);
                         PrintUtils.sendMessage(sender, "Created new permissions group \"" + group.getName() + "\" successfully.");
                         
@@ -449,6 +473,14 @@ public class CoreCommand extends EdenCommand
         }
     }
 
+    @EdenCommandHandler(usage = "eden disengage", description = "Disables and unloads all Eden modules.", argsCount = 1)
+    public void edencommand_disengage()
+    {
+        Eden.getModuleManager().getEnabledModules().forEach((mod) -> {
+            Eden.getModuleManager().disableModule(mod.getName(), CallerToken.EDEN, true);
+        });
+    }
+
     @EdenCommandHandler(usage = "eden logging <verbose | export>", description = "Toggle verbose logging or export the current log to a file.", argsCount = 2)
     @EdenCommandRedirect(labels = {"logs", "log"}, command = "eden logging args")
     public void edencommand_logging(CommandSender sender, String commandLabel, String[] args)
@@ -456,12 +488,10 @@ public class CoreCommand extends EdenCommand
         switch (args[1])
         {
             case "verbose":
-
-                // TODO This needs a really solid look-at
                 if (PrintUtils.isVerboseLoggingEnabled())
                 {
                     PrintUtils.sendMessage(sender, "Disabled verbose logging.");
-                    Eden.getModuleManager().getEnabledModuleByName("Eden").getConfig().put("verboseLogging", "false");
+                    Eden.getEdenConfig().put("verboseLogging", "false");
                     PrintUtils.disableVerboseLogging();
                     break;
                 }
@@ -469,7 +499,7 @@ public class CoreCommand extends EdenCommand
                 PrintUtils.sendMessage(sender, "Enabled verbose logging.");
                 PrintUtils.enableVerboseLogging();
 
-                Eden.getModuleManager().getEnabledModuleByName("Eden").getConfig().put("verboseLogging", "true");
+                Eden.getEdenConfig().put("verboseLogging", "true");
                 break;
             case "export":
                 time = LocalDate.now();
@@ -560,7 +590,6 @@ public class CoreCommand extends EdenCommand
 
                 if (module.getClass().isAnnotationPresent(PreventUnload.class) && sender instanceof ConsoleCommandSender)
                 {
-                    
                     if (module.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
                     {
                         if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 1))
@@ -648,13 +677,80 @@ public class CoreCommand extends EdenCommand
                         if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 0))
                         {
                             PrintUtils.sendMessage(sender, "§6Already warned you about disabling this module, going ahead and disabling it...");
-                            Eden.getModuleManager().disableModule(module.getName(), CallerToken.EDEN);
+                            
+                            Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.EDEN);
+
+                            state: switch (option.getState())
+                            {
+                                case NONE:
+                                    PrintUtils.sendMessage(sender, "Disabled protected module.");
+                                    break state;
+                                case SOME:
+                                    PrintUtils.sendMessage(sender, "§cFailed to disable protected module! Performing rollback... (Reason: " + option.unwrap().getReason() + ")");
+                                    
+                                    if (option.unwrap().performRollback())
+                                    {
+                                        PrintUtils.sendMessage(sender, "§cRollback complete.");
+                                        break state;
+                                    }
+
+                                    PrintUtils.sendMessage(sender, "§cRollback failed.");
+                                    break state;
+                            }
+
                             break;
                         }
 
                         PrintUtils.sendMessage(sender, "§6This module has an @PreventUnload tag with a caller token of EDEN. Disabling it is probably a bad idea!");
                         PrintUtils.sendMessage(sender, "§6If you're still sure you want to disable this module, enter \"§ciknowwhatimdoingiswear§6\".");
                         PrintUtils.sendMessage(sender, "§6This request will time out in 60 seconds.");
+                        
+                        String header = "§cT";
+                        List<EdenModule> reliant = Eden.getModuleManager().getReliantModules(module);
+                        if (reliant.size() != 0)
+                        {
+                            StringBuilder builder = new StringBuilder("§cThe following " + PrintUtils.plural(module.getReliantModules().size(), "module", "modules") + " will also be forcibly disabled: ");
+
+                            for (EdenModule m : reliant)
+                                builder.append(m.getName() + ", ");
+
+                            builder.delete(builder.length() - 2, builder.length() - 1); // Chop off trailing comma
+                            PrintUtils.sendMessage(sender, builder.toString());
+
+                            header = "§cAdditionally, t";
+                        }
+
+                        int protectedCommands = 0;
+                        StringBuilder builder = new StringBuilder(" ");
+
+                        for (EdenCommand c : module.getCommands())
+                        {
+                            if (c.getClass().isAnnotationPresent(PreventUnload.class))
+                                if (c.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
+                                {
+                                    protectedCommands++;
+                                    builder.append("/" + c.getName() + ", ");
+                                }
+                        }
+
+                        if (reliant.size() != 0)
+                            for (EdenModule m : reliant)
+                                for (EdenCommand c : m.getCommands())
+                                    if (c.getClass().isAnnotationPresent(PreventUnload.class))
+                                        if (c.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
+                                        {
+                                            protectedCommands++;
+                                            builder.append("/" + c.getName() + ", ");
+                                        }
+
+                        if (protectedCommands != 0)
+                        {
+                            builder.delete(builder.length() - 2, builder.length() - 1);
+                            builder.insert(0, header + "he following " + PrintUtils.plural(protectedCommands, "command", "commands") + " cannot be unregistered: ");
+
+                            PrintUtils.sendMessage(sender, builder.toString());
+                        }
+
 
                         CoreModule.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 0));
 
@@ -673,17 +769,28 @@ public class CoreCommand extends EdenCommand
                         break;
                     }
                 }
+ 
+                Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.fromCommandSender(sender));
 
-                Eden.getModuleManager().disableModule(module.getName(), CallerToken.fromCommandSender(sender));
-
-                if (Eden.getModuleManager().getDisabledModuleByName(module.getName()) != null)
+                option: switch (option.getState())
                 {
-                    module.setDisabled();
-                    PrintUtils.sendMessage(sender, "Disabled module.");
-                    break;
+                    case NONE:
+                        break option;
+                    case SOME:
+                        PrintUtils.sendMessage(sender, "§cFailed to disable module! Performing rollback... (Reason: " + option.unwrap().getReason() + ")");
+
+                        if (option.unwrap().performRollback())
+                        {
+                            PrintUtils.sendMessage(sender, "§cRollback complete.");
+                            break;
+                        }
+
+                        PrintUtils.sendMessage(sender, "§cRollback failed.");
+                        break;
                 }
-                
-                PrintUtils.sendMessage(sender, "Failed to disable module. Perhaps it cannot be disabled?");
+
+                module.setDisabled();
+                PrintUtils.sendMessage(sender, "Disabled module.");
 
                 break;
             case "download":

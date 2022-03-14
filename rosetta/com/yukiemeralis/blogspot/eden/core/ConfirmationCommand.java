@@ -4,13 +4,18 @@ import com.yukiemeralis.blogspot.eden.Eden;
 import com.yukiemeralis.blogspot.eden.command.EdenCommand;
 import com.yukiemeralis.blogspot.eden.command.annotations.HideFromEdenHelpall;
 import com.yukiemeralis.blogspot.eden.module.EdenModule;
+import com.yukiemeralis.blogspot.eden.module.java.ModuleDisableFailureData;
 import com.yukiemeralis.blogspot.eden.module.java.enums.CallerToken;
+import com.yukiemeralis.blogspot.eden.module.java.enums.PreventUnload;
+import com.yukiemeralis.blogspot.eden.utils.Option;
 import com.yukiemeralis.blogspot.eden.utils.PrintUtils;
+import com.yukiemeralis.blogspot.eden.utils.Option.OptionState;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
 @HideFromEdenHelpall
+@PreventUnload(CallerToken.EDEN)
 public class ConfirmationCommand extends EdenCommand 
 {
     public ConfirmationCommand(EdenModule parent_module) 
@@ -37,8 +42,26 @@ public class ConfirmationCommand extends EdenCommand
         {
             case 0:
                 PrintUtils.sendMessage(sender, "§6Attempting to disable an EDEN-level module by elevating to EDEN...");
-                Eden.getModuleManager().disableModule(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN);
+            
+                Option<ModuleDisableFailureData> data = Eden.getModuleManager().disableModule(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN);
         
+                if (data.getState().equals(OptionState.SOME))
+                {
+                    PrintUtils.sendMessage(sender, "§cFailed to disable EDEN-level module " + CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + "! (Reason: " + data.unwrap().getReason().name() + ")");
+                    
+                    if (data.unwrap().getDownstreamModules().size() != 0)
+                    {
+                        StringBuilder builder = new StringBuilder();
+
+                        for (EdenModule m : data.unwrap().getDownstreamModules())
+                            builder.append(m.getName() + ", ");
+
+                        builder.delete(builder.length() - 2, builder.length() - 1);
+
+                        PrintUtils.sendMessage(sender, "§cDownstream " + PrintUtils.plural(data.unwrap().getDownstreamModules().size(), "module", "modules") + ": " + builder.toString());
+                    }
+                }
+
                 CoreModule.EDEN_WARN_DISABLE_REQUESTS.add(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + ":" + 0);
                 break;
             case 1:
