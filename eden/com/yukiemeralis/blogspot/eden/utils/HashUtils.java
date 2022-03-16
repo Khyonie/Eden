@@ -3,8 +3,7 @@ package com.yukiemeralis.blogspot.eden.utils;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import com.yukiemeralis.blogspot.eden.Eden;
+import java.util.Random;
 
 public class HashUtils 
 {
@@ -38,25 +37,25 @@ public class HashUtils
     }
 
     /**
-     * Converts a String into a salted hash array of bytes using the SHA-256 hashing algorithm. Salt is provided by an Eden main config value.
+     * Converts a String into a salted hash array of bytes using the SHA-256 hashing algorithm.
      * @param input Unhashed input
      * @return Salted hashed input
      */
-    public static byte[] hashStringSHA256(String input)
+    public static byte[] hashStringSHA256(String input, String salt)
     {
-        return hashString(HashAlgorithm.SHA_256, input);
+        return hashString(HashAlgorithm.SHA_256, input, salt);
     }
 
     /**
-     * Converts a String into a salted hash array of bytes using a supported hashing algorithm. Salt is provided by an Eden main config value.
+     * Converts a String into a salted hash array of bytes using a supported hashing algorithm
      * @param input Unhashed input
      * @return Salted hashed input
      */
-    public static byte[] hashString(HashAlgorithm algorithm, String input)
+    public static byte[] hashString(HashAlgorithm algorithm, String input, String salt)
     {
         try {
             MessageDigest digest = MessageDigest.getInstance(algorithm.getLabel());
-            digest.update((input + Eden.getEdenConfig().get("hashSalt")).getBytes("UTF-8"));
+            digest.update((input + salt).getBytes("UTF-8"));
 
             return digest.digest();
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
@@ -76,6 +75,18 @@ public class HashUtils
         for (byte b : input)
             builder.append(Integer.toString((b & 0xFF) + 0x100, 16));
 
+        return builder.toString();
+    }
+
+    public static String genererateSalt(int length)
+    {
+        StringBuilder builder = new StringBuilder();
+        Random random = new Random(System.currentTimeMillis());
+
+        for (int i = 0; i < length; i++)
+            builder.append((char) random.nextInt(0x20, 0x7F));
+
+        random = null;
         return builder.toString();
     }
 }

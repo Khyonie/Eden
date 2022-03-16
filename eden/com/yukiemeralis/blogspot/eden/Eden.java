@@ -62,7 +62,6 @@ public class Eden extends JavaPlugin
 		"eColor", "FFB7C5", 
 		"verboseLogging", "false",
 		"flyingSolo", "false",
-		"hashSalt", "changeMe",
 		"elevatedUsersIgnorePerms", "true"
 	));
 

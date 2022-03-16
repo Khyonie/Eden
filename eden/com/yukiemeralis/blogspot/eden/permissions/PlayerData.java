@@ -18,11 +18,17 @@ public class PlayerData
     private int autoLoginKey = -1;
 
     @Expose(serialize = true, deserialize = true)
-    private String dataVersion = "1.4.0", accountPassword;
+    private String 
+        dataVersion = "1.5.0", 
+        accountPassword,
+        accountSalt;
     @Expose(serialize = true, deserialize = true)
     private Map<String, ModulePlayerData> moduleData;
     @Expose(serialize = true, deserialize = true)
-    private List<String> permissionGroup, addedPermissions, revokedPermissions; 
+    private List<String> 
+        permissionGroup, 
+        addedPermissions, 
+        revokedPermissions; 
 
     /**
      * An instance of a core player account, generated upon first login and saved to a local file.
@@ -115,6 +121,16 @@ public class PlayerData
         return this.accountPassword != null;
     }
 
+    public void setSalt(String salt)
+    {
+        this.accountSalt = salt;
+    }
+
+    public String getSalt()
+    {
+        return this.accountSalt;
+    }
+
     public void setPassword(String passwordHash)
     {
         this.accountPassword = passwordHash;
@@ -131,7 +147,7 @@ public class PlayerData
             return false;
         if (input == null)
             return false;
-        return this.accountPassword.equals(HashUtils.hexToString(HashUtils.hashStringSHA256(input)));
+        return this.accountPassword.equals(HashUtils.hexToString(HashUtils.hashStringSHA256(input, accountSalt)));
     }
 
     public boolean hasModuleData(String modName)

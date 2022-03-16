@@ -922,7 +922,7 @@ public class CoreCommand extends EdenCommand
         ChatUtils.expectChat(sender, action);
     }
 
-    private final Map<String, String> cachedPasswords = new HashMap<>(); 
+    private final Map<String, String[]> cachedPasswords = new HashMap<>(); 
 
     @EdenCommandHandler(usage = "eden data <user> <subcommand>", description = "View and repair player data.", argsCount = 2)
     public void edencommand_data(CommandSender sender, String commandLabel, String[] args)
@@ -1023,7 +1023,8 @@ public class CoreCommand extends EdenCommand
                             return;
                         }
 
-                        cachedPasswords.put(((Player) sender).getName(), result);
+
+                        cachedPasswords.put(((Player) sender).getName(), new String[] {result, HashUtils.genererateSalt(64)});
                         PrintUtils.log("Received new password request. Estimated strength: [" + DataUtils.estimatePasswordStrength(result) + "]");
                         PrintUtils.sendMessage(sender, "Sent password for approval.");
                     }
@@ -1080,7 +1081,8 @@ public class CoreCommand extends EdenCommand
                         // Offline player
                         account = JsonUtils.fromJsonFile("./plugins/Eden/playerdata/" + uuid + ".json", PlayerData.class);
 
-                        account.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+                        account.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1])[0], cachedPasswords.get(args[1])[1])));
+                        account.setSalt(cachedPasswords.get(args[1])[1]);
                         JsonUtils.toJsonFile("./plugins/Eden/playerdata/" + uuid + ".json", account);
 
                         PrintUtils.sendMessage(sender, "Approved offline password request.");
@@ -1091,7 +1093,8 @@ public class CoreCommand extends EdenCommand
 
                     account = Eden.getPermissionsManager().getPlayerData(p);
                     
-                    account.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+                    account.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1])[0], cachedPasswords.get(args[1])[1])));
+                    account.setSalt(cachedPasswords.get(args[1])[1]);
 
                     PrintUtils.sendMessage(sender, "Approved password request.");
                     PrintUtils.sendMessage(p, "Your password has been approved. You may now access elevated resources with \"/eden sudo\".");
@@ -1124,7 +1127,8 @@ public class CoreCommand extends EdenCommand
                                     // Offline player
                                     paccount = JsonUtils.fromJsonFile("./plugins/Eden/playerdata/" + uuid + ".json", PlayerData.class);
 
-                                    paccount.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+                                    paccount.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1])[0], cachedPasswords.get(args[1])[1])));
+                                    paccount.setSalt(cachedPasswords.get(args[1])[1]);
                                     JsonUtils.toJsonFile("./plugins/Eden/playerdata/" + uuid + ".json", paccount);
 
                                     PrintUtils.sendMessage(sender, "Approved offline password request.");
@@ -1135,7 +1139,8 @@ public class CoreCommand extends EdenCommand
 
                                 paccount = Eden.getPermissionsManager().getPlayerData(p);
                                 
-                                paccount.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1]))));
+                                paccount.setPassword(HashUtils.hexToString(HashUtils.hashStringSHA256(cachedPasswords.get(args[1])[0], cachedPasswords.get(args[1])[1])));
+                                paccount.setSalt(cachedPasswords.get(args[1])[1]);
 
                                 PrintUtils.sendMessage(sender, "Approved password request.");
                                 PrintUtils.sendMessage(p, "Your password has been approved. You may now access elevated resources with \"/eden sudo\".");
@@ -1155,7 +1160,7 @@ public class CoreCommand extends EdenCommand
                 };
 
                 ChatUtils.expectChat(sender, approveAction);
-                PrintUtils.sendMessage(sender, "Approve password for user \"" + args[2] + "\"? Estimated strength: " + DataUtils.estimatePasswordStrength(cachedPasswords.get(args[1])) + ", [yes|no|cancel].");
+                PrintUtils.sendMessage(sender, "Approve password for user \"" + args[2] + "\"? Estimated strength: " + DataUtils.estimatePasswordStrength(cachedPasswords.get(args[1])[0]) + ", [yes|no|cancel].");
 
                 break;
             default:
