@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="surface"/>
 	<classpathentry kind="src" path="flock"/>
 	<classpathentry kind="src" path="eden"/>
+	<classpathentry kind="src" path="surface2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
 		<attributes>
 			<attribute name="module" value="true"/>

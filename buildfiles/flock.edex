@@ -2,7 +2,7 @@
 
 name:Flock
 source:flock
-secondarysource:
+secondarysource:eden:rosetta:checkpoint:surface2
 output:./../../../Servers/Minecraft/Minecraft\ 1.18/plugins/Eden/mods/Flock.jar
-classpath:@.classpaths/rosetta.classes
+classpath:eden/:flock/:rosetta/:surface2/:checkpoint/:lib/fastutil-8.5.6.jar:lib/spigot-1.18.2-R0.1-SNAPSHOT.jar:lib/spigot-api-1.18.2-R0.1-SNAPSHOT-shaded.jar:lib/spigot-1.18.1-R0.1-SNAPSHOT.jar:lib/spigot-api-1.18.1-R0.1-SNAPSHOT-shaded.jar:lib/spigot-1.17.1.jar:lib/spigot-api-1.17.1-R0.1-SNAPSHOT-shaded.jar:lib/spigot-1.16.5.jar:lib/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar@.classpaths/rosetta.classes
 input:LICENSE

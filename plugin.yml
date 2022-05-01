@@ -1,7 +1,7 @@
 name: Eden
-main: com.yukiemeralis.blogspot.eden.Eden
+main: fish.yukiemeralis.eden.Eden
 prefix: e
 version: 1.0
-api-version: 1.16
+api-version: 1.18
 author: Yuki_emeralis (Hailey)
-website: www.yukiemeralis.blogspot.com
+website: www.yukiemeralis.fish
