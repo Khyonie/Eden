@@ -74,6 +74,8 @@ public class SurfaceGui implements ISurfaceGui
         if (e != null)
         {
             view(e).setItem(slot, item);
+            initData(e);
+
             data.get(e).remove(slot);
         }
 
@@ -90,6 +92,8 @@ public class SurfaceGui implements ISurfaceGui
     public void updateSingleComponent(HumanEntity e, int slot, GuiComponent component)
     {
         view(e).setItem(slot, component.generate());
+
+        initData(e);
         data.get(e).put(slot, component);
     }
 
@@ -265,9 +269,17 @@ public class SurfaceGui implements ISurfaceGui
         InventoryView view = target.openInventory(host);
         
         OPEN_GUIS.put(target, this);
-        data.put(target, new HashMap<>());
+
         onGuiOpen(target, view);
 
         return view;
+    }
+
+    private void initData(HumanEntity target)
+    {
+        if (data.containsKey(target))
+            return;
+
+        data.put(target, new HashMap<>());
     }
 }
