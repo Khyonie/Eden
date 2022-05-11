@@ -7,7 +7,9 @@ import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryView;
 
 public class ComponentTestGui extends SurfaceGui 
 {
@@ -21,7 +23,11 @@ public class ComponentTestGui extends SurfaceGui
     public ComponentTestGui() 
     {
         super(54, "Component GUI", DefaultClickAction.CANCEL);
+    }
 
+    @Override
+    public void init(HumanEntity e, InventoryView view)
+    {
         paint(FISH_BUTTON);
     }
 }

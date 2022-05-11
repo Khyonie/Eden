@@ -18,6 +18,9 @@ public class RainbowTestGui extends SurfaceGui
         super(54, "Rainbow GUI", DefaultClickAction.CANCEL);
     } 
 
+    @Override
+    public void init(HumanEntity e, InventoryView view) { }
+
     private static ItemStack[] COLORS = {
         new ItemStack(Material.RED_STAINED_GLASS_PANE),
         new ItemStack(Material.ORANGE_STAINED_GLASS_PANE),

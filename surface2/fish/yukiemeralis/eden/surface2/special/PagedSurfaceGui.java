@@ -13,6 +13,7 @@ import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.InventoryView;
 
 public class PagedSurfaceGui extends SurfaceGui 
 {
@@ -47,8 +48,12 @@ public class PagedSurfaceGui extends SurfaceGui
         this.topBarComponents = topBarComponents;
         this.components = components;
         this.row = topBarRow;
+    }
 
-        generatePage(target);
+    @Override
+    public void init(HumanEntity e, InventoryView view) 
+    {
+        generatePage(e);
     }
 
     public int getPage()
@@ -86,5 +91,5 @@ public class PagedSurfaceGui extends SurfaceGui
     {
         this.page = page;
         generatePage(e);
-    }
+    } 
 }

@@ -20,7 +20,7 @@ public class ModuleGui
 {
     public void display(HumanEntity target)
     {
-        new TabbedSurfaceGui(36, "Rosetta Module Manager", target, 0, convertModuleFamilies(target), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF).display(target);
+        new TabbedSurfaceGui(36, "Rosetta Module Manager", 0, convertModuleFamilies(target), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF).display(target);
     }
 
     private List<GuiTab> convertModuleFamilies(HumanEntity target)

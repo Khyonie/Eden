@@ -220,9 +220,14 @@ public class PrintUtils
         sendMessage((Entity) target, message);
     }
 
+    public static void reloadEColor()
+    {
+        ecolor_hex = null;
+        getEColorHex();
+    }
+
     private static String getEColorHex()
     {
-        // TODO Allow changing cache (command maybe?)
         if (ecolor_hex != null)
             return ecolor_hex;
         if (Eden.getModuleManager().isModulePresent("Rosetta"))

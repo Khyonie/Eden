@@ -6,6 +6,13 @@ import org.bukkit.inventory.InventoryView;
 public interface ISurfaceGui 
 {
     /**
+     * Initializes a new GUI with data pertaining to the given GUI.
+     * @param e The human target.
+     * @param view The view being initialized.
+     */
+    public void init(HumanEntity e, InventoryView view);
+
+    /**
      * Runs once when the GUI is opened.
      * @param e The entity that opened this view.
      * @param view The view being opened.

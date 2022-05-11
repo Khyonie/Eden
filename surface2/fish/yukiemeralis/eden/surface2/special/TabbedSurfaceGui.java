@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.InventoryView;
 
 import fish.yukiemeralis.eden.surface2.GuiUtils;
 import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
@@ -50,22 +51,26 @@ public class TabbedSurfaceGui extends SurfaceGui
      * @param defaultAction
      * @param allowedClickActions
      */
-    public TabbedSurfaceGui(int size, String title, HumanEntity target, int tabRow, List<GuiTab> tabData, DefaultClickAction defaultAction, InventoryAction... allowedClickActions) 
+    public TabbedSurfaceGui(int size, String title, int tabRow, List<GuiTab> tabData, DefaultClickAction defaultAction, InventoryAction... allowedClickActions) 
     {
         super(size, title, defaultAction, allowedClickActions);
         this.tabRow = tabRow;
         this.tabData = tabData;
-
-        paintBlack();
+        
         if (tabData.size() == 0)
         {
             PrintUtils.log("Attempted to initialized tabbed GUI with an empty dataset! This may be a bug, please open an issue, especcially if it looks like an Eden process is involved.", InfoType.WARN);
             PrintUtils.log("Call stack snippet: " + DataUtils.getPreviousCaller(Thread.currentThread()), InfoType.WARN);
             return;
         }
+    }
 
-        updateTabLine(target, 0);
-        changeTab(target, tabData.get(0));
+    @Override
+    public void init(HumanEntity e, InventoryView view)
+    {
+        paintBlack();
+        updateTabLine(e, 0);
+        changeTab(e, tabData.get(0));
     }
 
     public int getTabPage()

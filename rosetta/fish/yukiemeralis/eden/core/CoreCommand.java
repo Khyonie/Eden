@@ -1166,6 +1166,13 @@ public class CoreCommand extends EdenCommand
         }
     }
 
+    @EdenCommandHandler(usage = "eden recachepu", description = "Reloads the color used for the \"e\" icon.", argsCount = 1)
+    public void edencommand_recachepu(CommandSender sender, String commandLabel, String[] args)
+    {
+        PrintUtils.reloadEColor();
+        PrintUtils.sendMessage(sender, "Reloaded cached \"e\" color.");
+    }
+
     @EdenCommandHandler(usage = "eden", description = "Provides the user with Eden's version and a module count.", argsCount = 0)
     public void edencommand_nosubcmd(CommandSender sender, String commandLabel, String[] args)
     {

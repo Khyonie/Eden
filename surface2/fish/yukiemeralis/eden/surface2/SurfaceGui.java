@@ -17,7 +17,7 @@ import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.utils.Option;
 
-public class SurfaceGui implements ISurfaceGui
+public abstract class SurfaceGui implements ISurfaceGui
 {
     private static Map<HumanEntity, SurfaceGui> OPEN_GUIS = new HashMap<>();
  
@@ -34,7 +34,7 @@ public class SurfaceGui implements ISurfaceGui
         host = Bukkit.createInventory(null, size, title);
         this.size = size;
         this.title = title;
-        this.defaultAction = defaultAction;
+	    this.defaultAction = defaultAction;
         this.allowedClickActions = Arrays.asList(allowedClickActions);
     }
 
@@ -73,8 +73,8 @@ public class SurfaceGui implements ISurfaceGui
     {
         if (e != null)
         {
-            view(e).setItem(slot, item);
             initData(e);
+            view(e).setItem(slot, item);
 
             data.get(e).remove(slot);
         }
@@ -189,6 +189,24 @@ public class SurfaceGui implements ISurfaceGui
     }
 
     /**
+     * Obtains the InventoryView in use by a player in a Surface2 GUI.
+     * Returns null if the player is not in a Surface2 GUI. 
+     * @param e The human target.
+     * @return The InventoryView in use by the target.
+     */
+    protected InventoryView surfaceView(HumanEntity e)
+    {
+        if (OPEN_GUIS.containsKey(e))
+            return view(e);
+        return null;
+    }
+
+    public boolean isInSurfaceGui(HumanEntity e)
+    {
+        return OPEN_GUIS.containsKey(e);
+    }
+
+    /**
      * Obtains a list of all InventoryViews <i>pertaining to this exact instance of a Surface2 GUI</i>.
      * @return A list of all InventoryViews derived from this GUI's host.
      */
@@ -260,7 +278,6 @@ public class SurfaceGui implements ISurfaceGui
 
     /**
      * Opens an inventory to the player, returning a handle to the inventoryview.<p>
-     * Note: If you override this method but fail to place the target and GUI inside the <code>OPEN_GUIS</code> map, your GUI may be unresponsive.
      * @param target The HumanEntity to display this GUI to.
      * @return A handle to the opened inventory view.
      */
@@ -270,6 +287,7 @@ public class SurfaceGui implements ISurfaceGui
         
         OPEN_GUIS.put(target, this);
 
+        init(target, view);
         onGuiOpen(target, view);
 
         return view;

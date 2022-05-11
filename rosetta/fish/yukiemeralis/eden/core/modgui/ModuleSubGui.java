@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import fish.yukiemeralis.eden.module.EdenModule;
@@ -25,15 +26,13 @@ public class ModuleSubGui extends SurfaceGui
 {
     private final EdenModule module;
 
-    private static GuiItemStack CLOSE_BUTTON = SimpleComponentBuilder.build(Material.BARRIER, "§r§c§lClose", (e) -> {
-            e.getWhoClicked().closeInventory();
-        },
+    private static GuiItemStack CLOSE_BUTTON = SimpleComponentBuilder.build(Material.BARRIER, "§r§c§lClose", 
+        (e) -> e.getWhoClicked().closeInventory(),
         "§7§oClose this menu."
     );
 
-    private static GuiItemStack BACK_BUTTON = SimpleComponentBuilder.build(Material.RED_CONCRETE, "§r§c§lBack", (e) -> {
-            new ModuleGui().display(e.getWhoClicked());
-        }, 
+    private static GuiItemStack BACK_BUTTON = SimpleComponentBuilder.build(Material.RED_CONCRETE, "§r§c§lBack", 
+        (e) -> new ModuleGui().display(e.getWhoClicked()), 
         "§7§oReturn to the main module manager", 
         "§7§oscreen."
     );
@@ -48,17 +47,21 @@ public class ModuleSubGui extends SurfaceGui
     {
         super(27, "Rosetta -> " + module.getName() + " v" + module.getVersion(), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF);
         this.module = module;
+    }
 
+    @Override
+    public void init(HumanEntity e, InventoryView view)
+    {
         paintBlack();
-        updateSingleComponent(target, 0, CLOSE_BUTTON);
-        updateSingleComponent(target, 1, BACK_BUTTON);
-        updateSingleComponent(target, 2, new ModuleGuiAdapter(module, (e) -> {}, true));
-        updateSingleItem(target, 3, (module.getReliantModules().size() != 0 ? generateTreeItem() : GuiUtils.BLACK_PANE), false);
+        updateSingleComponent(e, 0, CLOSE_BUTTON);
+        updateSingleComponent(e, 1, BACK_BUTTON);
+        updateSingleComponent(e, 2, new ModuleGuiAdapter(module, (event) -> {}, true));
+        updateSingleItem(e, 3, (module.getReliantModules().size() != 0 ? generateTreeItem() : GuiUtils.BLACK_PANE), false);
 
         GuiItemStack displayedButton = ENABLE_MODULE;
         if (!module.getIsEnabled())
         {
-            updateSingleDataItem(target, GuiUtils.generateRectange(0, 1, 4, 3, displayedButton), false);
+            updateSingleDataItem(e, GuiUtils.generateRectange(0, 1, 4, 3, displayedButton), false);
             return;
         }
         
@@ -68,7 +71,7 @@ public class ModuleSubGui extends SurfaceGui
         if (module.getClass().isAnnotationPresent(PreventUnload.class) || option.getState().equals(OptionState.SOME))    
             displayedButton = generateDisableInactiveItem(option);
 
-        updateSingleDataItem(target, GuiUtils.generateRectange(0, 1, 4, 3, displayedButton), false);
+        updateSingleDataItem(e, GuiUtils.generateRectange(0, 1, 4, 3, displayedButton), false);
     }
 
     public EdenModule getModule()
