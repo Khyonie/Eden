@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.utils.Option;
+import fish.yukiemeralis.eden.utils.PrintUtils;
 
 public abstract class SurfaceGui implements ISurfaceGui
 {
@@ -45,12 +46,11 @@ public abstract class SurfaceGui implements ISurfaceGui
 
     /**
      * Paints the base inventory with an itemstack. This change affects all current and future inventoryviews derived from this one.
-     * <p>Analagous to <code>updateAlldataItem(GuiUtils.generateBaseGui(size, item), true);</code>
      * @param i Itemstack to paint with.
      */
     public void paint(ItemStack i)
     {
-        updateAllDataItem(GuiUtils.generateBaseGui(size, i), true);
+        embedDataInHost(GuiUtils.generateBaseGui(size, i));
     }
 
     //
@@ -71,6 +71,11 @@ public abstract class SurfaceGui implements ISurfaceGui
      */
     public void updateSingleItem(HumanEntity e, int slot, ItemStack item, boolean persistent)
     {
+        if (persistent)
+        {
+            embedInHost(slot, item);
+        }
+
         if (e != null)
         {
             initData(e);
@@ -78,9 +83,6 @@ public abstract class SurfaceGui implements ISurfaceGui
 
             data.get(e).remove(slot);
         }
-
-        if (persistent)
-            embdedInHost(slot, item);
     }
 
     /**
@@ -132,7 +134,9 @@ public abstract class SurfaceGui implements ISurfaceGui
      */
     public void updateSingleDataItem(HumanEntity e, Map<Integer, ItemStack> data, boolean persistent)
     {
-        data.forEach((slot, item) -> updateSingleItem(e, slot, item, persistent));
+        data.forEach((slot, item) -> {
+            updateSingleItem(e, slot, item, persistent);
+        });
     }
 
     /**
@@ -156,7 +160,9 @@ public abstract class SurfaceGui implements ISurfaceGui
      */
     public void updateAllDataItem(Map<Integer, ItemStack> data, boolean persistent)
     {
-        this.data.forEach((e, map) -> updateSingleDataItem(e, data, persistent));
+        this.data.forEach((e, map) -> {
+            updateSingleDataItem(e, data, persistent);
+        });
     }
 
     /**
@@ -168,13 +174,24 @@ public abstract class SurfaceGui implements ISurfaceGui
         this.data.forEach((e, map) -> updateSingleDataComponent(e, data));
     }
 
+    private void embedDataInHost(Map<Integer, ItemStack> data)
+    {
+        data.forEach((slot, item) -> embedInHost(slot, item));
+    }
+
     /**
-     * Tiny method to embed an itemstack into a host inventory.
+     * Tiny method to safely embed an itemstack into a host inventory.
      * @param slot
      * @param item
      */
-    private void embdedInHost(int slot, ItemStack item)
+    private void embedInHost(int slot, ItemStack item)
     {
+        if (host.getItem(slot) != null)
+        {PrintUtils.log("Not null, item type: " + host.getItem(slot).getType().name() + ", equal to type to be embedded? " + (host.getItem(slot).equals(item)));
+            if (host.getItem(slot).equals(item))
+                return;
+        }
+        
         host.setItem(slot, item);
     }
 
@@ -283,10 +300,20 @@ public abstract class SurfaceGui implements ISurfaceGui
      */
     public InventoryView display(HumanEntity target)
     {
+        // Clean up a little
+        if (isInSurfaceGui(target))
+        {
+            getOpenGui(target).unwrap().onGuiClose(target, view(target));
+            OPEN_GUIS.remove(target);
+        }
+
+        // Generate a new view
         InventoryView view = target.openInventory(host);
-        
+
+        // Make the GUI actionable
         OPEN_GUIS.put(target, this);
 
+        // Perform abstract initialization
         init(target, view);
         onGuiOpen(target, view);
 

@@ -47,15 +47,15 @@ public class ModuleSubGui extends SurfaceGui
     {
         super(27, "Rosetta -> " + module.getName() + " v" + module.getVersion(), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF);
         this.module = module;
+        paintBlack();
     }
 
     @Override
     public void init(HumanEntity e, InventoryView view)
     {
-        paintBlack();
         updateSingleComponent(e, 0, CLOSE_BUTTON);
         updateSingleComponent(e, 1, BACK_BUTTON);
-        updateSingleComponent(e, 2, new ModuleGuiAdapter(module, (event) -> {}, true));
+        updateSingleComponent(e, 2, new ModuleGuiAdapter(module, (event) -> {}, false));
         updateSingleItem(e, 3, (module.getReliantModules().size() != 0 ? generateTreeItem() : GuiUtils.BLACK_PANE), false);
 
         GuiItemStack displayedButton = ENABLE_MODULE;
