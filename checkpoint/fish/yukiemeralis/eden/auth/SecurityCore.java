@@ -27,7 +27,7 @@ import org.bukkit.Material;
 @ModInfo (
     modName = "Checkpoint",
     description = "Provides permissions for users and commands.",
-    version = "1.4.1",
+    version = "1.4.2",
     modIcon = Material.IRON_BARS,
     maintainer = "Yuki_emeralis",
     supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}

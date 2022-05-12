@@ -28,10 +28,8 @@ public class TabCompleteListener implements Listener
     {
         String[] commandFull = event.getBuffer().split(" ", -1);
 
-        if (commandFull.length == 0)
-        {
+        if (commandFull[0].length() == 0)
             return;
-        }
 
         String commandLabel = commandFull[0].substring(1); 
         

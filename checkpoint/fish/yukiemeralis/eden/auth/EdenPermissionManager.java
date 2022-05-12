@@ -198,52 +198,54 @@ public class EdenPermissionManager extends PermissionsManager
         "default",
 
         // Perms
-        "Eden.eden", 
-        "Eden.eden.helpall"
+        "Rosetta.eden", 
+        "Rosetta.eden.data.password",
+        "Rosetta.eden.helpall"
     );
 
     public static PermissionGroup ADMIN = new PermissionGroup(
         "administrator", 
 
         // Core command
-        "Eden.eden.mods",
-        "Eden.eden.mods.config",
-        "Eden.eden.mods.saveconfig",
-        "Eden.eden.mods.reloadconfig",
-        "Eden.eden.mods.clean",
-        "Eden.eden.mods.readconfig",
-        "Eden.eden.logging.verbose",
-        "Eden.eden.logging.export",
-        "Eden.eden.mm.load",
-        "Eden.eden.mm.unload",
-        "Eden.eden.mm.enable",
-        "Eden.eden.mm.disable",
-        "Eden.eden.mm.download",
-        "Eden.eden.data.repair",
-        "Eden.eden.data.reset",
-        "Eden.eden.sudo",
+        "Rosetta.eden.mods",
+        "Rosetta.eden.mods.config",
+        "Rosetta.eden.mods.saveconfig",
+        "Rosetta.eden.mods.reloadconfig",
+        "Rosetta.eden.mods.clean",
+        "Rosetta.eden.mods.readconfig",
+        "Rosetta.eden.logging.verbose",
+        "Rosetta.eden.logging.export",
+        "Rosetta.eden.mm.load",
+        "Rosetta.eden.mm.unload",
+        "Rosetta.eden.mm.enable",
+        "Rosetta.eden.mm.disable",
+        "Rosetta.eden.data",
+        "Rosetta.eden.data.clearpassword",
+        "Rosetta.eden.data.repair",
+        "Rosetta.eden.data.reset",
+        "Rosetta.eden.sudo",
+        "Rosetta.eden.disengage",
+        "Rosetta.eden.recachepu",
 
         // Perms management
-        "Eden.perms.specific.add",
-        "Eden.perms.specific.remove",
-        "Eden.perms.group.add",
-        "Eden.perms.group.remove",
-        "Eden.perms.group.create",
-        "Eden.perms.group.delete",
-        "Eden.perms.group.assign",
-        "Eden.perms.group.unassign",
+        "Rosetta.perms.specific.add",
+        "Rosetta.perms.specific.remove",
+        "Rosetta.perms.group.add",
+        "Rosetta.perms.group.remove",
+        "Rosetta.perms.group.create",
+        "Rosetta.perms.group.delete",
+        "Rosetta.perms.group.assign",
+        "Rosetta.perms.group.unassign",
 
-        // Enchants command
-        "EdenEnchants.edench.apply",
-        "EdenEnchants.edench.gui",
-        
-        // Events command
-        "EdenEvents.scripts",
-        "EdenEvents.scripts.add",
-        "EdenEvents.scripts.remove",
-        "EdenEvents.scripts.edit",
-
-        // Networking command
-        "Flock.edendl.tdl"
+        // Flock commands
+        "Flock.edenmr",
+        "Flock.edenmr.sync",
+        "Flock.edenmr.upgrade",
+        "Flock.edenmr.add",
+        "Flock.edenmr.remove",
+        "Flock.edenmr.open",
+        "Flock.edenmr.exportblank",
+        "Flock.edenmr.synctimestamps",
+        "Flock.edenmr.gentimestamp"
     );
 }

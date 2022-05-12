@@ -20,7 +20,6 @@ package fish.yukiemeralis.eden.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,9 +35,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.auth.EdenPermissionManager;
 import fish.yukiemeralis.eden.auth.PermissionGroup;
 import fish.yukiemeralis.eden.auth.SecurityCore;
-import fish.yukiemeralis.eden.auth.EdenPermissionManager;
 import fish.yukiemeralis.eden.command.CommandManager;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
@@ -52,6 +51,7 @@ import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
+import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.HashUtils;
@@ -59,7 +59,6 @@ import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.Result;
-import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
 import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
 
 @PreventUnload(CallerToken.EDEN)
@@ -69,7 +68,7 @@ public class CoreCommand extends EdenCommand
     {
         super("eden", mod);
 
-        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "sudo", "^disengage");
+        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "sudo", "^disengage", "^recachepu");
 
         this.getBranch("^perms").addBranch("specific", "group");
         this.getBranch("^perms").getBranch("specific").addBranch("<ALL_PLAYERS>").addBranch("add", "remove");
@@ -83,12 +82,11 @@ public class CoreCommand extends EdenCommand
         this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("assign").addBranch("<ALL_PLAYERS>");
         this.getBranch("^perms").getBranch("group").getBranch("<GROUP>").getBranch("unassign").addBranch("<ALL_PLAYERS>");
 
-        this.getBranch("^mm").addBranch("load", "unload", "enable", "disable", "download");
+        this.getBranch("^mm").addBranch("load", "unload", "enable", "disable");
         this.getBranch("^mm").getBranch("load").addBranch("<FILENAME>");
         this.getBranch("^mm").getBranch("enable").addBranch("<DISABLED_MODULES>");
         this.getBranch("^mm").getBranch("unload").addBranch("<DISABLED_MODULES>");
         this.getBranch("^mm").getBranch("disable").addBranch("<ENABLED_MODULES>");
-        this.getBranch("^mm").getBranch("download").addBranch("<URL>");
 
         this.getBranch("^mods").addBranch("<ALL_MODULES>").addBranch("config", "reloadconfig", "saveconfig", "readconfig", "clean", "status");
         this.getBranch("^mods").getBranch("<ALL_MODULES>").getBranch("config").addBranch("<KEY>").addBranch("<VALUE>");
@@ -471,7 +469,7 @@ public class CoreCommand extends EdenCommand
     }
 
     @EdenCommandHandler(usage = "eden disengage", description = "Disables and unloads all Eden modules.", argsCount = 1)
-    public void edencommand_disengage()
+    public void edencommand_disengage(CommandSender sender, String commandLabel, String[] args)
     {
         Eden.getModuleManager().getEnabledModules().forEach((mod) -> {
             Eden.getModuleManager().disableModule(mod.getName(), CallerToken.EDEN, true);
@@ -789,29 +787,7 @@ public class CoreCommand extends EdenCommand
                 module.setDisabled();
                 PrintUtils.sendMessage(sender, "Disabled module.");
 
-                break;
-            case "download":
-                if (!Eden.getModuleManager().isModulePresent("Flock"))
-                {
-                    PrintUtils.sendMessage(sender, "This functionality requires the Flock module.");
-                    return;
-                }
-
-                try {
-                    // We have to ask the module manager to grab this class from the cache, since it doesn't exist in this context
-                    Class<?> nu_class = Eden.getModuleManager().getCachedClass("fish.yukiemeralis.eden.networking.NetworkingUtils");
-
-                    String finalPortion = (String) nu_class.getMethod("getFinalURLPortion", String.class).invoke(null, args[2]);
-                    nu_class.getMethod("downloadFileFromURLThreaded", String.class, String.class).invoke(null, args[2], "./plugins/Eden/dlcache/" + finalPortion);
-
-                    PrintUtils.sendMessage(sender, "Done! File has been saved as " + finalPortion + ".");
-                } catch (InvocationTargetException e) {
-                    PrintUtils.sendMessage(sender, "Failed to download file. Ensure that the given URL is correct.");
-                    PrintUtils.printPrettyStacktrace(e);
-                } catch (NoSuchMethodException | IllegalAccessException e) {
-                    PrintUtils.printPrettyStacktrace(e);
-                }
-                break;
+                break; 
             default:
                 sendErrorMessage(sender, args[1], "mm");
                 break;

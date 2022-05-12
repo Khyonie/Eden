@@ -11,8 +11,8 @@ import org.bukkit.Material;
 @ModInfo (
     modName = "Surface2",
     description = "Centralized system for inventory-based GUIs.",
-    maintainer = "Yuki_emeralis (Hailey)",
-    version = "1.0.0",
+    maintainer = "Yuki_emeralis",
+    version = "1.1.0",
     modIcon = Material.OBSERVER,
     supportedApiVersions = { "v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2" }
 )
