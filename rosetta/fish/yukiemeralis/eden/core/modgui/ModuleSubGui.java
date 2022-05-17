@@ -9,7 +9,10 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.surface2.GuiUtils;
@@ -17,6 +20,7 @@ import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
 import fish.yukiemeralis.eden.surface2.SurfaceGui;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
+import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.Option.OptionState;
@@ -37,17 +41,43 @@ public class ModuleSubGui extends SurfaceGui
         "§7§oscreen."
     );
 
-    private static GuiItemStack ENABLE_MODULE = SimpleComponentBuilder.build(Material.LIME_CONCRETE, "§r§a§lEnable module", (e) -> {
-
-        },
-        "§7§oAttempt to safely enable this module."
+    private static ItemStack UNLOAD_INACTIVE_BUTTON = ItemUtils.build(
+        Material.GRAY_CONCRETE, 
+        "§r§8§lUnload module",
+        "§7§oModules must be disabled first before",
+        "§7§othey may be unloaded."
     );
+
+    private static GuiItemStack ENABLE_MODULE;
+    private static GuiItemStack UNLOAD_MODULE;
 
     public ModuleSubGui(EdenModule module, HumanEntity target) 
     {
         super(27, "Rosetta -> " + module.getName() + " v" + module.getVersion(), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF);
         this.module = module;
         paintBlack();
+
+        ENABLE_MODULE = SimpleComponentBuilder.build(Material.LIME_CONCRETE, "§r§a§lEnable module", (e) -> {
+                Eden.getModuleManager().enableModule(module);
+                init(target, view(target)); 
+            },
+            "§7§oAttempt to safely enable this module."
+        );
+
+        UNLOAD_MODULE = SimpleComponentBuilder.build(Material.RED_CONCRETE, "§r§4§lUnload module", (e) -> {
+                Eden.getModuleManager().removeModuleFromMemory(module.getName(), CallerToken.PLAYER);
+                new ModuleGui().display(e.getWhoClicked());
+            },
+            "§c§oAttempt to remove this module from",
+            "§c§othe server's physical memory.",
+            "",
+            "§7§oUnloaded modules cannot be enabled",
+            "§7§oand must first be loaded back into",
+            "§7§omemory.",
+            "",
+            "§7§oA reference will remain for easy",
+            "§7§oreloading of this module."
+        );
     }
 
     @Override
@@ -56,22 +86,43 @@ public class ModuleSubGui extends SurfaceGui
         updateSingleComponent(e, 0, CLOSE_BUTTON);
         updateSingleComponent(e, 1, BACK_BUTTON);
         updateSingleComponent(e, 2, new ModuleGuiAdapter(module, (event) -> {}, false));
-        updateSingleItem(e, 3, (module.getReliantModules().size() != 0 ? generateTreeItem() : GuiUtils.BLACK_PANE), false);
 
+        // Data items
+        updateSingleItem(
+            e, 
+            3, 
+            ItemUtils.build(
+                Material.REPEATING_COMMAND_BLOCK, 
+                "§r§2§lRegistered commands", 
+                (module.getCommands().size() == 0 ?
+                    new String[] {"§7§oNo commands are registered", "§7§oto this module."}
+                :
+                    DataUtils.mapList(module.getCommands(), (cmd) -> { return "§7§o/" + ((EdenCommand) cmd).getName(); })
+                        .toArray(new String[module.getCommands().size()])
+                )
+            ), 
+            false
+        );
+        updateSingleItem(e, 4, ItemUtils.build(Material.OBSERVER, "§r§2§lRegistered events", "§7§o" + module.getListeners().size() + PrintUtils.plural(module.getListeners().size(), " event", " events")), false);
+        updateSingleItem(e, 5, (module.getReliantModules().size() != 0 ? generateTreeItem() : GuiUtils.BLACK_PANE), false);
+
+        // Main buttons
         GuiItemStack displayedButton = ENABLE_MODULE;
         if (!module.getIsEnabled())
         {
-            updateSingleDataItem(e, GuiUtils.generateRectange(0, 1, 4, 3, displayedButton), false);
+            updateSingleDataComponent(e, GuiUtils.generateComponentRectangle(0, 1, 4, 3, displayedButton));
+            updateSingleDataComponent(e, GuiUtils.generateComponentRectangle(5, 1, 9, 3, UNLOAD_MODULE));
             return;
         }
-        
-        displayedButton = generateDisableActiveItem();
+
+        displayedButton = generateDisableActiveItem(e);
 
         Option<DisableData> option = isDisableDisallowed();
         if (module.getClass().isAnnotationPresent(PreventUnload.class) || option.getState().equals(OptionState.SOME))    
             displayedButton = generateDisableInactiveItem(option);
 
-        updateSingleDataItem(e, GuiUtils.generateRectange(0, 1, 4, 3, displayedButton), false);
+        updateSingleDataComponent(e, GuiUtils.generateComponentRectangle(0, 1, 4, 3, displayedButton));
+        updateSingleDataItem(e, GuiUtils.generateItemRectangle(5, 1, 9, 3, UNLOAD_INACTIVE_BUTTON), false);
     }
 
     public EdenModule getModule()
@@ -110,7 +161,7 @@ public class ModuleSubGui extends SurfaceGui
         return SimpleComponentBuilder.build(Material.GRAY_CONCRETE, "§r§8§lDisable module", (e) -> {}, description.toArray(new String[description.size()]));
     }
 
-    private GuiItemStack generateDisableActiveItem()
+    private GuiItemStack generateDisableActiveItem(HumanEntity target)
     {
         List<String> description = new ArrayList<>();
         description.add("§7§oAttempt to safely disable this module.");
@@ -126,7 +177,19 @@ public class ModuleSubGui extends SurfaceGui
 
 
         return SimpleComponentBuilder.build(Material.YELLOW_CONCRETE, "§r§6§lDisable module", (e) -> {
+                Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName());
 
+                if (option.getState().equals(OptionState.SOME))
+                {
+                    PrintUtils.sendMessage(e.getWhoClicked(), "§cFailed to disable " + module.getName() + " v" + module.getVersion() + "! Failure: " + option.unwrap().getReason().name() + ", attempting rollback...");
+                    if (option.unwrap().performRollback()) {
+                        PrintUtils.sendMessage(e.getWhoClicked(), "§cAttempted rollback failed. Restarting the server or executing /eden restore may fix the problem.");
+                        return;
+                    }
+                    PrintUtils.sendMessage(e.getWhoClicked(), "Rollback complete.");
+                }
+                module.setDisabled();
+                init(target, view(target));
             },
             description.toArray(new String[description.size()])
         );

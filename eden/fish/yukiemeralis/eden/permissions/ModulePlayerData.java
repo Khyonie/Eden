@@ -30,6 +30,7 @@ public class ModulePlayerData
 
     /**
      * Pulls a value stored in this dataset. Type is checked prior to retrieval, so only valid requests get valid values.
+     * If an int value is desired, use getInt(key) instead. GSON is made to read integers as doubles.
      * @param <T> Type
      * @param key Key the value is stored under.
      * @param type Type
@@ -43,6 +44,23 @@ public class ModulePlayerData
         if (!type.isAssignableFrom(data.get(key).getClass()))
             return null;
         return (T) data.get(key);
+    }
+
+    public int getInt(String key)
+    {
+        if (!data.containsKey(key))
+            return Integer.MIN_VALUE;
+        if (Double.class.isAssignableFrom(data.get(key).getClass()))
+            return ((Double) data.get(key)).intValue();
+        return (Integer) data.get(key); 
+    }
+
+    public int incrementInt(String key, int value)
+    {
+        if (!data.containsKey(key))
+            return Integer.MIN_VALUE;
+        setValue(key, getInt(key) + value);
+        return getInt(key);
     }
 
     /**

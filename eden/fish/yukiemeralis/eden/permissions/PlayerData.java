@@ -19,9 +19,10 @@ public class PlayerData
 
     @Expose(serialize = true, deserialize = true)
     private String 
-        dataVersion = "1.5.0", 
+        dataVersion = "5", 
         accountPassword,
-        accountSalt;
+        accountSalt,
+        lastKnownIp = "0.0.0.0";
     @Expose(serialize = true, deserialize = true)
     private Map<String, ModulePlayerData> moduleData;
     @Expose(serialize = true, deserialize = true)
@@ -65,6 +66,16 @@ public class PlayerData
     public List<String> getPermissionGroups()
     {
         return this.permissionGroup;
+    }
+
+    public void setLastKnownIP(String address)
+    {
+        this.lastKnownIp = address;
+    }
+
+    public String getLastKnownIP()
+    {
+        return this.lastKnownIp;
     }
 
     public boolean hasPermission(String permission)

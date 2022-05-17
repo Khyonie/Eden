@@ -19,8 +19,7 @@ public class PagedSurfaceGui extends SurfaceGui
 {
     private int page = 0;
     private List<? extends GuiComponent> components;
-    @SuppressWarnings("unused")
-    private List<? extends GuiComponent> topBarComponents; // TODO This
+    private List<? extends GuiComponent> topBarComponents;
     private int row = 0; // Row where the top bar will generate
 
     private static final GuiItemStack NEXT_PAGE_ITEM = SimpleComponentBuilder.build(Material.PAPER, "§r§f§lNext page", (e) -> {
@@ -70,18 +69,34 @@ public class PagedSurfaceGui extends SurfaceGui
         for (int i = 0; i < 9; i++)
             updateSingleItem(e, (row * 9) + i, GuiUtils.GREY_PANE_GUI, false);
 
+        for (int i = 0; i < 7; i++)
+        {
+            if (i == topBarComponents.size())
+                break;
+
+            updateSingleComponent(e, (row * 9) + i, topBarComponents.get(i));
+        }
+
         if (page != 0)
             updateSingleComponent(e, (row * 9) + 7, BACK_PAGE_ITEM);
 
         if (page * (this.getSize() - 9) < components.size())
             updateSingleComponent(e, (row * 9) + 8, NEXT_PAGE_ITEM);
 
+        generateListData(e);
+    }
+
+    public void generateListData(HumanEntity e)
+    {
         int index = page * (this.getSize() - 9);
         for (int i = 0; i < this.getSize(); i++)
         {
             if (i / 9 == row)
                 continue;
 
+            if (index == components.size())
+                break;    
+            
             updateSingleComponent(e, i, components.get(index));
             index++;
         }

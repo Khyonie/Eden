@@ -7,9 +7,7 @@ package fish.yukiemeralis.eden.module.java.enums;
 public enum BranchType 
 {
 	/** */
-    NIGHTLY,
-    /** */
-    BETA,
+    FEATURE,
     /** */
     RELEASE_CANDIDATE,
     /** */

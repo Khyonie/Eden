@@ -20,6 +20,7 @@ package fish.yukiemeralis.eden.core;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class CoreCommand extends EdenCommand
     {
         super("eden", mod);
 
-        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "sudo", "^disengage", "^recachepu");
+        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "^restore", "sudo", "^disengage", "^recachepu");
 
         this.getBranch("^perms").addBranch("specific", "group");
         this.getBranch("^perms").getBranch("specific").addBranch("<ALL_PLAYERS>").addBranch("add", "remove");
@@ -1147,6 +1148,32 @@ public class CoreCommand extends EdenCommand
     {
         PrintUtils.reloadEColor();
         PrintUtils.sendMessage(sender, "Reloaded cached \"e\" color.");
+    }
+
+    @EdenCommandHandler(usage = "eden restore", description = "Force-disengages all modules, destroys all cached module data, and reloads.", argsCount = 1)
+    public void edencommand_restore(CommandSender sender, String commandLabel, String[] args)
+    {
+        for (EdenModule m : Eden.getModuleManager().getEnabledModules())
+            Eden.getModuleManager().disableModule(m.getName(), true);
+
+        for (EdenModule m : Eden.getModuleManager().getDisabledModules())
+            Eden.getModuleManager().removeModuleFromMemory(m.getName(), CallerToken.EDEN);
+
+        Eden.getInstance().onDisable();
+
+        // And start anew
+        Field module_manager;
+        try {
+            module_manager = Eden.class.getDeclaredField("module_manager");
+            module_manager.setAccessible(true); 
+
+            module_manager.set(Eden.getInstance(), null);
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+            PrintUtils.sendMessage(sender, "§cRestore failed. See console for details.");
+            PrintUtils.printPrettyStacktrace(e);
+        }
+
+        Eden.getInstance().onEnable();
     }
 
     @EdenCommandHandler(usage = "eden", description = "Provides the user with Eden's version and a module count.", argsCount = 0)

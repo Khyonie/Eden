@@ -382,6 +382,11 @@ public abstract class EdenCommand extends Command
     // Permissions
     //
 
+    public boolean testBasePermission(CommandSender sender, String label)
+    {
+        return Eden.getPermissionsManager().isAuthorized(sender, this.parent_module.getName() + "." + label);
+    }
+
     protected String generatePermission(EdenModule module, String base, String[] args)
     {
         // Start with a base permission, with the module and command label

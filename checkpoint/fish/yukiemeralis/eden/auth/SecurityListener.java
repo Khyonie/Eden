@@ -19,7 +19,7 @@ import java.util.List;
 
 public class SecurityListener implements Listener
 {
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onConnect(PlayerJoinEvent event)
     {
         PlayerData account = Eden.getPermissionsManager().getPlayerData(event.getPlayer());

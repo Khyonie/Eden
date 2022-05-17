@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.module.event.EdenFinishLoadingEvent;
 import fish.yukiemeralis.eden.module.java.ModuleManager;
 import fish.yukiemeralis.eden.module.java.annotations.Branch;
 import fish.yukiemeralis.eden.module.java.enums.BranchType;
@@ -44,7 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Represents the Eden core plugin, with module management and commands.
  * @author Yuki_emeralis
  */
-@Branch(BranchType.NIGHTLY)
+@Branch(BranchType.FEATURE)
 public class Eden extends JavaPlugin
 {
 	private static Eden server_instance;
@@ -156,7 +157,6 @@ public class Eden extends JavaPlugin
 			try {
 				pm = (PermissionsManager) pmClass.getConstructor().newInstance();
 				setPermissionsManager(pm);
-				return;
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				PrintUtils.log(
 					"<Instatiation of permission manager >{" + Eden.getEdenConfig().get("preferredPermissionsManager") + "}< failed. Reason: " +
@@ -164,14 +164,16 @@ public class Eden extends JavaPlugin
 					" | " + e.getCause().getMessage() : "") + ">"
 				);
 			}
+		} else {
+			PrintUtils.log("<Failed to find valid permission manager " + Eden.getEdenConfig().get("preferredPermissionsManager") + ".>");
+			PrintUtils.log("<No permission manager has been set. Emergency permissions manager will be used. Please install a module with a permissions manager.>", InfoType.WARN);
+			setPermissionsManager(new EmergencyPermissionsManager());
 		}
 		
-		PrintUtils.log("<Failed to find valid permission manager " + Eden.getEdenConfig().get("preferredPermissionsManager") + ".>");
-		PrintUtils.log("<No permission manager has been set. Emergency permissions manager will be used. Please install a module with a permissions manager.>", InfoType.WARN);
-		setPermissionsManager(new EmergencyPermissionsManager());
-		
 		PrintUtils.log("Loading and enabling took [" + (System.currentTimeMillis() - time) + "] ms.", InfoType.INFO);
-		isBeingEnabled = false;		
+		isBeingEnabled = false;	
+
+		this.getServer().getPluginManager().callEvent(new EdenFinishLoadingEvent());
 	}
 	
 	@Override

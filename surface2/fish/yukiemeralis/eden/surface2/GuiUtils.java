@@ -58,7 +58,7 @@ public class GuiUtils
         return data;
     }
 
-    public static Map<Integer, ItemStack> generateRectange(int x1, int y1, int x2, int y2, ItemStack component)
+    public static Map<Integer, ItemStack> generateItemRectangle(int x1, int y1, int x2, int y2, ItemStack component)
     {
         Map<Integer, ItemStack> data = new HashMap<>();
         
@@ -66,6 +66,17 @@ public class GuiUtils
             for (int x = x1; x < x2; x++)
                 data.put((y * 9) + x, component.clone());
         
+        return data;
+    }
+
+    public static Map<Integer, GuiComponent> generateComponentRectangle(int x1, int y1, int x2, int y2, GuiComponent component)
+    {
+        Map<Integer, GuiComponent> data = new HashMap<>();
+
+        for (int y = y1; y < y2; y++)
+            for (int x = x1; x < x2; x++)
+                data.put((y * 9) + x, component);
+
         return data;
     }
 

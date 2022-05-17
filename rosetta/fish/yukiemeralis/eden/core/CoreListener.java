@@ -29,14 +29,11 @@ public class CoreListener implements Listener
         if (Boolean.valueOf(Eden.getModuleManager().getEnabledModuleByName("Rosetta").getConfig().get("warnIfNotRelease")))
             switch (Eden.getInstance().getClass().getAnnotation(Branch.class).value())
             {
-                case NIGHTLY: // Most unstable - Features may not be fleshed out, and showstopper grade bugs may be present.
-                    PrintUtils.sendMessage(event.getPlayer(), "§cYou are using a nightly build, expect many bugs and unfinished features.");
+                case FEATURE:
+                    PrintUtils.sendMessage(event.getPlayer(), "§cYou are using a feature build, one or more features will be work-in-progress.");
                     break;
-                case BETA: // Second most unstable - No immediate showstopper bugs present, features may not be finished.
-                    PrintUtils.sendMessage(event.getPlayer(), "§cYou are using a beta build, please report all bugs to Yuki_emeralis.");
-                    break;
-                case RELEASE_CANDIDATE: // Second most stable - No immediate showstopper bugs present, all features present.
-                    PrintUtils.sendMessage(event.getPlayer(), "§cYou are using a release candidate build, bugs are unlikely but still possible. Please report all issues to Yuki_emeralis.");
+                case RELEASE_CANDIDATE:
+                    PrintUtils.sendMessage(event.getPlayer(), "§cYou are using a release candidate build, report all problems to https://github.com/YukiEmeralis/Eden/issues.");
                     break;
                 default:
                     break;

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.listeners.PlayerIPListener;
 import fish.yukiemeralis.eden.listeners.UuidCacheListener;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
@@ -38,7 +39,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
     modName = "Rosetta", 
     description = "Eden's core module.",
     maintainer = "Yuki_emeralis",
-    version = "1.6.3",
+    version = "1.6.4",
     modIcon = Material.ENDER_EYE,
     supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
 )
@@ -62,6 +63,7 @@ public class CoreModule extends EdenModule
     public CoreModule()
     {
         addListener(new UuidCacheListener());
+        addListener(new PlayerIPListener());
     }
 
     @Override

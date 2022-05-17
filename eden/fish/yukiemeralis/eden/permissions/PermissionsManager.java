@@ -87,6 +87,7 @@ public abstract class PermissionsManager
         {
             account = new PlayerData();
             account.addPermissionGroup("default");
+            account.setLastKnownIP(player.getAddress().getAddress().getHostAddress());
             JsonUtils.toJsonFile(accountFile.getAbsolutePath(), account);
         }
 

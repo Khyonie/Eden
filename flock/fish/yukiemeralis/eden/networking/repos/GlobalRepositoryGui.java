@@ -16,7 +16,7 @@ public class GlobalRepositoryGui
 {
     public void display(HumanEntity e)
     {
-        new PagedSurfaceGui(5, "All repositories", e, 0, GuiUtils.of(NetworkingModule.getKnownRepositories().values()), GuiUtils.of(getCloseButton()), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF).display(e);
+        new PagedSurfaceGui(54, "All repositories", e, 0, GuiUtils.of(NetworkingModule.getKnownRepositories().values()), GuiUtils.of(getCloseButton()), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF).display(e);
     }
 
     public static GuiItemStack getCloseButton()

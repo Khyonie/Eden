@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.PrintUtils;
 
 public abstract class SurfaceGui implements ISurfaceGui
 {
@@ -187,7 +186,7 @@ public abstract class SurfaceGui implements ISurfaceGui
     private void embedInHost(int slot, ItemStack item)
     {
         if (host.getItem(slot) != null)
-        {PrintUtils.log("Not null, item type: " + host.getItem(slot).getType().name() + ", equal to type to be embedded? " + (host.getItem(slot).equals(item)));
+        {
             if (host.getItem(slot).equals(item))
                 return;
         }

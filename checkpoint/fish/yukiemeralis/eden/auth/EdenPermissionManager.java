@@ -228,14 +228,14 @@ public class EdenPermissionManager extends PermissionsManager
         "Rosetta.eden.recachepu",
 
         // Perms management
-        "Rosetta.perms.specific.add",
-        "Rosetta.perms.specific.remove",
-        "Rosetta.perms.group.add",
-        "Rosetta.perms.group.remove",
-        "Rosetta.perms.group.create",
-        "Rosetta.perms.group.delete",
-        "Rosetta.perms.group.assign",
-        "Rosetta.perms.group.unassign",
+        "Rosetta.eden.perms.specific.add",
+        "Rosetta.eden.perms.specific.remove",
+        "Rosetta.eden.perms.group.add",
+        "Rosetta.eden.perms.group.remove",
+        "Rosetta.eden.perms.group.create",
+        "Rosetta.eden.perms.group.delete",
+        "Rosetta.eden.perms.group.assign",
+        "Rosetta.eden.perms.group.unassign",
 
         // Flock commands
         "Flock.edenmr",
