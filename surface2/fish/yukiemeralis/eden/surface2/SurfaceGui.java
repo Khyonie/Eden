@@ -14,6 +14,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
+import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.utils.Option;
 
@@ -25,7 +26,7 @@ public abstract class SurfaceGui implements ISurfaceGui
     private Map<HumanEntity, Map<Integer, GuiComponent>> data = new HashMap<>();
 
     private final int size;
-    private final String title;
+    private String title;
     private final DefaultClickAction defaultAction;
     private final List<InventoryAction> allowedClickActions;
 
@@ -50,6 +51,35 @@ public abstract class SurfaceGui implements ISurfaceGui
     public void paint(ItemStack i)
     {
         embedDataInHost(GuiUtils.generateBaseGui(size, i));
+    }
+
+    public void rename(String name)
+    {
+        // Regenerate inventory
+        Inventory backup = host;
+        host = Bukkit.createInventory(null, size, name);
+        this.title = name;
+
+        // Copy server-side
+        host.addItem(backup.getContents());
+
+        // Copy client-side
+        Map<HumanEntity, Map<Integer, GuiComponent>> backupData = new HashMap<>(data);
+        List<HumanEntity> viewers = new ArrayList<>(data.keySet());
+
+        // Close all instances of this inventory
+        for (HumanEntity e : viewers)
+            e.closeInventory();
+
+        // Clean component data...
+        data.clear();
+
+        // ... And reapply it.
+        for (HumanEntity e : viewers)
+        {
+            display(e);
+            updateSingleDataComponent(e, backupData.get(e));
+        }
     }
 
     //
@@ -92,10 +122,11 @@ public abstract class SurfaceGui implements ISurfaceGui
      */
     public void updateSingleComponent(HumanEntity e, int slot, GuiComponent component)
     {
-        view(e).setItem(slot, component.generate());
+        GuiItemStack comp = component.generate();
+        view(e).setItem(slot, comp);
 
         initData(e);
-        data.get(e).put(slot, component);
+        data.get(e).put(slot, comp);
     }
 
     /**

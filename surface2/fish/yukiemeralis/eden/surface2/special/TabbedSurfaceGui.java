@@ -26,6 +26,7 @@ public class TabbedSurfaceGui extends SurfaceGui
 
     private int tabPage = 0;
     private List<GuiTab> tabData;
+    private GuiTab currentTab;
 
     private static final GuiItemStack NEXT_TAB_SECTION = SimpleComponentBuilder.build(Material.PAPER, "§r§f§lNext page", (e) -> {
             TabbedSurfaceGui gui = (TabbedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap();
@@ -147,5 +148,22 @@ public class TabbedSurfaceGui extends SurfaceGui
             }
             index++;
         }
+
+        currentTab = tab;
+    }
+
+    public void redisplay(HumanEntity e)
+    {
+        changeTab(e, currentTab);
+    }
+
+    public List<GuiTab> getTabData()
+    {
+        return this.tabData;
+    }
+
+    public GuiTab getCurrentTab()
+    {
+        return this.currentTab;
     }
 }
