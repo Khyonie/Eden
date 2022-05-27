@@ -38,7 +38,7 @@ public abstract class SurfaceGui implements ISurfaceGui
 	    this.defaultAction = defaultAction;
         this.allowedClickActions = Arrays.asList(allowedClickActions);
     }
-
+    
     public void paintBlack()
     {
         paint(GuiUtils.BLACK_PANE);
@@ -57,11 +57,8 @@ public abstract class SurfaceGui implements ISurfaceGui
     {
         // Regenerate inventory
         Inventory backup = host;
-        host = Bukkit.createInventory(null, size, name);
         this.title = name;
-
-        // Copy server-side
-        host.addItem(backup.getContents());
+        host = Bukkit.createInventory(null, size, title);
 
         // Copy client-side
         Map<HumanEntity, Map<Integer, GuiComponent>> backupData = new HashMap<>(data);

@@ -1,5 +1,8 @@
 package fish.yukiemeralis.eden.auth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,16 +15,23 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
+import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import fish.yukiemeralis.eden.utils.Option.OptionState;
 
 public class SecurityListener implements Listener
 {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onConnect(PlayerJoinEvent event)
     {
+        Option<UuidBanEntry> isBanned = SecurityCore.isBanned(event.getPlayer());
+        if (isBanned.getState().equals(OptionState.SOME))
+        {
+            event.getPlayer().kickPlayer(isBanned.unwrap().getBanMessage());
+            event.setJoinMessage("§8[§4✕§8] §c" + event.getPlayer() + "§7 attempted to connect, but is banned.");
+            return;
+        }
+
         PlayerData account = Eden.getPermissionsManager().getPlayerData(event.getPlayer());
         Eden.getPermissionsManager().addUserData(event.getPlayer(), account);
     }

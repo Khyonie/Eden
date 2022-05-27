@@ -71,7 +71,7 @@ public class TabbedSurfaceGui extends SurfaceGui
     {
         paintBlack();
         updateTabLine(e, 0);
-        changeTab(e, tabData.get(0));
+        changeTab(e, currentTab == null ? tabData.get(0) : currentTab);
     }
 
     public int getTabPage()
