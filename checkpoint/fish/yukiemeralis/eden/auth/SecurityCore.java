@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.core.CompletionsManager;
 import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
@@ -25,13 +28,10 @@ import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-
 @ModInfo (
     modName = "Checkpoint",
     description = "Provides permissions for users and commands.",
-    version = "1.4.3",
+    version = "1.4.4",
     modIcon = Material.IRON_BARS,
     maintainer = "Yuki_emeralis",
     supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
@@ -57,7 +57,6 @@ public class SecurityCore extends EdenModule
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void onEnable() 
     {
         FileUtils.ensureFolder("./plugins/Eden/playerdata/");
@@ -66,10 +65,10 @@ public class SecurityCore extends EdenModule
         File banFile = new File("./plugins/Eden/banned-uuids.json");
         if (!banFile.exists())
         {
-            JsonUtils.toJsonFile(banFile.getAbsolutePath(), new ArrayList<UuidBanEntry>());
+            JsonUtils.toJsonFile(banFile.getAbsolutePath(), new UuidBanList(new ArrayList<UuidBanEntry>()));
         }
 
-        uuid_bans = JsonUtils.fromJsonFile(banFile.getAbsolutePath(), ArrayList.class);
+        uuid_bans = JsonUtils.fromJsonFile(banFile.getAbsolutePath(), UuidBanList.class).getData();
 
         try {
             CompletionsManager.registerCompletion("UUID_BANNED_PLAYERS", new ObjectMethodPair(this, this.getClass().getMethod("allUuidBans")), true);
@@ -94,7 +93,7 @@ public class SecurityCore extends EdenModule
             });
         }
 
-        JsonUtils.toJsonFile("./plugins/Eden/banned-uuids.json", uuid_bans);
+        JsonUtils.toJsonFile("./plugins/Eden/banned-uuids.json", new UuidBanList(uuid_bans));
     }
 
     /**
@@ -146,6 +145,18 @@ public class SecurityCore extends EdenModule
             player.kickPlayer(kickMessage);
 
         return true;
+    }
+
+    public static boolean pardonUuid(String username)
+    {
+        for (UuidBanEntry ban : uuid_bans)
+            if (ban.getUuid().equals(Eden.getUuidCache().get(username)))
+            {
+                uuid_bans.remove(ban);
+                return true;
+            }
+
+        return false;
     }
 
     public static Option<UuidBanEntry> isBanned(Player player)

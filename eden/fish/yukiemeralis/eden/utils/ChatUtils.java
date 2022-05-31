@@ -233,6 +233,16 @@ public class ChatUtils implements Listener
         return builder.toString();
     }
 
+    public static String concatStringArgs(String[] data, String seperator, int offset)
+    {
+       StringBuilder sb = new StringBuilder();
+
+        for (int i = offset; i < data.length; i++)
+            sb.append(data[i] + seperator);
+
+        return sb.toString();
+    }
+
     public static String of(String input, String from, String to)
     {
         return of(input, from, to, "");

@@ -28,7 +28,7 @@ public class SecurityListener implements Listener
         if (isBanned.getState().equals(OptionState.SOME))
         {
             event.getPlayer().kickPlayer(isBanned.unwrap().getBanMessage());
-            event.setJoinMessage("§8[§4✕§8] §c" + event.getPlayer() + "§7 attempted to connect, but is banned.");
+            event.setJoinMessage("§8[§4§l✕§r§8] §c" + event.getPlayer().getName() + "§7 attempted to connect, but is banned.");
             return;
         }
 

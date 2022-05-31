@@ -60,13 +60,23 @@ public abstract class SurfaceGui implements ISurfaceGui
         this.title = name;
         host = Bukkit.createInventory(null, size, title);
 
+        // Copy server-side
+        host.addItem(backup.getContents());
+        
         // Copy client-side
-        Map<HumanEntity, Map<Integer, GuiComponent>> backupData = new HashMap<>(data);
         List<HumanEntity> viewers = new ArrayList<>(data.keySet());
 
-        // Close all instances of this inventory
+        // Items
+        Map<HumanEntity, Map<Integer, ItemStack>> backupItem = new HashMap<>();
         for (HumanEntity e : viewers)
-            e.closeInventory();
+        {
+            backupItem.put(e, new HashMap<>());
+            for (int i = 0; i < size; i++)
+                backupItem.get(e).put(i, e.getOpenInventory().getItem(i));
+        }
+
+        // Components
+        Map<HumanEntity, Map<Integer, GuiComponent>> backupData = new HashMap<>(data);        
 
         // Clean component data...
         data.clear();
@@ -74,7 +84,8 @@ public abstract class SurfaceGui implements ISurfaceGui
         // ... And reapply it.
         for (HumanEntity e : viewers)
         {
-            display(e);
+            display(e, false);
+            updateSingleDataItem(e, backupItem.get(e), false);
             updateSingleDataComponent(e, backupData.get(e));
         }
     }
@@ -320,12 +331,17 @@ public abstract class SurfaceGui implements ISurfaceGui
         return OPEN_GUIS.containsKey(e) ? option.some(OPEN_GUIS.get(e)) : option.none();
     }
 
+    public InventoryView display(HumanEntity target)
+    {
+        return display(target, true);
+    }
+
     /**
      * Opens an inventory to the player, returning a handle to the inventoryview.<p>
      * @param target The HumanEntity to display this GUI to.
      * @return A handle to the opened inventory view.
      */
-    public InventoryView display(HumanEntity target)
+    public InventoryView display(HumanEntity target, boolean init)
     {
         // Clean up a little
         if (isInSurfaceGui(target))
@@ -341,8 +357,12 @@ public abstract class SurfaceGui implements ISurfaceGui
         OPEN_GUIS.put(target, this);
 
         // Perform abstract initialization
-        init(target, view);
-        onGuiOpen(target, view);
+        if (init)
+        {
+            init(target, view);
+            onGuiOpen(target, view);
+        }
+        
 
         return view;
     }

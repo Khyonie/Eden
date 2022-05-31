@@ -3,18 +3,22 @@ package fish.yukiemeralis.eden.core.modgui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryAction;
+
+import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
+import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiTab;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.surface2.special.TabbedSurfaceGui;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.inventory.InventoryAction;
+import fish.yukiemeralis.eden.utils.Result;
 
 public class ModuleGui
 {
@@ -37,6 +41,40 @@ public class ModuleGui
                 }));
 
             data.add(new GuiTab(ItemUtils.build(e.getMaterial(), "§r§9§l" + e.getName(), "§7§o" + e.getData().size() + " " + PrintUtils.plural(e.getData().size(), "module", "modules")), components));
+        }
+
+        List<GuiComponent> unloadedComponents = new ArrayList<>();
+        for (String ref : Eden.getModuleManager().getReferences().keySet())
+        {
+            if (Eden.getModuleManager().isModulePresent(ref))
+                continue;
+
+            unloadedComponents.add(SimpleComponentBuilder.build(Material.SALMON_BUCKET, "§r§f§l" + ref, (e) -> {
+                    Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(ref));
+                    EdenModule mod;
+                    switch (result.getState())
+                    {
+                        case ERR:
+                            PrintUtils.sendMessage(e.getWhoClicked(), "§cFailed to load \"" + ref + "\". Reason: " + result.unwrap());
+                            return;
+                        case OK:
+                            mod = (EdenModule) result.unwrap();
+                            break;
+                        default:
+                            return;
+                    }
+
+                    new ModuleSubGui(mod, e.getWhoClicked()).display(e.getWhoClicked());
+                },
+                "§7§oThis module is unloaded.",
+                "§7§oClick to load module."
+            ));
+        }
+        
+        if (unloadedComponents.size() > 0)
+        {
+            GuiTab unloaded = new GuiTab(Material.WHITE_CONCRETE, "§r§9§lUnloaded modules", unloadedComponents);
+            data.add(unloaded);
         }
 
         return data;
