@@ -70,7 +70,7 @@ public class CoreCommand extends EdenCommand
     {
         super("eden", mod);
 
-        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "^restore", "sudo", "^disengage", "^recachepu");
+        this.addBranch("^mods", "data", "^mm", "^logging", "helpall", "^perms", "^restore", "sudo", "^disengage", "^recachepu", "^reload");
 
         this.getBranch("^perms").addBranch("specific", "group");
         this.getBranch("^perms").getBranch("specific").addBranch("<ALL_PLAYERS>").addBranch("add", "remove");
@@ -98,6 +98,8 @@ public class CoreCommand extends EdenCommand
         this.getBranch("^logging").addBranch("verbose", "export");
 
         this.getBranch("sudo").addBranch("<ALL_PLAYERS>");
+
+        this.getBranch("^reload").addBranch("ALL_MODULES"); // TODO This
     }
 
     private static LocalDate time = LocalDate.now();
