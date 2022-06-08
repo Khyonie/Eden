@@ -53,6 +53,7 @@ import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
+import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.HashUtils;
@@ -1174,6 +1175,74 @@ public class CoreCommand extends EdenCommand
         }
 
         Eden.getInstance().onEnable();
+    }
+
+    @EdenCommandHandler(usage = "eden reload <module>", description = "Unloads and reloads a specific module. Any code changes will be reflected.", argsCount = 2)
+    public void edencommand_reload(CommandSender sender, String commandLabel, String[] args)
+    {
+        EdenModule m = Eden.getModuleManager().getModuleByName(args[1]);
+        if (m == null)
+        {
+            PrintUtils.sendMessage(sender, "Unknown module \"" + args[1] + "\".");   
+            return;
+        }
+
+        if (m.getIsEnabled())
+        {
+            Option<ModuleDisableFailureData> result = Eden.getModuleManager().disableModule(m.getName());
+
+            if (result.getState().equals(OptionState.SOME))
+            {
+                PrintUtils.sendMessage(sender, "§cFailed to disable \"" + args[1] + "\". Reason: " + result.unwrap().getReason().name() + ". Attempting rollback.");
+
+                if (!result.unwrap().performRollback())
+                {
+                    PrintUtils.sendMessage(sender, "§cRollback complete.");
+                    return;
+                }
+
+                PrintUtils.sendMessage(sender, "§cRollback failed. Please restart the server.");
+                return;
+            }
+
+            PrintUtils.sendMessage(sender, "§aDisable success.");
+        }
+
+        try {
+            Eden.getModuleManager().removeModuleFromMemory(m.getName(), CallerToken.PLAYER);
+        } catch (Exception e) {
+            PrintUtils.sendMessage(sender, "§cFailed to unload \"" + args[1] + "\". Aborting.");
+            return;
+        }
+
+        PrintUtils.sendMessage(sender, "§aUnload success.");
+
+        // Reload
+        Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1]));
+
+        EdenModule mod = switch (result.getState())
+        {
+            case ERR:
+                PrintUtils.sendMessage(sender, "Failed to load module reference to \"" + args[1] + "\". Reason: " + result.unwrap());
+                yield null;
+            case OK:
+                yield (EdenModule) result.unwrap();
+        };
+
+        if (mod == null)
+            return;
+
+        PrintUtils.sendMessage(sender, "§aLoad success. Version: v" + m.getVersion() + " -> v" + mod.getVersion());
+        
+        try {
+            Eden.getModuleManager().enableModule(mod);
+            mod.setEnabled();
+
+            PrintUtils.sendMessage(sender, "§aEnable success. Reload complete!");
+        } catch (Exception e) {
+            PrintUtils.sendMessage(sender, "§cFailed to enable \"" + args[1] + "\" v" + mod.getVersion() + ".");
+        }
+
     }
 
     @EdenCommandHandler(usage = "eden", description = "Provides the user with Eden's version and a module count.", argsCount = 0)

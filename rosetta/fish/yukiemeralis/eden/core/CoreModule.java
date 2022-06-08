@@ -39,7 +39,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
     modName = "Rosetta", 
     description = "Eden's core module.",
     maintainer = "Yuki_emeralis",
-    version = "1.6.4",
+    version = "1.6.5",
     modIcon = Material.ENDER_EYE,
     supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
 )
