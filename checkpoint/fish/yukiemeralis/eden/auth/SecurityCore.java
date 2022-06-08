@@ -34,7 +34,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
     version = "1.4.4",
     modIcon = Material.IRON_BARS,
     maintainer = "Yuki_emeralis",
-    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
+    supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2", "v1_19_R1"}
 )
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @PreventUnload(CallerToken.EDEN)

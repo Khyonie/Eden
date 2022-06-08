@@ -109,7 +109,7 @@ public class ModuleClassLoader extends URLClassLoader
 
 				if (!Arrays.asList(buffer.getAnnotation(ModInfo.class).supportedApiVersions()).contains(Eden.getNMSVersion()))
 				{
-					PrintUtils.log("<Module \">[" + buffer.getAnnotation(ModInfo.class).modName() + "]<\" is declared as compatible with the following version(s):> {" + Arrays.toString(buffer.getAnnotation(ModInfo.class).supportedApiVersions()) + "}<,>", InfoType.ERROR);
+					PrintUtils.log("<Module \">[" + buffer.getAnnotation(ModInfo.class).modName() + "]<\" is declared as compatible with the following version\\(s\\):> {" + Arrays.toString(buffer.getAnnotation(ModInfo.class).supportedApiVersions()) + "}<,>", InfoType.ERROR);
 					PrintUtils.log("<however this server is running on version >[" + Eden.getNMSVersion() + "]<.>", InfoType.ERROR);
 					PrintUtils.log("<Please upgrade or downgrade this module, or contact this module's maintainer.>", InfoType.ERROR);
 					return null;

@@ -36,7 +36,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 	modIcon = Material.END_PORTAL_FRAME, 
 	maintainer = "Yuki_emeralis", 
 	version = "1.2.0",
-	supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2"}
+	supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2", "v1_19_R1"}
 )
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @LoadBefore(loadBefore = {"Checkpoint", "Surface2"})
