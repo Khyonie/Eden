@@ -3,6 +3,7 @@ package fish.yukiemeralis.eden.core;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,11 @@ public class CompletionsManager
                 buffer.add(p.getName());
 
         return buffer;
+    }
+
+    private List<String> materials()
+    {
+        List<String> buffer = Arrays.asList(Material.values());
     }
 
     private List<String> allModules()

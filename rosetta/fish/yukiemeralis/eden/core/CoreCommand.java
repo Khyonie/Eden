@@ -99,8 +99,8 @@ public class CoreCommand extends EdenCommand
 
         this.getBranch("sudo").addBranch("<ALL_PLAYERS>");
 
-        this.getBranch("^reload").addBranch("ALL_MODULES"); // TODO This
-    }
+        this.getBranch("^reload").addBranch("<ALL_MODULES>");
+    } 
 
     private static LocalDate time = LocalDate.now();
     private PrintWriter text_writer;
