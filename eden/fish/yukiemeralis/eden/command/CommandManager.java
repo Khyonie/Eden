@@ -12,6 +12,7 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
 
 /**
  * General-purpose handler for registering and unregistering Eden commands into the server.
@@ -101,9 +102,18 @@ public class CommandManager
                     knownEdenCommands.remove(getCommand(commandName));
                     ((org.bukkit.craftbukkit.v1_18_R2.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
                     break;
+                case "v1_19_R1":
+                    scm = (org.bukkit.craftbukkit.v1_19_R1.command.CraftCommandMap) scmField.get(Bukkit.getServer());
+                    knownEdenCommands.remove(getCommand(commandName));
+                    ((org.bukkit.craftbukkit.v1_19_R1.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
+                    break;
+                default:
+                    throw new VersionNotHandledException();
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             PrintUtils.printPrettyStacktrace(e);
+        } catch (VersionNotHandledException e) {
+            PrintUtils.log("§cEden API version " + Eden.getNMSVersion() + " is not handled by command manager. Please update Eden.");
         }
     }
 

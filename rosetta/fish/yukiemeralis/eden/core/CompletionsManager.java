@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
@@ -108,7 +110,9 @@ public class CompletionsManager
 
     private List<String> materials()
     {
-        List<String> buffer = Arrays.asList(Material.values());
+        List<String> buffer = DataUtils.mapList(Arrays.asList(Material.values()), (in) -> in.name());
+
+        return buffer;
     }
 
     private List<String> allModules()
