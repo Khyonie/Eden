@@ -13,15 +13,15 @@
         "**Zenith.iml": true,
         "**/.kanbn/": true
     },
+
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx32G -Xms100m",
+    "java.help.shareDiagnostics": true,
+    "java.dependency.packagePresentation": "flat",
+    "java.dependency.syncWithFolderExplorer": true,
     "java.project.sourcePaths": [
-        "zen",
-        "rustls",
-        "projectile",
-        "net",
-        "events",
-        "ench",
-        "core",
-        "auth",
-        "gui"
+        "surface2",
+        "rosetta",
+        "checkpoint",
+        "eden"
     ]
 }
