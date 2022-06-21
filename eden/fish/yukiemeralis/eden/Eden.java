@@ -163,7 +163,7 @@ public class Eden extends JavaPlugin
 					e.getClass().getName() + " | " + e.getMessage() + " " + (e.getCause() != null ? "(caused by: " + e.getCause().getClass().getName() + 
 					" | " + e.getCause().getMessage() : "") + ">"
 				);
-			}
+				}
 		} else {
 			PrintUtils.log("<Failed to find valid permission manager " + Eden.getEdenConfig().get("preferredPermissionsManager") + ".>");
 			PrintUtils.log("<No permission manager has been set. Emergency permissions manager will be used. Please install a module with a permissions manager.>", InfoType.WARN);
