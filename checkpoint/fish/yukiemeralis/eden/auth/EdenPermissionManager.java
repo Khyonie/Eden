@@ -24,6 +24,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 
+/**
+ * Eden's permissions manager. Supplies default permissions, and supports permissions groups out of the box.
+ */
 public class EdenPermissionManager extends PermissionsManager
 {
     private Map<String, PermissionGroup> permissionGroups = new HashMap<>(); 
@@ -65,21 +68,40 @@ public class EdenPermissionManager extends PermissionsManager
         } 
     }
 
+    /**
+     * Obtains a permissions group with a given name. May return null if the group does not exist.
+     * @param name A permissions group with the given name.
+     * @return A permissions group with the given name.
+     */
     public PermissionGroup getGroup(String name)
     {
         return permissionGroups.get(name);
     }
 
+    /**
+     * Obtains a list of all valid permissions group names.
+     * @return A list of all permissions group names.
+     */
     public List<String> getGroupNames()
     {
         return new ArrayList<>(permissionGroups.keySet());
     }
 
+    /**
+     * Obtains a map of all groups and their names.
+     * @return A map of all groups and their names.
+     */
     public Map<String, PermissionGroup> getAllGroups()
     {
         return permissionGroups;
     }
 
+    /**
+     * Attempts to add a permissions group. Supplies an option where SOME denotes a failure, and provides a message
+     * describing the reason.
+     * @param group Permissions group to add.
+     * @return The processing result of adding the given group.
+     */
     public Option<String> addGroup(PermissionGroup group)
     {
         Option<String> option = new Option<>(String.class);
@@ -95,6 +117,11 @@ public class EdenPermissionManager extends PermissionsManager
         return option;
     }
 
+    /**
+     * Attempts to delete a group. Returns false if the group has not been registered.
+     * @param group The permissions group to attempt to remove.
+     * @return If the deletion was successful.
+     */
     public boolean deleteGroup(PermissionGroup group)
     {
         return permissionGroups.remove(group.getName()) != null;
@@ -193,7 +220,7 @@ public class EdenPermissionManager extends PermissionsManager
         return false;
     }
 
-    // Default permission group
+    /** Default permission group */
     public static PermissionGroup DEFAULT = new PermissionGroup(
         "default",
 
@@ -203,6 +230,7 @@ public class EdenPermissionManager extends PermissionsManager
         "Rosetta.eden.helpall"
     );
 
+    /** Administrator permission group */
     public static PermissionGroup ADMIN = new PermissionGroup(
         "administrator", 
 

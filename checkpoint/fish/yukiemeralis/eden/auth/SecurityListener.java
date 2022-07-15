@@ -19,6 +19,9 @@ import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.Option.OptionState;
 
+/**
+ * Handler for various smaller security tasks.
+ */
 public class SecurityListener implements Listener
 {
     @EventHandler(priority = EventPriority.LOWEST)

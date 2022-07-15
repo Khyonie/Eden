@@ -9,6 +9,10 @@ import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import fish.yukiemeralis.eden.command.CommandManager;
 
+/**
+ * Helper class to obscure commands the player does not have access to.<p>
+ * If <code>obscureDisallowedCommands</code> is set to false, this listener does nothing.
+ */
 public class CommandObscureListener implements Listener
 {
     @EventHandler(priority = EventPriority.LOWEST)

@@ -43,6 +43,11 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
     keys =   {"notifyElevate", "blockPasswordsInChat", "deopOnIpChange", "obscureDisallowedCommands"},
     values = {"true",          "true",                 "true",           "true"}
 )
+
+/**
+ * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for
+ * permissions managers in EdenPermissionManager and BukkitPermissionManager.
+ */
 public class SecurityCore extends EdenModule
 {
     private static List<String> security_log = new ArrayList<>();
@@ -132,6 +137,13 @@ public class SecurityCore extends EdenModule
         return module;
     }
 
+    /**
+     * Issue a UUID ban to a user. Users that have been UUID banned cannot join, and is immune to IP and username changes.
+     * @param player The player to issue a ban to.
+     * @param kickMessage The message to send to the player when the ban is submitted.
+     * @param banMessage The message to send when the player attempts to join.
+     * @return If the ban was successful or not.
+     */
     public static boolean banUuid(Player player, String kickMessage, String banMessage)
     {
         for (UuidBanEntry ban : uuid_bans)
@@ -147,6 +159,11 @@ public class SecurityCore extends EdenModule
         return true;
     }
 
+    /**
+     * Pardons a UUID banned player.
+     * @param username The username of the player to pardon.
+     * @return If the pardon was successful or not.
+     */
     public static boolean pardonUuid(String username)
     {
         for (UuidBanEntry ban : uuid_bans)
@@ -159,6 +176,11 @@ public class SecurityCore extends EdenModule
         return false;
     }
 
+    /**
+     * Check if the given player is UUID banned. If so, a UUID ban entry is supplied.
+     * @param player The player to check.
+     * @return If the player is UUID banned.
+     */
     public static Option<UuidBanEntry> isBanned(Player player)
     {
         Option<UuidBanEntry> option = new Option<>(UuidBanEntry.class);
@@ -169,6 +191,10 @@ public class SecurityCore extends EdenModule
         return option.none();
     }
 
+    /**
+     * Obtains a list of all current UUID bans.
+     * @return A list of all current UUID bans.
+     */
     public List<String> allUuidBans()
     {
         List<String> data = new ArrayList<>();

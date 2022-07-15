@@ -7,6 +7,10 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+/**
+ * A grouped list of permission and permission states. Players can be assigned groups to have permissions added in bulk.<p>
+ * Permissions can be "negative" or revoked, meaning players cannot use the associated command, even if they've been allowed access elsewhere. 
+ */
 public class PermissionGroup 
 {
     @Expose
@@ -19,7 +23,6 @@ public class PermissionGroup
     {
         this.name = name;
         this.associatedPermissions = new ArrayList<>(Arrays.asList(permissions));
-        // this.revokedPermissions = new ArrayList<>(Arrays.asList(revokedPermissions));
     } 
 
     public PermissionGroup(String name, PermissionGroup base)
@@ -63,30 +66,10 @@ public class PermissionGroup
         this.associatedPermissions.addAll(perms);
     }
 
-    // public void addRevokedPermission(String perm)
-    // {
-    //     this.revokedPermissions.add(perm);
-    // }
-
-    // public boolean hasRevokedPermission(String permission)
-    // {
-    //     return this.revokedPermissions.contains(permission);
-    // }
-
     public boolean removePermission(String permission)
     {
         return associatedPermissions.remove(permission);
     }
-
-    // public boolean removeRevokedPermission(String permission)
-    // {
-    //     return revokedPermissions.remove(permission);
-    // }
-
-    // public List<String> getRevokedPermissions()
-    // {
-    //     return this.revokedPermissions;
-    // }
 
     public List<String> getPermissions()
     {
