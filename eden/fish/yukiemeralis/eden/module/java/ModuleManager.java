@@ -41,6 +41,7 @@ import fish.yukiemeralis.eden.utils.Result;
 import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
+import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
 
 /**
  * Handler for all tasks related to Eden's modules.</p>
@@ -450,6 +451,11 @@ public class ModuleManager
 			case "v1_18_R2":
 				((org.bukkit.craftbukkit.v1_18_R2.CraftServer) Bukkit.getServer()).syncCommands();
 				break;
+			case "v1_19_R1":
+				((org.bukkit.craftbukkit.v1_19_R1.CraftServer) Bukkit.getServer()).syncCommands();
+				break;
+			default:
+				throw new VersionNotHandledException();
 		}
 
 		if (module.getClass().isAnnotationPresent(EdenConfig.class))

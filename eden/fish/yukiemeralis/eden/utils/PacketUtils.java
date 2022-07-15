@@ -4,6 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
 
 public interface PacketUtils
 {
@@ -23,6 +24,8 @@ public interface PacketUtils
             case "v1_18_R2":
                 new PacketUtils_v1_18_R2().hideEntityInternal(e, player);
                 break;
+            default:
+                throw new VersionNotHandledException();
         }
     }
 
