@@ -232,7 +232,7 @@ public class PrintUtils
             return ecolor_hex;
         if (Eden.getModuleManager().isModulePresent("Rosetta"))
         {
-            ecolor_hex = Eden.getModuleManager().getModuleByName("Rosetta").getConfig().get("eColor");
+            ecolor_hex = Eden.getModuleManager().getModuleByName("Rosetta").getConfig().getString("eColor");
             return ecolor_hex;
         }
         

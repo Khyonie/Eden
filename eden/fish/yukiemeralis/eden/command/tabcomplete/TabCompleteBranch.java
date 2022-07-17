@@ -9,7 +9,6 @@ import java.util.Map;
 /**
  * An object that contains a String label and a list of branches.
  * @Author Yuki_emeralis
- *
  */
 @SuppressWarnings("unused")
 public class TabCompleteBranch 

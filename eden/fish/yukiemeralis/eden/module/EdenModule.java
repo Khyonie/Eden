@@ -5,8 +5,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +20,9 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.java.ModuleManager;
 import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
+import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig.DefaultConfigWrapper;
+import fish.yukiemeralis.eden.module.java.enums.DefaultConfigFailure;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
@@ -29,6 +30,7 @@ import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.Result;
 
 /**
  * Represents an Eden module.
@@ -44,7 +46,8 @@ public abstract class EdenModule
     private List<Listener> listeners = new ArrayList<>();
     private List<EdenCommand> commands = new ArrayList<>();
 
-    protected Map<String, String> config;
+    //protected Map<String, String> config;
+    protected ModuleConfig config;
 
     protected List<EdenModule> reliantModules = new ArrayList<>(); // Modules that depend on this module
 
@@ -154,7 +157,7 @@ public abstract class EdenModule
      * Obtains this module's configuration.
      * @return This module's configuration.
      */
-    public Map<String, String> getConfig()
+    public ModuleConfig getConfig()
     {
         return config;
     }
@@ -347,9 +350,49 @@ public abstract class EdenModule
     }
 
     /**
+     * Attempts to obtain the default config for this module. Result states:<p>
+     * <b>Ok</b> - Success. Unwrap to obtain config.<p>
+     * <b>NO_DEFAULT_CONFIG_ANNOTATION</b> - Class does not contain a DefaultConfig annotation.<p>
+     * <b>NO_DEFAULT_CONFIG_FOUND</b> - Field name given by DefaultConfig annotation does not match an existing field.<p>
+     * <i>- Field name can be specified inside annotation, otherwise default is "EDEN_DEFAULT_CONFIG".<p>
+     * <b>INVALID_DEFAULT_CONFIG</b> - Data is not presented in valid format. Config must be a Map of strings and objects.<p>
+     * <b>EMPTY_DEFAULT_CONFIG</b> - Config does not have any entries. Consider removing the DefaultConfig annotation and data.
+     * @return A result containing a DefaultConfigWrapper, or an enum describing the error.
+     */
+    @SuppressWarnings("unchecked") // Cast is checked
+    public Result<DefaultConfigWrapper, DefaultConfigFailure> getDefaultConfig()
+    {
+        Result<DefaultConfigWrapper, DefaultConfigFailure> data = new Result<>(DefaultConfigWrapper.class, DefaultConfigFailure.class);
+        Class<? extends EdenModule> clazz = this.getClass();
+        
+        if (!clazz.isAnnotationPresent(DefaultConfig.class))
+            return data.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_ANNOTATION);
+
+        DefaultConfig annotation = clazz.getAnnotation(DefaultConfig.class);
+        String fieldName = annotation.value();
+        Field field;
+        Map<String, Object> config;
+
+        try {
+            field = clazz.getDeclaredField(fieldName);
+            config = (Map<String, Object>) field.get(this);
+        } catch (NoSuchFieldException e) { // Map does not exist
+            return data.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_FOUND);
+        } catch (ClassCastException e) { // Map is not of <String, Object>
+            return data.err(DefaultConfigFailure.INVALID_DEFAULT_CONFIG);
+        } catch (SecurityException | IllegalAccessException e) { // Other generic errors
+            return data.err(DefaultConfigFailure.UNKNOWN_ERROR);
+        }
+        
+        if (config.isEmpty()) // No keys in map
+            return data.err(DefaultConfigFailure.EMPTY_DEFAULT_CONFIG);
+
+        return data.ok(new DefaultConfigWrapper(config));
+    }
+
+    /**
      * Loads this module's configuration from a file.
      */
-    @SuppressWarnings("unchecked")
     public void loadConfig()
     {
         File file = new File("./plugins/Eden/configs/" + this.modName + ".json");
@@ -362,17 +405,52 @@ public abstract class EdenModule
                 return;
             }
 
-            DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-            Map<String, String> dc = new HashMap<>();
+            // DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
+            // Map<String, Object> dc = new HashMap<>();
 
             for (int i = 0; i < defaultconfig.keys().length; i++)
                 dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
 
-            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", dc);
+            Result<DefaultConfigWrapper, DefaultConfigFailure> data = getDefaultConfig();
+            switch (data.getState())
+            {
+                case OK:
+                    break;
+                case ERR:
+                    switch ((DefaultConfigFailure) data.unwrap())
+                    {
+                        case EMPTY_DEFAULT_CONFIG:
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but the given default configuration is empty!>", InfoType.ERROR);
+                            return;
+                        case INVALID_DEFAULT_CONFIG:
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is invalid!>", InfoType.ERROR);
+                            return;
+                        case NO_DEFAULT_CONFIG_ANNOTATION:
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but one doesn't exist nor is a default config specified!>", InfoType.ERROR);
+                            return;
+                        case NO_DEFAULT_CONFIG_FOUND:
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but the given field name does not exist!>", InfoType.ERROR);
+                            return;
+                        case UNKNOWN_ERROR:
+                        default:
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but an error occurred in accessing the default configuration.>", InfoType.ERROR);
+                            break;
+                    }
+                    break;
+            }
+
+            Map<String, Object> dc = ((DefaultConfigWrapper) data.unwrap()).getData();
+            for (int i = 0; i < defaultconfig.keys().length; i++)
+                dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
+
+
+            ModuleConfig config = new ModuleConfig(dc);
+
+            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
         }
 
         try {
-            this.config = (HashMap<String, String>) JsonUtils.fromJsonFile("./plugins/Eden/configs/" + this.modName + ".json", HashMap.class);
+            this.config = JsonUtils.fromJsonFile("./plugins/Eden/configs/" + this.modName + ".json", ModuleConfig.class);
 
             if (this.config == null)
                 throw new ClassCastException();
@@ -381,27 +459,29 @@ public abstract class EdenModule
             FileUtils.moveToLostAndFound(file);
 
             DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-            Map<String, String> dc = new HashMap<>();
+            Map<String, Object> dc = new HashMap<>();
 
             for (int i = 0; i < defaultconfig.keys().length; i++)
                 dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
 
-            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", dc);
+            ModuleConfig config = new ModuleConfig(dc);
+
+            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
         }
         
 
         // Then do a quick double check to make sure that the config has all the expected values, specified in @DefaultConfig
         if (this.getClass().isAnnotationPresent(DefaultConfig.class))
         {
-            if (this.config.size() < this.getClass().getAnnotation(DefaultConfig.class).keys().length)
+            if (this.config.getSize() < this.getClass().getAnnotation(DefaultConfig.class).keys().length)
             {
                 DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
                 PrintUtils.log("<Local config file is missing configuration values. Filling in from default config, please review these new values.>", InfoType.WARN);
 
                 for (int i = 0; i < defaultconfig.keys().length; i++)
-                    if (!this.config.containsKey(defaultconfig.keys()[i]))
+                    if (!this.config.hasKey(defaultconfig.keys()[i]))
                     {
-                        config.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
+                        config.setKey(defaultconfig.keys()[i], defaultconfig.values()[i]);
                         PrintUtils.log("<" + defaultconfig.keys()[i] + " -\\> " + defaultconfig.values()[i] + ">", InfoType.WARN);
                     }
 

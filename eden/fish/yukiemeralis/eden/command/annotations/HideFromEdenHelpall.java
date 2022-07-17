@@ -7,4 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+/**
+ * Hide a command from /eden helpall, found inside the Rosetta module.
+ */
 public @interface HideFromEdenHelpall {}

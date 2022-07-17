@@ -16,19 +16,20 @@ limitations under the License.
 
 package fish.yukiemeralis.eden.core;
 
-import org.bukkit.Material;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.bukkit.Material;
 
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.listeners.PlayerIPListener;
 import fish.yukiemeralis.eden.listeners.UuidCacheListener;
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
 import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
 import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
@@ -46,19 +47,20 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @LoadBefore(loadBefore = {"Checkpoint", "Surface2"})
 @EdenConfig
-@DefaultConfig(
-    keys = {
-        "loginGreeting", "warnIfNotRelease", "prettyLoginMessage", "eColor"
-    },
-    values = {
-        "true", "true", "false", "47ff9a"
-    }
-)
+@DefaultConfig()
 @PreventUnload(CallerToken.EDEN)
 public class CoreModule extends EdenModule
 {
     static List<DisableRequest> EDEN_DISABLE_REQUESTS = new ArrayList<>();
     static List<String> EDEN_WARN_DISABLE_REQUESTS = new ArrayList<>();
+
+    @SuppressWarnings("unused")
+    private static final Map<String, Object> EDEN_DEFAULT_CONFIG = Map.of(
+        "loginGreeting", true,
+        "warnIfNotRelease", true,
+        "prettyLoginMessage", false,
+        "eColor", "47FF9A"
+    );
 
     public CoreModule()
     {
@@ -73,7 +75,7 @@ public class CoreModule extends EdenModule
 
         FileUtils.ensureFolder("./plugins/Eden/playerdata");
 
-        if (Boolean.parseBoolean(this.config.get("verboseLogging")))
+        if (this.config.getBoolean("verboseLogging"))
             PrintUtils.enableVerboseLogging();
 
         // ModuleFamily.registerFamily("Eden base modules", Material.ENDER_EYE, "Required core modules.");
