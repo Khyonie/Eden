@@ -24,10 +24,12 @@ import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
 import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig.DefaultConfigWrapper;
 import fish.yukiemeralis.eden.module.java.enums.DefaultConfigFailure;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
+import fish.yukiemeralis.eden.surface2.enums.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
+import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 import fish.yukiemeralis.eden.utils.Result;
@@ -391,103 +393,163 @@ public abstract class EdenModule
     }
 
     /**
+     * Safely gets a defaultconfigwrapper. An OptionState of NONE indicates a failure, and an error describing the
+     * issue will be printed.
+     * @param file This module's configuration file.
+     * @return An option containing a DefaultConfigWrapper. Always match the OptionState before unwrapping.
+     */
+    private Option<DefaultConfigWrapper> getConfigSafe(File file)
+    {
+        Result<DefaultConfigWrapper, DefaultConfigFailure> data = getDefaultConfig();
+        Option<DefaultConfigWrapper> opt = new Option<>(DefaultConfigWrapper.class);
+        
+        switch (data.getState())
+        {
+            case OK:
+                return opt.some((DefaultConfigWrapper) data.unwrap());
+            case ERR:
+                switch ((DefaultConfigFailure) data.unwrap())
+                {
+                    case EMPTY_DEFAULT_CONFIG:
+                        if (!file.exists())
+                        {                            
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the supplied default configuration is empty! Cannot load module.>", InfoType.ERROR);
+                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                            PrintUtils.log("§b- If you are a developer: please populate your default configuration, or consider removing the @EdenConfig annotation entirely.");
+                            return opt.none();
+                        }
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is empty! Cannot verify current stored configuration integrity.>", InfoType.ERROR);
+                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                        PrintUtils.log("§b- If you are a developer: please populate your default configuration.");
+                        return opt.none();
+                    case INVALID_DEFAULT_CONFIG:
+                        if (!file.exists())
+                        {   
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\"requested a new configuration file, but the supplied default configuration is invalid! Cannot load module.>", InfoType.ERROR);
+                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                            PrintUtils.log("§b- If you are a developer: please ensure your configuration is stored as a Map\\<String, Object\\>.");
+                            return opt.none();
+                        }
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is invalid! Cannot verify current stored configuration integrity.>", InfoType.ERROR);
+                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                        PrintUtils.log("§b- If you are a developer: please ensure your configuration is stored as a Map\\<String, Object\\>.");
+                        return opt.none();
+                    case NO_DEFAULT_CONFIG_ANNOTATION:
+                        if (!file.exists())
+                        {
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the module class is missing an @DefaultConfig annotation! Cannot load module.>");
+                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                            PrintUtils.log("§b- If you are a developer: please add an @DefaultConfig annotation to your module class. See the wiki for more info.");
+                            return opt.none();
+                        }
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\"'s module class is missing an @DefaultConfig annotation. Cannot verify stored configuration integrity.>", InfoType.ERROR);
+                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                        PrintUtils.log("§b- If you are a developer: please add an @DefaultConfig annotation to your module class. See the wiki for more info.");
+                        return opt.none();
+                    case NO_DEFAULT_CONFIG_FOUND:
+                        if (!file.exists())
+                        {
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(DefaultConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
+                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                            PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
+                            return opt.none();
+                        }
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(DefaultConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
+                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                        PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
+                        return opt.none();
+                    case UNKNOWN_ERROR:
+                    default:
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a configuration file, but an error occurred in accessing the default configuration.>", InfoType.ERROR);
+                        return opt.none();
+                }
+            default:
+                throw new TimeSpaceDistortionException(); // This shouldn't fire unless something exceptionally catastrophic happens
+        }
+    }
+
+    /**
      * Loads this module's configuration from a file.
      */
-    public void loadConfig()
+    public boolean loadConfig()
     {
         File file = new File("./plugins/Eden/configs/" + this.modName + ".json");
 
+        // Attempt to pull config data from @DefaultConfig annotation
+        Option<DefaultConfigWrapper> data = getConfigSafe(file);
+        
+        Map<String, Object> defaultConfig = switch (data.getState())
+        {
+            case SOME:
+                yield data.unwrap().getData();
+            case NONE:
+            default:
+                yield null;
+        };
+
+        if (defaultConfig == null)
+            return false;
+
+        // Generate config file if needed
         if (!file.exists())
         {
-            if (!this.getClass().isAnnotationPresent(DefaultConfig.class))
-            {
-                PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but one doesn't exist nor is a default config specified!>", InfoType.ERROR);
-                return;
-            }
-
-            // DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-            // Map<String, Object> dc = new HashMap<>();
-
-            for (int i = 0; i < defaultconfig.keys().length; i++)
-                dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
-
-            Result<DefaultConfigWrapper, DefaultConfigFailure> data = getDefaultConfig();
-            switch (data.getState())
-            {
-                case OK:
-                    break;
-                case ERR:
-                    switch ((DefaultConfigFailure) data.unwrap())
-                    {
-                        case EMPTY_DEFAULT_CONFIG:
-                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but the given default configuration is empty!>", InfoType.ERROR);
-                            return;
-                        case INVALID_DEFAULT_CONFIG:
-                            PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is invalid!>", InfoType.ERROR);
-                            return;
-                        case NO_DEFAULT_CONFIG_ANNOTATION:
-                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but one doesn't exist nor is a default config specified!>", InfoType.ERROR);
-                            return;
-                        case NO_DEFAULT_CONFIG_FOUND:
-                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but the given field name does not exist!>", InfoType.ERROR);
-                            return;
-                        case UNKNOWN_ERROR:
-                        default:
-                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but an error occurred in accessing the default configuration.>", InfoType.ERROR);
-                            break;
-                    }
-                    break;
-            }
-
-            Map<String, Object> dc = ((DefaultConfigWrapper) data.unwrap()).getData();
-            for (int i = 0; i < defaultconfig.keys().length; i++)
-                dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
-
-
-            ModuleConfig config = new ModuleConfig(dc);
+            ModuleConfig config = new ModuleConfig(new HashMap<>(((DefaultConfigWrapper) data.unwrap()).getData()));
 
             JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
         }
 
+        // Proceed to load config from file. If this is a fresh file, should be an exact copy of the default config
         try {
             this.config = JsonUtils.fromJsonFile("./plugins/Eden/configs/" + this.modName + ".json", ModuleConfig.class);
 
             if (this.config == null)
                 throw new ClassCastException();
         } catch (Exception e) {
-            PrintUtils.log("<Configuration file for module \">(" + this.modName + ")<\" is corrupt! Moving to lost and found...>", InfoType.ERROR);
+            PrintUtils.log("<Stored configuration file for module \">(" + this.modName + ")<\" is corrupt! Moving to lost and found...>", InfoType.ERROR);
             FileUtils.moveToLostAndFound(file);
 
-            DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-            Map<String, Object> dc = new HashMap<>();
-
-            for (int i = 0; i < defaultconfig.keys().length; i++)
-                dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
-
-            ModuleConfig config = new ModuleConfig(dc);
+            ModuleConfig config = new ModuleConfig(new HashMap<>(defaultConfig));
 
             JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
         }
-        
 
-        // Then do a quick double check to make sure that the config has all the expected values, specified in @DefaultConfig
-        if (this.getClass().isAnnotationPresent(DefaultConfig.class))
+        // // Then do a quick double check to make sure that the config has all the expected values
+        // if (this.getClass().isAnnotationPresent(DefaultConfig.class))
+        // {
+        //     if (this.config.getSize() < this.getClass().getAnnotation(DefaultConfig.class).keys().length)
+        //     {
+        //         DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
+        //         PrintUtils.log("<Local config file is missing configuration values. Filling in from default config, please review these new values.>", InfoType.WARN);
+
+        //         for (int i = 0; i < defaultconfig.keys().length; i++)
+        //             if (!this.config.hasKey(defaultconfig.keys()[i]))
+        //             {
+        //                 config.setKey(defaultconfig.keys()[i], defaultconfig.values()[i]);
+        //                 PrintUtils.log("<" + defaultconfig.keys()[i] + " -\\> " + defaultconfig.values()[i] + ">", InfoType.WARN);
+        //             }
+
+        //         this.saveConfig();
+        //     }
+        // }
+
+        boolean missingValueWarned = false;
+        for (String key : defaultConfig.keySet())
         {
-            if (this.config.getSize() < this.getClass().getAnnotation(DefaultConfig.class).keys().length)
+            if (config.hasKey(key))
+                continue;
+            
+            if (!missingValueWarned)
             {
-                DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-                PrintUtils.log("<Local config file is missing configuration values. Filling in from default config, please review these new values.>", InfoType.WARN);
-
-                for (int i = 0; i < defaultconfig.keys().length; i++)
-                    if (!this.config.hasKey(defaultconfig.keys()[i]))
-                    {
-                        config.setKey(defaultconfig.keys()[i], defaultconfig.values()[i]);
-                        PrintUtils.log("<" + defaultconfig.keys()[i] + " -\\> " + defaultconfig.values()[i] + ">", InfoType.WARN);
-                    }
-
-                this.saveConfig();
+                PrintUtils.log("<Stored configuration file is missing configuration values. Filling in from default configuration, please review these new values.>", InfoType.WARN);
+                missingValueWarned = true;
             }
+
+            this.config.setKey(key, defaultConfig.get(key));
+            PrintUtils.log("<" + key + " -\\> " + defaultConfig.get(key) + ">", InfoType.WARN);
         }
+        this.saveConfig();
+
+        return true;
     }
 
     /**
