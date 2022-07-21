@@ -55,7 +55,7 @@ public class CoreModule extends EdenModule
     static List<String> EDEN_WARN_DISABLE_REQUESTS = new ArrayList<>();
 
     @SuppressWarnings("unused")
-    private static final Map<String, Object> EDEN_DEFAULT_CONFIG = Map.of(
+    private Map<String, Object> EDEN_DEFAULT_CONFIG = Map.of(
         "loginGreeting", true,
         "warnIfNotRelease", true,
         "prettyLoginMessage", false,

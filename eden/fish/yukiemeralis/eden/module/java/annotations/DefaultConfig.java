@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 import java.util.Map;
 
 /**
- * Annotation for modules that have an @EdenConfig annotation. Provides the keys and values for a default config.
+ * Annotation for modules that have an @EdenConfig annotation. Provides the keys and values for a default config. Default field mapping is <code>EDEN_DEFAULT_CONFIG</code>.
  * @Author Yuki_emeralis
  */
 @Retention(RetentionPolicy.RUNTIME)

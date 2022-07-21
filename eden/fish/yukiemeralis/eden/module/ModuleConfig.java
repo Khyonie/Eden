@@ -2,6 +2,7 @@ package fish.yukiemeralis.eden.module;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -37,14 +38,32 @@ public class ModuleConfig
         return clazz.cast(data.get(key));
     }
 
+    public <T extends Enum<T>> Enum<T> getEnum(String key, Class<T> clazz)
+    {
+        if (getString(key) == null)
+            return null;
+        
+        return Enum.valueOf(clazz, getString(key));
+    }
+
     public Object getKey(String key)
     {
         return data.get(key);
     }
 
-    public boolean getBoolean(String key)
+    /**
+     * Safely obtains a boolean key. Returns false if the key does not exist, or if the value to the supplied key is not a boolean.
+     * @param key Key to boolean value.
+     * @return <code>true</code> if and only if this module's configuration contains the given key, the value is a boolean, and the value resolves to <code>true</code>.
+     */
+    public Boolean getBoolean(String key)
     {
-        return getKey(key, Boolean.class);
+        Boolean val = getKey(key, Boolean.class);
+
+        if (val == null)
+            return false;
+
+        return val;
     }
 
     public String getString(String key)
@@ -71,6 +90,11 @@ public class ModuleConfig
     public Object setKey(String key, Object value)
     {
         return data.put(key, value);
+    }
+
+    public Set<String> getKeys()
+    {
+        return data.keySet();   
     }
 
     /**

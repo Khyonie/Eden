@@ -22,6 +22,7 @@ import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
+import fish.yukiemeralis.eden.networking.enums.DefaultDownloadBehavior;
 import fish.yukiemeralis.eden.networking.enums.ModuleUpgradeStatus;
 import fish.yukiemeralis.eden.networking.repos.EdenRepository;
 import fish.yukiemeralis.eden.networking.repos.EdenRepositoryEntry;
@@ -41,10 +42,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @LoadBefore(loadBefore = {"Checkpoint", "Surface2"})
 @EdenConfig
-@DefaultConfig(
-	keys =   { "defaultDownloadBehavior" },
-	values = { "LOAD_ENABLE" }
-)
+@DefaultConfig()
 @PreventUnload(CallerToken.EDEN)
 public class NetworkingModule extends EdenModule
 {
@@ -53,6 +51,11 @@ public class NetworkingModule extends EdenModule
 	private static NetworkingModule instance;
 
 	private static final String SYNC_FILE = "./plugins/Eden/repos/.syncdata";
+
+	@SuppressWarnings("unused")
+	private Map<String, Object> EDEN_DEFAULT_CONFIG = Map.of(
+		"defaultDownloadBehavior", DefaultDownloadBehavior.LOAD_ENABLE
+	);
 
 	public NetworkingModule()
 	{

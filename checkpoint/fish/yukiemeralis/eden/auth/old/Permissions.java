@@ -210,7 +210,7 @@ public class Permissions
     @Deprecated
     public static void expectPassword(Player target, String username)
     {
-        if ((!Boolean.valueOf(Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().get("allow_console_logins")) && username.equals("console")) ||
+        if (Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().getBoolean("allow_console_logins") && username.equals("console") ||
             accounts.get(username).isDisabled())
         {
             PrintUtils.sendMessage(target, "This account has been disabled. Please contact an administrator if you believe this is a mistake.");
@@ -352,10 +352,10 @@ public class Permissions
     private static void onFailedLogin(CommandSender user, String username)
     {
         if (max_failed_login_attempts == -1)
-            max_failed_login_attempts = Integer.parseInt(Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().get("max_failed_login_attempts"));
+            max_failed_login_attempts = Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().getInt("max_failed_login_attempts");
 
-        if (max_failed_login_attempts != Integer.parseInt(Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().get("max_failed_login_attempts")))
-            max_failed_login_attempts = Integer.parseInt(Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().get("max_failed_login_attempts"));
+        if (max_failed_login_attempts != Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().getInt("max_failed_login_attempts"))
+            max_failed_login_attempts = Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().getInt("max_failed_login_attempts");
 
         if (locked_accounts.contains(username))
             return;
@@ -366,7 +366,7 @@ public class Permissions
 
             int lockoutTime = 300;
             try {
-                lockoutTime = Integer.parseInt(Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().get("account_lockout_time"));
+                lockoutTime = Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().getInt("account_lockout_time");
             } catch (IllegalArgumentException e) {}
 
             BukkitTask timer_thread = new BukkitRunnable()

@@ -24,7 +24,6 @@ import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
 import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig.DefaultConfigWrapper;
 import fish.yukiemeralis.eden.module.java.enums.DefaultConfigFailure;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
-import fish.yukiemeralis.eden.surface2.enums.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
@@ -32,13 +31,13 @@ import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.Result;
 
 /**
  * Represents an Eden module.
  * @author Yuki_emeralis
  */
-@SuppressWarnings("unused")
 public abstract class EdenModule
 {
     protected String modName, version, description, maintainer;
@@ -377,6 +376,7 @@ public abstract class EdenModule
 
         try {
             field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
             config = (Map<String, Object>) field.get(this);
         } catch (NoSuchFieldException e) { // Map does not exist
             return data.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_FOUND);
@@ -474,6 +474,7 @@ public abstract class EdenModule
     public boolean loadConfig()
     {
         File file = new File("./plugins/Eden/configs/" + this.modName + ".json");
+        PrintUtils.logVerbose("Attempting to load \"" + this.modName + "\"'s configuration...", InfoType.INFO);
 
         // Attempt to pull config data from @DefaultConfig annotation
         Option<DefaultConfigWrapper> data = getConfigSafe(file);
@@ -513,25 +514,7 @@ public abstract class EdenModule
             JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
         }
 
-        // // Then do a quick double check to make sure that the config has all the expected values
-        // if (this.getClass().isAnnotationPresent(DefaultConfig.class))
-        // {
-        //     if (this.config.getSize() < this.getClass().getAnnotation(DefaultConfig.class).keys().length)
-        //     {
-        //         DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-        //         PrintUtils.log("<Local config file is missing configuration values. Filling in from default config, please review these new values.>", InfoType.WARN);
-
-        //         for (int i = 0; i < defaultconfig.keys().length; i++)
-        //             if (!this.config.hasKey(defaultconfig.keys()[i]))
-        //             {
-        //                 config.setKey(defaultconfig.keys()[i], defaultconfig.values()[i]);
-        //                 PrintUtils.log("<" + defaultconfig.keys()[i] + " -\\> " + defaultconfig.values()[i] + ">", InfoType.WARN);
-        //             }
-
-        //         this.saveConfig();
-        //     }
-        // }
-
+        // Check for missing keys
         boolean missingValueWarned = false;
         for (String key : defaultConfig.keySet())
         {
@@ -545,11 +528,187 @@ public abstract class EdenModule
             }
 
             this.config.setKey(key, defaultConfig.get(key));
-            PrintUtils.log("<" + key + " -\\> " + defaultConfig.get(key) + ">", InfoType.WARN);
+            PrintUtils.log("<" + key + " -\\> " + defaultConfig.get(key) + " \\(of type: " + (defaultConfig.get(key) != null ? defaultConfig.get(key).getClass().getSimpleName() : "null") + "\\)>", InfoType.WARN);
         }
+
+        // Then do the reverse, checking for keys that aren't needed
+        for (String key : this.config.getKeys())
+        {
+            if (defaultConfig.containsKey(key))
+                continue;
+
+            PrintUtils.log("<Trimming unused key \"" + key + "\"...>");
+            this.config.removeKey(key);
+        }
+
+        // Finally, attempt to update to the 1.6.0 standard of <String, Object>
+        PrintUtils.logVerbose("Attempting to update old configuration data to the 1.6.0 standard...", InfoType.INFO);
+
+        switch (updateOldConfigData(defaultConfig))
+        {
+            case FAILURE:
+                PrintUtils.log("Failed to update configuration data. See stacktrace for details.", InfoType.ERROR);
+                break;
+            case NOTHING_TO_DO:
+                PrintUtils.logVerbose("Nothing to do.", InfoType.INFO);
+                break;
+            case SUCCESS:
+                PrintUtils.log("Successfully updated configuration for module \"" + this.modName + "\".");
+                break;
+        }
+
         this.saveConfig();
 
         return true;
+    }
+
+    private ConfigUpdateStatus updateOldConfigData(Map<String, Object> defaultConfig)
+    {
+        try {
+            int updated = 0;
+            loop: for (String key : this.config.getKeys())
+            {
+                Object stored = config.getKey(key);
+                Object defaultVal = defaultConfig.get(key);
+
+                if (stored == null)
+                {
+                    if (defaultVal == null)
+                    {
+                        PrintUtils.log("<Both the stored configuration and default configuration value for key \"" + key + "\" is null. Consider removing this key.>");
+                        continue;
+                    }
+
+                    PrintUtils.log("<Stored value for key \"" + key + "\" is null, filling in from default value...>");
+                    PrintUtils.log("<" + key + ": null -\\> " + defaultVal + " >");
+                    this.config.setKey(key, defaultVal);
+
+                    updated++;
+                    continue;   
+                }
+
+                if (defaultVal.getClass().isAssignableFrom(stored.getClass()))
+                    continue; // Key doesn't need to be updated
+
+                PrintUtils.log("<Stored value and default value for key \"" + key + "\" are of different types! \\(stored: " + stored.getClass().getSimpleName() + " | default: " + defaultVal.getClass().getSimpleName() + "\\) " + (stored instanceof String ? "Attempting to convert..." : "") + ">"); 
+                
+                if (!(stored instanceof String))
+                {
+                    PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                    PrintUtils.log("<" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + defaultVal + " \\(" + defaultVal.getClass().getSimpleName() + "\\)>");
+                    this.config.setKey(key, defaultVal);
+
+                    updated++;
+                    continue;
+                }
+
+                update: switch (defaultVal.getClass().getName())
+                {
+                    case "java.lang.Integer":
+                        try {
+                            Integer i = Integer.parseInt((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Byte":
+                        try {
+                            Byte i = Byte.parseByte((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Short":
+                        try {
+                            Short i = Short.parseShort((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Long":
+                        try {
+                            Long i = Long.parseLong((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Float":
+                        try {
+                            Float i = Float.parseFloat((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Double":
+                        try {
+                            Double i = Double.parseDouble((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Boolean":
+                        String out = ((String) stored).trim().toLowerCase();
+
+                        if (!out.equals("true") && !out.equals("false"))
+                        {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                            break update;
+                        }
+
+                        this.config.setKey(key, Boolean.parseBoolean(out));
+                        updated++;
+                        break update;
+                    default:
+                        PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                        PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                        this.config.setKey(key, defaultVal);
+
+                        updated++;
+                        continue loop;
+                }
+
+                PrintUtils.log("<" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + this.config.getKey(key) + " \\(" + this.config.getKey(key).getClass().getSimpleName() + "\\)>");
+            }
+
+            return updated == 0 ? ConfigUpdateStatus.NOTHING_TO_DO : ConfigUpdateStatus.SUCCESS;
+        } catch (Exception e) {
+            PrintUtils.printPrettyStacktrace(e);
+            return ConfigUpdateStatus.FAILURE;
+        }
     }
 
     /**
@@ -572,5 +731,13 @@ public abstract class EdenModule
     	 * An array of module names that a module depends on.
     	 */
         String[] loadBefore();
+    }
+
+    private static enum ConfigUpdateStatus
+    {
+        SUCCESS,
+        FAILURE,
+        NOTHING_TO_DO
+        ;
     }
 }

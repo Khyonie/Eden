@@ -10,10 +10,6 @@ flock:
 	edex buildfiles/flock.edex
 	cp ~/Servers/DevServer/1182/plugins/Eden/mods/Flock.jar ./lib/Flock.jar
 	cp ./lib/Flock.jar ./internalModules
-surface:
-	edex buildfiles/surface.edex
-	cp ~/Servers/DevServer/1182/plugins/Eden/mods/Surface.jar ./lib/Surface.jar
-	cp ./lib/Surface.jar ./internalModules
 surface2:
 	edex buildfiles/surface2.edex
 	cp ~/Servers/DevServer/1182/plugins/Eden/mods/Surface2.jar ./lib/Surface2.jar

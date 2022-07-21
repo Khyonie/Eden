@@ -44,7 +44,7 @@ public class SecurityListener implements Listener
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event)
     {
-        if (!SecurityCore.getModuleInstance().getConfig().get("blockPasswordsInChat").equals("true"))
+        if (!SecurityCore.getModuleInstance().getConfig().getBoolean("blockPasswordsInChat"))
             return;
 
         PlayerData account = Eden.getPermissionsManager().getPlayerData(event.getPlayer());

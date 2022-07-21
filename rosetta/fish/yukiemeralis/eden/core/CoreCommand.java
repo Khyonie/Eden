@@ -22,9 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -47,18 +45,17 @@ import fish.yukiemeralis.eden.core.modgui.ModuleGui;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
 import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.HashUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.Option;
+import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.Result;
 import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
@@ -151,34 +148,41 @@ public class CoreCommand extends EdenCommand
         switch (args[2])
         {
             case "config":
-                if (!ensureArgsCount(args, 5, 2, "config", sender))
-                    break;
+                // if (!ensureArgsCount(args, 5, 2, "config", sender))
+                //     break;
 
-                String oldValue = module.getConfig().get(args[3]);
+                // String oldValue = module.getConfig().get(args[3]);
 
-                module.getConfig().put(args[3], args[4]);
+                // module.getConfig().put(args[3], args[4]);
 
-                // Call an event to notify anything that might want to listen for things like this
-                Eden.getInstance().getServer().getPluginManager().callEvent(new EdenConfigChangeEvent(module, args[3], oldValue, args[4]));
-                PrintUtils.sendMessage(sender, "Entered configuration value \"§a" + args[4] + "§7\" into key \"§b" + args[3] + "§7\" in module " + module.getName() + ".");
+                // // Call an event to notify anything that might want to listen for things like this
+                // Eden.getInstance().getServer().getPluginManager().callEvent(new EdenConfigChangeEvent(module, args[3], oldValue, args[4]));
+                // PrintUtils.sendMessage(sender, "Entered configuration value \"§a" + args[4] + "§7\" into key \"§b" + args[3] + "§7\" in module " + module.getName() + ".");
+                PrintUtils.sendMessage(sender, "This subcommand is under construction.");
                 break;
             case "readconfig":
-                module.getConfig().forEach((key, value) -> {
+                module.getConfig().getKeys().forEach((key) -> {
                     String color = "e";
-                    if (value.equals("true")) {
-                        color = "a";
-                    } else if (value.equals("false")) {
-                        color = "c";
+                    
+                    if (module.getConfig().getBoolean(key) != null)
+                    {
+                        color = module.getConfig().getBoolean(key).booleanValue() ? "a" : "c";
+                        return;
                     }
 
-                    PrintUtils.sendMessage(sender, "Config: §b" + key + "§7 | §" + color + value);
+                    PrintUtils.sendMessage(sender, "Config: §b" + key + "§7 | §" + color + module.getConfig().getKey(key));
                 });
                 break;
             case "reloadconfig":
                 if (module.getClass().isAnnotationPresent(EdenConfig.class))
                 {
-                    module.loadConfig();
-                    PrintUtils.sendMessage(sender, "Reloaded config from file. You should double-check the new values by using /eden mods " + args[1] + " readconfig.");
+                    if (module.loadConfig())
+                    {
+                        PrintUtils.sendMessage(sender, "Reloaded config from file. You should double-check the new values by using /eden mods " + args[1] + " readconfig.");
+                        break;
+                    }
+
+                    PrintUtils.sendMessage(sender, "§cFailed to reload config from file.");
                     break;
                 }
                     
@@ -195,29 +199,30 @@ public class CoreCommand extends EdenCommand
                 PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
                 break;
             case "clean":
-                if (module.getClass().isAnnotationPresent(EdenConfig.class) && module.getClass().isAnnotationPresent(DefaultConfig.class))
-                {
-                    DefaultConfig dc = module.getClass().getAnnotation(DefaultConfig.class);
-                    Map<String, String> config = module.getConfig();
+                // if (module.getClass().isAnnotationPresent(EdenConfig.class) && module.getClass().isAnnotationPresent(DefaultConfig.class))
+                // {
+                //     DefaultConfig dc = module.getClass().getAnnotation(DefaultConfig.class);
+                //     Map<String, String> config = module.getConfig();
                     
-                    Iterator<String> iter = config.keySet().iterator();
-                    int removed = 0;
-                    while (iter.hasNext())
-                    {
-                        String key = iter.next();
+                //     Iterator<String> iter = config.keySet().iterator();
+                //     int removed = 0;
+                //     while (iter.hasNext())
+                //     {
+                //         String key = iter.next();
 
-                        if (!Arrays.asList(dc.keys()).contains(key))
-                        {
-                            iter.remove();
-                            removed++;
-                        }
-                    }
+                //         if (!Arrays.asList(dc.keys()).contains(key))
+                //         {
+                //             iter.remove();
+                //             removed++;
+                //         }
+                //     }
 
-                    PrintUtils.sendMessage(sender, "Cleaned " + removed + " " + PrintUtils.plural(removed, "key", "keys") + " from configuration file.");
-                    break;
-                }
+                //     PrintUtils.sendMessage(sender, "Cleaned " + removed + " " + PrintUtils.plural(removed, "key", "keys") + " from configuration file.");
+                //     break;
+                // }
 
-                PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
+                // PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
+                PrintUtils.sendMessage(sender, "This subcommand is under construction.");
                 break;
             case "status": // Query informmation of a module
                 PrintUtils.sendMessage(sender, "§e-----[§6" + module.getName() + "§e]-----");

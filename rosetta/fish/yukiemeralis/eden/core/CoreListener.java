@@ -18,15 +18,15 @@ public class CoreListener implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
-        if (Boolean.valueOf(Eden.getModuleManager().getEnabledModuleByName("Rosetta").getConfig().get("prettyLoginMessage")))
+        if (CoreModule.getModuleInstance().getConfig().getBoolean("prettyLoginMessage"))
             event.setJoinMessage("§8[§a§l→§r§8] §7" + event.getPlayer().getName());
 
-        if (!Boolean.valueOf(Eden.getModuleManager().getEnabledModuleByName("Rosetta").getConfig().get("loginGreeting")))
+        if (!CoreModule.getModuleInstance().getConfig().getBoolean("loginGreeting"))
             return;
 
         PrintUtils.sendMessage(event.getPlayer(), "Welcome " + event.getPlayer().getDisplayName() + "! This server is running Eden " + VersionCtrl.getVersion() + ".");
 
-        if (Boolean.valueOf(Eden.getModuleManager().getEnabledModuleByName("Rosetta").getConfig().get("warnIfNotRelease")))
+        if (CoreModule.getModuleInstance().getConfig().getBoolean("warnIfNotRelease"))
             switch (Eden.getInstance().getClass().getAnnotation(Branch.class).value())
             {
                 case FEATURE:
@@ -43,7 +43,7 @@ public class CoreListener implements Listener
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event)
     {
-        if (Boolean.valueOf(Eden.getModuleManager().getEnabledModuleByName("Rosetta").getConfig().get("prettyLoginMessage")))
+        if (CoreModule.getModuleInstance().getConfig().getBoolean("prettyLoginMessage"))
             event.setQuitMessage("§8[§c§l←§r§8] §7" + event.getPlayer().getName());
     }
 

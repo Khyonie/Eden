@@ -94,6 +94,7 @@ public class ModuleClassLoader extends URLClassLoader
 
 			try {
 				Class<?> buffer = Class.forName(entry.getName().replace("/", ".").replace(".class", ""), false, this);
+				PrintUtils.log("Parsing class " + buffer.getName());
 				
 				if (!EdenModule.class.isAssignableFrom(buffer))
 					continue;
@@ -106,6 +107,10 @@ public class ModuleClassLoader extends URLClassLoader
 					PrintUtils.log("<Offending file:> [" + file.getName() + "]", InfoType.ERROR);
 					return null;
 				}
+
+				PrintUtils.log("Compatible versions: " + buffer.getAnnotation(ModInfo.class).supportedApiVersions().length);
+				for (String version : buffer.getAnnotation(ModInfo.class).supportedApiVersions())
+					PrintUtils.log("- " + version);
 
 				if (!Arrays.asList(buffer.getAnnotation(ModInfo.class).supportedApiVersions()).contains(Eden.getNMSVersion()))
 				{

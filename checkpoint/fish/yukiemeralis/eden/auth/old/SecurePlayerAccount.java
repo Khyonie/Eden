@@ -53,7 +53,7 @@ public class SecurePlayerAccount
         this.password = Permissions.genHash(password);
         this.type = type;
 
-        int min_2fa_rank = Integer.parseInt(Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().get("min_rank_for_2fa"));
+        int min_2fa_rank = Eden.getModuleManager().getEnabledModuleByName("Checkpoint").getConfig().getInt("min_rank_for_2fa");
         if (type.getRank() >= min_2fa_rank)
         {
             this.enforce2fa = true;

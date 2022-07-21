@@ -1,8 +1,8 @@
 package fish.yukiemeralis.eden.surface2;
 
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.enums.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.Option;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -18,7 +18,7 @@ public class CommandObscureListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommandSend(PlayerCommandSendEvent event)
     {
-        if (!SecurityCore.getModuleInstance().getConfig().get("obscureDisallowedCommands").equals("true"))
+        if (!SecurityCore.getModuleInstance().getConfig().getBoolean("obscureDisallowedCommands"))
             return;
 
         Iterator<String> iter = event.getCommands().iterator();

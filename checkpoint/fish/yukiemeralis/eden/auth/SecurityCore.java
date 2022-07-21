@@ -39,10 +39,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @PreventUnload(CallerToken.EDEN)
 @EdenConfig
-@DefaultConfig(
-    keys =   {"notifyElevate", "blockPasswordsInChat", "deopOnIpChange", "obscureDisallowedCommands"},
-    values = {"true",          "true",                 "true",           "true"}
-)
+@DefaultConfig
 
 /**
  * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for
@@ -53,6 +50,14 @@ public class SecurityCore extends EdenModule
     private static List<String> security_log = new ArrayList<>();
     private static List<UuidBanEntry> uuid_bans = new ArrayList<>();
     private static EdenModule module;
+
+    @SuppressWarnings("unused")
+    private Map<String, Object> EDEN_DEFAULT_CONFIG = Map.of(
+        "notifyElevate", true,
+        "blockPasswordsInChat", true,
+        "deopOnIpChange", true,
+        "obscureDisallowedCommands", true  
+    );
 
     public SecurityCore()
     {

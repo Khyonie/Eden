@@ -461,7 +461,8 @@ public class ModuleManager
 		if (module.getClass().isAnnotationPresent(EdenConfig.class))
 		{
 			PrintUtils.logVerbose("Found module config", InfoType.INFO);
-			module.loadConfig();
+			if (!module.loadConfig())
+				return;
 		}
 
 		PrintUtils.logVerbose("All registered! Enabling " + module.getName() + " " + module.getVersion() + "...", InfoType.INFO);
