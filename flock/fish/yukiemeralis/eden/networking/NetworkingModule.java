@@ -1,8 +1,5 @@
 package fish.yukiemeralis.eden.networking;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -10,7 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+
 import com.google.gson.reflect.TypeToken;
+
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.core.CompletionsManager;
 import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
@@ -22,7 +23,6 @@ import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
-import fish.yukiemeralis.eden.networking.enums.DefaultDownloadBehavior;
 import fish.yukiemeralis.eden.networking.enums.ModuleUpgradeStatus;
 import fish.yukiemeralis.eden.networking.repos.EdenRepository;
 import fish.yukiemeralis.eden.networking.repos.EdenRepositoryEntry;
@@ -54,7 +54,7 @@ public class NetworkingModule extends EdenModule
 
 	@SuppressWarnings("unused")
 	private Map<String, Object> EDEN_DEFAULT_CONFIG = Map.of(
-		"defaultDownloadBehavior", DefaultDownloadBehavior.LOAD_ENABLE
+		"defaultDownloadBehavior", "LOAD_ENABLE"
 	);
 
 	public NetworkingModule()

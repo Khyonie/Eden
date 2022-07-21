@@ -147,7 +147,7 @@ public class EdenRepositoryEntry implements GuiComponent
 
                                 // Check if the config value is valid to avoid any nasty errors
                                 try {
-                                    configValue = NetworkingModule.getModuleInstance().getConfig().getKey("defaultDownloadBehavior", DefaultDownloadBehavior.class);
+                                    configValue = (DefaultDownloadBehavior) NetworkingModule.getModuleInstance().getConfig().getEnum("defaultDownloadBehavior", DefaultDownloadBehavior.class);
                                 } catch (Exception e) {
                                     PrintUtils.log("Invalid default download behavior in config! Valid options are: [ IGNORE, MOVE_TO_DLCACHE, LOAD_NO_ENABLE, LOAD_ENABLE ]. Falling back to LOAD_ENABLE...", InfoType.ERROR);
                                     // Set to a valid value
