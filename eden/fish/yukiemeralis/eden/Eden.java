@@ -45,7 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Represents the Eden core plugin, with module management and commands.
  * @author Yuki_emeralis
  */
-@Branch(BranchType.RELEASE)
+@Branch(BranchType.FEATURE)
 public class Eden extends JavaPlugin
 {
 	private static Eden server_instance;
