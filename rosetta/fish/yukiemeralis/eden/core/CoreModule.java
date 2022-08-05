@@ -26,13 +26,12 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.listeners.PlayerIPListener;
 import fish.yukiemeralis.eden.listeners.UuidCacheListener;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
 import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 
@@ -47,7 +46,6 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @LoadBefore(loadBefore = {"Checkpoint", "Surface2"})
 @EdenConfig
-@DefaultConfig()
 @PreventUnload(CallerToken.EDEN)
 public class CoreModule extends EdenModule
 {

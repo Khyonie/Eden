@@ -16,13 +16,12 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.core.CompletionsManager;
 import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
 import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.networking.enums.ModuleUpgradeStatus;
 import fish.yukiemeralis.eden.networking.repos.EdenRepository;
 import fish.yukiemeralis.eden.networking.repos.EdenRepositoryEntry;
@@ -42,7 +41,6 @@ import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @LoadBefore(loadBefore = {"Checkpoint", "Surface2"})
 @EdenConfig
-@DefaultConfig()
 @PreventUnload(CallerToken.EDEN)
 public class NetworkingModule extends EdenModule
 {

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import fish.yukiemeralis.eden.gui.GuiComponent;
 import fish.yukiemeralis.eden.gui.base.DynamicGui;
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

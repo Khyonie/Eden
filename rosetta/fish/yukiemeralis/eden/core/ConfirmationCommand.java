@@ -1,18 +1,19 @@
 package fish.yukiemeralis.eden.core;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
-import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+
+import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.command.EdenCommand;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
+import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
+import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
+import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
+import fish.yukiemeralis.eden.module.java.enums.CallerToken;
+import fish.yukiemeralis.eden.utils.Option;
+import fish.yukiemeralis.eden.utils.Option.OptionState;
+import fish.yukiemeralis.eden.utils.PrintUtils;
 
 @HideFromEdenHelpall
 @PreventUnload(CallerToken.EDEN)

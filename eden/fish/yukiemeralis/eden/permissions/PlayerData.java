@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.annotations.Expose;
-import fish.yukiemeralis.eden.utils.HashUtils;
-
 import org.bukkit.entity.Player;
+
+import com.google.gson.annotations.Expose;
+
+import fish.yukiemeralis.eden.utils.HashUtils;
 
 public class PlayerData 
 {

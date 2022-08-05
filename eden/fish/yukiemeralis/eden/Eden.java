@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.module.annotation.Branch;
 import fish.yukiemeralis.eden.module.event.EdenFinishLoadingEvent;
 import fish.yukiemeralis.eden.module.java.ModuleManager;
-import fish.yukiemeralis.eden.module.java.annotations.Branch;
 import fish.yukiemeralis.eden.module.java.enums.BranchType;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.permissions.EmergencyPermissionsManager;

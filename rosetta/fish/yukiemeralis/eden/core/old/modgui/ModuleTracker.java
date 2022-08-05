@@ -1,6 +1,6 @@
 package fish.yukiemeralis.eden.core.old.modgui;
 
-import fish.yukiemeralis.eden.module.java.annotations.Unimplemented;
+import fish.yukiemeralis.eden.module.annotation.Unimplemented;
 
 /**
  * @deprecated Deprecated in favor of new ModuleFamily implementation.

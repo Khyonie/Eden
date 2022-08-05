@@ -2,7 +2,7 @@ package fish.yukiemeralis.eden.core.eventtasks;
 
 import org.bukkit.event.Event;
 
-import fish.yukiemeralis.eden.module.java.annotations.Unimplemented;
+import fish.yukiemeralis.eden.module.annotation.Unimplemented;
 
 @Unimplemented
 public abstract class EventScheduledTask<T extends Event> implements Runnable

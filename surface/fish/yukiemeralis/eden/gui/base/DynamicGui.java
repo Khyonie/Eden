@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import fish.yukiemeralis.eden.gui.GuiComponent;
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;

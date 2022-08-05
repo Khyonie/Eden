@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import fish.yukiemeralis.eden.gui.GuiItemStack;
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 
 import org.bukkit.event.EventHandler;

@@ -7,8 +7,8 @@ import fish.yukiemeralis.eden.gui.special.PagedDynamicGui;
 import fish.yukiemeralis.eden.gui.special.TabbedDynamicGui;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 
 import org.bukkit.Material;

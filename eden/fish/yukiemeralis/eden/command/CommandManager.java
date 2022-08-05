@@ -1,18 +1,20 @@
 package fish.yukiemeralis.eden.command;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 
 import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
 
 /**
  * General-purpose handler for registering and unregistering Eden commands into the server.
@@ -78,42 +80,12 @@ public class CommandManager
             Field scmField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             scmField.setAccessible(true);
 
-            org.bukkit.command.CommandMap scm;
+            CommandMap commandMap = (CommandMap) getCraftCommandMapClass().cast(scmField.get(Bukkit.getServer()));
 
-            switch (Eden.getNMSVersion())
-            {
-                case "v1_16_R3":
-                    scm = (org.bukkit.craftbukkit.v1_16_R3.command.CraftCommandMap) scmField.get(Bukkit.getServer());
-                    knownEdenCommands.remove(getCommand(commandName));
-                    ((org.bukkit.craftbukkit.v1_16_R3.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
-                    break;
-                case "v1_17_R1":
-                    scm = (org.bukkit.craftbukkit.v1_17_R1.command.CraftCommandMap) scmField.get(Bukkit.getServer());
-                    knownEdenCommands.remove(getCommand(commandName));
-                    ((org.bukkit.craftbukkit.v1_17_R1.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
-                    break;
-                case "v1_18_R1":
-                    scm = (org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap) scmField.get(Bukkit.getServer());
-                    knownEdenCommands.remove(getCommand(commandName));
-                    ((org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
-                    break;
-                case "v1_18_R2":
-                    scm = (org.bukkit.craftbukkit.v1_18_R2.command.CraftCommandMap) scmField.get(Bukkit.getServer());
-                    knownEdenCommands.remove(getCommand(commandName));
-                    ((org.bukkit.craftbukkit.v1_18_R2.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
-                    break;
-                case "v1_19_R1":
-                    scm = (org.bukkit.craftbukkit.v1_19_R1.command.CraftCommandMap) scmField.get(Bukkit.getServer());
-                    knownEdenCommands.remove(getCommand(commandName));
-                    ((org.bukkit.craftbukkit.v1_19_R1.command.CraftCommandMap) scm).getKnownCommands().remove(commandName);
-                    break;
-                default:
-                    throw new VersionNotHandledException();
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            knownEdenCommands.remove(getCommand(commandName));
+            getReflectedCommandMap(commandMap).remove(commandName);
+        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException e) {
             PrintUtils.printPrettyStacktrace(e);
-        } catch (VersionNotHandledException e) {
-            PrintUtils.log("§cEden API version " + Eden.getNMSVersion() + " is not handled by command manager. Please update Eden.");
         }
     }
 
@@ -147,5 +119,18 @@ public class CommandManager
     public static List<EdenCommand> getKnownCommands()
     {
         return knownEdenCommands;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Command> getReflectedCommandMap(CommandMap map) throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+    {
+        Method getKnownCommands = map.getClass().getMethod("getKnownCommands");
+
+        return (Map<String, Command>) getKnownCommands.invoke(map);
+    }
+
+    private static Class<?> getCraftCommandMapClass() throws ClassNotFoundException
+    {
+        return Class.forName("org.bukkit.craftbukkit." + Eden.getNMSVersion() + ".command.CraftCommandMap");
     }
 }

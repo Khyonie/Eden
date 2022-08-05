@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 
 @Deprecated

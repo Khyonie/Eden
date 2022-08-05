@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.java.annotations;
+package fish.yukiemeralis.eden.module.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

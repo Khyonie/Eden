@@ -39,14 +39,16 @@ import fish.yukiemeralis.eden.auth.PermissionGroup;
 import fish.yukiemeralis.eden.auth.SecurityCore;
 import fish.yukiemeralis.eden.command.CommandManager;
 import fish.yukiemeralis.eden.command.EdenCommand;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
 import fish.yukiemeralis.eden.core.CoreModule.DisableRequest;
 import fish.yukiemeralis.eden.core.modgui.ModuleGui;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
@@ -127,7 +129,7 @@ public class CoreCommand extends EdenCommand
             }
 
             new ModuleGui().display((Player) sender);
-            
+
             return;
         }
 
@@ -150,7 +152,7 @@ public class CoreCommand extends EdenCommand
             case "config":
                 // if (!ensureArgsCount(args, 5, 2, "config", sender))
                 //     break;
-
+                
                 // String oldValue = module.getConfig().get(args[3]);
 
                 // module.getConfig().put(args[3], args[4]);

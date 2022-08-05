@@ -16,12 +16,11 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.core.CompletionsManager;
 import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
@@ -39,7 +38,6 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @PreventUnload(CallerToken.EDEN)
 @EdenConfig
-@DefaultConfig
 
 /**
  * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for

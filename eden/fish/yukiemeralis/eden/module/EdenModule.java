@@ -19,11 +19,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig.DefaultConfigWrapper;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig.DefaultConfigWrapper;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.DefaultConfigFailure;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
@@ -31,8 +31,8 @@ import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.Result;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 
 /**
  * Represents an Eden module.
@@ -322,14 +322,6 @@ public abstract class EdenModule
     }
 
     /**
-     * Annotation to notify Eden that this module has a configuration file.
-     * @author Yuki_emeralis
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public static @interface EdenConfig {}
-
-    /**
      * Required annotation for all Eden modules to set themselves apart from other modules.
      * @author Yuki_emeralis
      */
@@ -366,10 +358,10 @@ public abstract class EdenModule
         Result<DefaultConfigWrapper, DefaultConfigFailure> data = new Result<>(DefaultConfigWrapper.class, DefaultConfigFailure.class);
         Class<? extends EdenModule> clazz = this.getClass();
         
-        if (!clazz.isAnnotationPresent(DefaultConfig.class))
-            return data.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_ANNOTATION);
+        // if (!clazz.isAnnotationPresent(EdenConfig.class))
+        //     return data.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_ANNOTATION);
 
-        DefaultConfig annotation = clazz.getAnnotation(DefaultConfig.class);
+        EdenConfig annotation = clazz.getAnnotation(EdenConfig.class);
         String fieldName = annotation.value();
         Field field;
         Map<String, Object> config;
@@ -434,27 +426,15 @@ public abstract class EdenModule
                         PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                         PrintUtils.log("§b- If you are a developer: please ensure your configuration is stored as a Map\\<String, Object\\>.");
                         return opt.none();
-                    case NO_DEFAULT_CONFIG_ANNOTATION:
-                        if (!file.exists())
-                        {
-                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the module class is missing an @DefaultConfig annotation! Cannot load module.>");
-                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
-                            PrintUtils.log("§b- If you are a developer: please add an @DefaultConfig annotation to your module class. See the wiki for more info.");
-                            return opt.none();
-                        }
-                        PrintUtils.log("<Module \">[" + this.modName + "]<\"'s module class is missing an @DefaultConfig annotation. Cannot verify stored configuration integrity.>", InfoType.ERROR);
-                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
-                        PrintUtils.log("§b- If you are a developer: please add an @DefaultConfig annotation to your module class. See the wiki for more info.");
-                        return opt.none();
                     case NO_DEFAULT_CONFIG_FOUND:
                         if (!file.exists())
                         {
-                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(DefaultConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(EdenConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
                             PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                             PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
                             return opt.none();
                         }
-                        PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(DefaultConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(EdenConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
                         PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                         PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
                         return opt.none();

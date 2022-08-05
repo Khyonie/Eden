@@ -1,9 +1,5 @@
 package fish.yukiemeralis.eden.command;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,12 +13,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteBranch;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteTree;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
+import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 
 /**
@@ -490,26 +488,5 @@ public abstract class EdenCommand extends Command
     private EdenCommand getInstance()
     {
         return this;
-    }
-
-    //
-    // Annotations
-    //
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    protected @interface EdenCommandHandler
-    {
-        String usage();
-        String description();
-        int argsCount();
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    protected @interface EdenCommandRedirect
-    {
-        String[] labels();
-        String command();
     }
 }

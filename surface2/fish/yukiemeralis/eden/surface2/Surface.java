@@ -3,8 +3,8 @@ package fish.yukiemeralis.eden.surface2;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 
 import org.bukkit.Material;
 

@@ -1,14 +1,15 @@
 package fish.yukiemeralis.eden.surface2;
 
+import org.bukkit.command.CommandSender;
+
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.EdenCommand;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.ModuleManager;
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
-
-import org.bukkit.command.CommandSender;
 
 /**
  * Small reload command for debugging. Unsafe.

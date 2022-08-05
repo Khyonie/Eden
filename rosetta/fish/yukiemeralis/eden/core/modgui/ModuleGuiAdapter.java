@@ -2,8 +2,8 @@ package fish.yukiemeralis.eden.core.modgui;
 
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder.SimpleComponentAction;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
