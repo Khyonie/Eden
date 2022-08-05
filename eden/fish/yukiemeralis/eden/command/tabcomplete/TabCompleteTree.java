@@ -19,6 +19,9 @@ public class TabCompleteTree
      */
     public TabCompleteBranch addBranch(String... labels)
     {
+        if (labels.length == 0)
+            throw new UnsupportedOperationException("Must add at least one branch");
+
         for (String str : labels)
             branches.put(str, new TabCompleteBranch(str));			
 

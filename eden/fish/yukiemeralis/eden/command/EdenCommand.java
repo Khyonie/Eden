@@ -470,9 +470,9 @@ public abstract class EdenCommand extends Command
     {
         tree.addBranch(labels);
 
-        if (labels.length == 1)
-            return tree.getBranch(labels[0]);
-        return null;
+        if (labels.length != 1)
+            throw new UnsupportedOperationException("Branches cannot be added to more than one branch at a time");
+        return tree.getBranch(labels[0]);
     }
 
     /**

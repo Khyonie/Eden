@@ -13,6 +13,7 @@ import org.bukkit.command.CommandMap;
 
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.annotation.PreventUnload;
+import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 
@@ -104,12 +105,12 @@ public class CommandManager
      * @param name The label of the command.
      * @return An Eden command matching the name given.
      */
-    public static EdenCommand getEdenCommand(String name)
+    public static Option<EdenCommand> getEdenCommand(String name)
     {
         for (EdenCommand cmd : knownEdenCommands)
             if (cmd.getLabel().equals(name))
-                return cmd;
-        return null;
+                return Option.some(cmd, EdenCommand.class);
+        return Option.none(EdenCommand.class);
     }
 
     /**

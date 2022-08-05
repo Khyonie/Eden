@@ -7,6 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.CommandMinecart;
+
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.core.CompletionsManager;
 import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
@@ -17,12 +23,6 @@ import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.CommandMinecart;
 
 /**
  * Eden's permissions manager. Supplies default permissions, and supports permissions groups out of the box.
@@ -69,13 +69,13 @@ public class EdenPermissionManager extends PermissionsManager
     }
 
     /**
-     * Obtains a permissions group with a given name. May return null if the group does not exist.
+     * Obtains a permissions group with a given name. Has an OptionState of NONE if the group does not exist.
      * @param name A permissions group with the given name.
      * @return A permissions group with the given name.
      */
-    public PermissionGroup getGroup(String name)
+    public Option<PermissionGroup> getGroup(String name)
     {
-        return permissionGroups.get(name);
+        return permissionGroups.get(name) == null ? new Option<PermissionGroup>(PermissionGroup.class).some(permissionGroups.get(name)) : new Option<PermissionGroup>(PermissionGroup.class).none();
     }
 
     /**

@@ -112,8 +112,7 @@ public class SecurityCore extends EdenModule
     @Deprecated
     public static Map<String, fish.yukiemeralis.eden.auth.old.SecurePlayerAccount> getAccountRequests() 
     { 
-        //return Permissions.getAccountRequests();
-        return null;
+        throw new UnsupportedOperationException("Secure player accounts are no longer used.");
     }
 
     static LocalDate date;

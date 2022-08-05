@@ -246,16 +246,12 @@ public class Permissions
      * @param password The input string
      * @return A string hash for the given input
      */
-    public static String genHash(String password)
-    {
-        try {   
-            MessageDigest msgDigest = MessageDigest.getInstance("MD5");
-            msgDigest.update(password.getBytes());
+    public static String genHash(String password) throws NoSuchAlgorithmException
+    {        
+        MessageDigest msgDigest = MessageDigest.getInstance("MD5");
+        msgDigest.update(password.getBytes());
 
-            return new String(msgDigest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
+        return new String(msgDigest.digest());
     }
 
     /**

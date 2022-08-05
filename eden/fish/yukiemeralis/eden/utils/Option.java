@@ -53,4 +53,14 @@ public class Option<T>
             return contained;
         return null; // This can't ever fire
     }
+
+    public static <T> Option<T> some(T contained, Class<? extends T> containedClass)
+    {
+        return new Option<T>(containedClass).some(contained);
+    }
+
+    public static <T> Option<T> none(Class<? extends T> containedClass)
+    {
+        return new Option<T>(containedClass).none();
+    }
 }

@@ -49,12 +49,16 @@ public class TabCompleteBranch
      */
     public TabCompleteBranch addBranch(String... branchLabels)
     {
+        if (branchLabels.length == 0)
+            throw new UnsupportedOperationException("Must add at least one branch");
+
         for (String str : branchLabels)
             attachedBranches.put(str, new TabCompleteBranch(str));
 
-        if (branchLabels.length == 1)
-            return attachedBranches.get(branchLabels[0]);
-        return null;
+        if (branchLabels.length != 1)
+            return null;
+            
+        return attachedBranches.get(branchLabels[0]);
     }
 
     /**

@@ -213,7 +213,7 @@ public abstract class EdenModule
         // For some unholy reason this is faster than Thread.getCurrentThread().getCurrentStacktrace()
         StackTraceElement current = new Throwable().getStackTrace()[1];
         PrintUtils.log("<Method> [" + current.getMethodName() + "] <in> [" + current.getClassName() + "] <requested instance from a module, however this module does not hide EdenModule#getInstance\\\\(\\\\)!>", InfoType.ERROR);
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
