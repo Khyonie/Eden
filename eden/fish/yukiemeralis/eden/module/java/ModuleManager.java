@@ -38,13 +38,13 @@ import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.ModuleDisableFailure;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 import fish.yukiemeralis.eden.utils.Result;
 import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
 import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.OptionState;
 
 /**
  * Handler for all tasks related to Eden's modules.</p>
@@ -497,13 +497,12 @@ public class ModuleManager
 	 * @param caller The token of the requestee.
 	 * @return Whether or not disabling was successful.
 	 */
-	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean force)
+	public Option disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean force)
 	{
-		Option<ModuleDisableFailureData> result = new Option<>(ModuleDisableFailureData.class);
 		EdenModule module = getEnabledModuleByName(name);
 
 		if (module == null)
-			return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.NULL_MODULE));; // Can't disable a module that doesn't exist
+			return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.NULL_MODULE));; // Can't disable a module that doesn't exist
 
 		// Check for a required caller token
 		if (module.getClass().isAnnotationPresent(PreventUnload.class))
@@ -513,7 +512,7 @@ public class ModuleManager
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
 				PrintUtils.log("<An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ">", InfoType.WARN);
-				return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNAUTHORIZED_CALLERTOKEN));
+				return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNAUTHORIZED_CALLERTOKEN));
 			}	
 		}
 
@@ -548,7 +547,7 @@ public class ModuleManager
 					// });
 					
 					dependentModuleTree.remove(module.getClass());
-					return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.DOWNSTREAM_DISABLE_FAILURE));
+					return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.DOWNSTREAM_DISABLE_FAILURE));
 				}
 
 				if (!disabledModuleList.contains(mod))
@@ -601,29 +600,29 @@ public class ModuleManager
 				Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
 
 				PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
-				return result.none();
+				return Option.none();
 			}
 		} catch (Exception e) {
 			PrintUtils.log("<Failed to disable module! Stacktrace is below...>", InfoType.ERROR);
 			PrintUtils.printPrettyStacktrace(e);
 
-			return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.JAVA_ERROR));
+			return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.JAVA_ERROR));
 		}
 
-		return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNKNOWN_ERROR));
+		return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNKNOWN_ERROR));
 	}
 
 	/**
 	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
 	 * @param name The expected name of a module.
 	 */
-	public Option<ModuleDisableFailureData> disableModule(String name)
+	public Option disableModule(String name)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false);
 	}
 
-	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken token)
+	public Option disableModule(String name, CallerToken token)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, token, disabledModuleList, false);
@@ -633,13 +632,13 @@ public class ModuleManager
 	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
 	 * @param name The expected name of a module.
 	 */
-	public Option<ModuleDisableFailureData> disableModule(String name, boolean force)
+	public Option disableModule(String name, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, force);
 	}
 
-	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken token, boolean force)
+	public Option disableModule(String name, CallerToken token, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, token, disabledModuleList, force);
@@ -730,12 +729,11 @@ public class ModuleManager
 	 * NONE - Class was found outside of a module. 
 	 * @param clazz The class to search with.
 	 */
-	public Option<EdenModule> getHostModule(Class<?> clazz) 
+	public Option getHostModule(Class<?> clazz) 
 	{
-		Option<EdenModule> option = new Option<>(EdenModule.class);
 		try {
 			Class.forName(clazz.getName(), false, this.getClass().getClassLoader()); // Part of Eden, bukkit/spigot, or NMS
-			return option; // Option is none
+			return Option.none(); // Option is none
 		} catch (ClassNotFoundException e) {}
 
 		for (String current : loader_cache.keySet())
@@ -744,15 +742,13 @@ public class ModuleManager
 
 			try {
 				loader.findClass(clazz.getName(), false);
-				option.some(loader.getModule()); // Class found
-				return option;
+				return Option.some(loader.getModule()); // Class found 
 			} catch (ClassNotFoundException e) {
 				continue;
 			}
 		}
 
-		option.some(null); // Class was not found anywhere
-		return option;
+		return Option.some(null); // Class was not found anywhere
 	}
 
 	/**

@@ -6,3 +6,4 @@ secondarysource:
 output:~/Servers/DevServer/1182/plugins/Eden-{MM}{DD}{YY}-{ASKME}.jar
 classpath:lib/fastutil-8.5.6.jar:lib/spigot-api-1.19-R0.1-SNAPSHOT-shaded.jar:lib/spigot-1.19-R0.1-SNAPSHOT.jar:lib/spigot-1.18.2-R0.1-SNAPSHOT.jar:lib/spigot-api-1.18.2-R0.1-SNAPSHOT-shaded.jar:lib/spigot-1.18.1-R0.1-SNAPSHOT.jar:lib/spigot-api-1.18.1-R0.1-SNAPSHOT-shaded.jar:lib/spigot-1.17.1.jar:lib/spigot-api-1.17.1-R0.1-SNAPSHOT-shaded.jar:lib/spigot-1.16.5.jar:lib/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar:eden/
 input:LICENSE,plugin.yml,internalModules/
+compilerargs:--release 18 --enable-preview

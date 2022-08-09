@@ -47,7 +47,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 @LoadBefore(loadBefore = {"Checkpoint", "Surface2"})
 @EdenConfig
 @PreventUnload(CallerToken.EDEN)
-public class CoreModule extends EdenModule
+public class Rosetta extends EdenModule
 {
     static List<DisableRequest> EDEN_DISABLE_REQUESTS = new ArrayList<>();
     static List<String> EDEN_WARN_DISABLE_REQUESTS = new ArrayList<>();
@@ -60,7 +60,7 @@ public class CoreModule extends EdenModule
         "eColor", "47FF9A"
     );
 
-    public CoreModule()
+    public Rosetta()
     {
         addListener(new UuidCacheListener());
         addListener(new PlayerIPListener());

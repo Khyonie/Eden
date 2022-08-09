@@ -12,6 +12,7 @@ import org.bukkit.util.StringUtil;
 import fish.yukiemeralis.eden.command.CommandManager;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteBranch;
+import fish.yukiemeralis.eden.utils.option.Some;
 
 /**
  * Listener for Eden TabComplete suggestions.
@@ -33,7 +34,10 @@ public class TabCompleteListener implements Listener
 
         String commandLabel = commandFull[0].substring(1); 
         
-        EdenCommand cmd = CommandManager.getEdenCommand(commandLabel);
+        EdenCommand cmd = switch (CommandManager.getEdenCommand(commandLabel)) {
+            case Some s -> s.unwrap(EdenCommand.class);
+            case default -> null;
+        };
 
         if (cmd == null)
             return; // Not an Eden command

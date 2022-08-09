@@ -23,14 +23,14 @@ public class PagedSurfaceGui extends SurfaceGui
     private int row = 0; // Row where the top bar will generate
 
     private static final GuiItemStack NEXT_PAGE_ITEM = SimpleComponentBuilder.build(Material.PAPER, "§r§f§lNext page", (e) -> {
-            PagedSurfaceGui gui = (PagedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap();    
+            PagedSurfaceGui gui = (PagedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap(SurfaceGui.class);    
             gui.goToPage(e.getWhoClicked(), gui.getPage() + 1);
         },
         "§7§oOpens the next page." 
     );
 
     private static final GuiItemStack BACK_PAGE_ITEM = SimpleComponentBuilder.build(Material.MAP, "§r§f§lPrevious page", (e) -> {
-            PagedSurfaceGui gui = (PagedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap();    
+            PagedSurfaceGui gui = (PagedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap(SurfaceGui.class);    
             gui.goToPage(e.getWhoClicked(), gui.getPage() - 1);
         },
         "§7§oOpens the previous page."

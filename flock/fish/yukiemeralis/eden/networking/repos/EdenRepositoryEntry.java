@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import com.google.gson.annotations.Expose;
+
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.ModuleDisableFailure;
 import fish.yukiemeralis.eden.networking.NetworkingModule;
 import fish.yukiemeralis.eden.networking.NetworkingUtils;
 import fish.yukiemeralis.eden.networking.enums.DefaultDownloadBehavior;
@@ -18,18 +23,11 @@ import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Result;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.Result;
+import fish.yukiemeralis.eden.utils.option.Option;
 
-import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-
-@SuppressWarnings("unused")
 public class EdenRepositoryEntry implements GuiComponent
 {
     @Expose
@@ -247,17 +245,17 @@ public class EdenRepositoryEntry implements GuiComponent
 
                         if (enabled)
                         {
-                            Option<ModuleDisableFailureData> result = Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
+                            Option result = Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
 
                             data: switch (result.getState())
                             {
                                 case NONE: // Don't need to do anything
                                     break data;
                                 case SOME: // Disable failed, reload given modules
-                                    PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! Attempting to perform rollback on " + result.unwrap().getDownstreamModules().size() + " " + PrintUtils.plural(result.unwrap().getDownstreamModules().size(), "module", "modules") + "...");
-                                    PrintUtils.sendMessage(event.getWhoClicked(), "§c§oTechnical failure reason: " + result.unwrap().getReason().name());
+                                    PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to disable module! Attempting to perform rollback on " + result.unwrap(ModuleDisableFailureData.class).getDownstreamModules().size() + " " + PrintUtils.plural(result.unwrap(ModuleDisableFailureData.class).getDownstreamModules().size(), "module", "modules") + "...");
+                                    PrintUtils.sendMessage(event.getWhoClicked(), "§c§oTechnical failure reason: " + result.unwrap(ModuleDisableFailureData.class).getReason().name());
 
-                                    if (result.unwrap().performRollback())
+                                    if (result.unwrap(ModuleDisableFailureData.class).performRollback())
                                     {
                                         PrintUtils.sendMessage(event.getWhoClicked(), "§cRollback complete.");
                                         return;

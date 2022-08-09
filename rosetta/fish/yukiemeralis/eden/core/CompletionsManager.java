@@ -15,9 +15,9 @@ import org.bukkit.entity.Player;
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 @SuppressWarnings("unused") // "Unused" methods are instead used reflectively
 public class CompletionsManager 
@@ -44,18 +44,13 @@ public class CompletionsManager
         return completionLists.containsKey(key);
     }
 
-    public static Option<String> registerCompletion(String label, ObjectMethodPair data, boolean overwrite)
+    public static Option registerCompletion(String label, ObjectMethodPair data, boolean overwrite)
     {
-        Option<String> option = new Option<>(String.class);
-
         if (completionLists.containsKey(label) && !overwrite)
-        {
-            option.some("Completion with this name already exists.");
-            return option;
-        }
+            return Option.some("Completion with this name already exists.");
 
         completionLists.put(label, data);
-        return option;
+        return Option.none();
     }
 
     @SuppressWarnings("unchecked")

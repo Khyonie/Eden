@@ -42,7 +42,7 @@ import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
-import fish.yukiemeralis.eden.core.CoreModule.DisableRequest;
+import fish.yukiemeralis.eden.core.Rosetta.DisableRequest;
 import fish.yukiemeralis.eden.core.modgui.ModuleGui;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.annotation.EdenConfig;
@@ -56,11 +56,12 @@ import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.HashUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.Result;
 import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.OptionState;
+import fish.yukiemeralis.eden.utils.option.Some;
 
 @PreventUnload(CallerToken.EDEN)
 public class CoreCommand extends EdenCommand
@@ -380,12 +381,16 @@ public class CoreCommand extends EdenCommand
 
                         if (args.length > 4)
                         {
-                            PermissionGroup baseGroup = ((EdenPermissionManager) Eden.getPermissionsManager()).getGroup(args[4]);
+                            PermissionGroup baseGroup = switch (((EdenPermissionManager) Eden.getPermissionsManager()).getGroup(args[4]))
+                            {
+                                case Some s -> s.unwrap(PermissionGroup.class);
+                                case default -> null;
+                            };
 
                             if (baseGroup == null)
                             {
-                                PrintUtils.sendMessage(sender, "§cUnknown permissions group \"" + args[4] + "\".");
-                                return;
+                                PrintUtils.sendMessage(sender, "§cUnknown permissions group \"" + args[4] + "\".");  
+                                return; 
                             }
 
                             group.addPermissions(baseGroup.getPermissions());
@@ -598,7 +603,7 @@ public class CoreCommand extends EdenCommand
                 {
                     if (module.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
                     {
-                        if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 1))
+                        if (Rosetta.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 1))
                         {
                             PrintUtils.sendMessage(sender, "§Already warned you about unloading this module, going ahead and unloading it...");
                             Eden.getModuleManager().removeModuleFromMemory(module.getName(), CallerToken.EDEN);
@@ -611,7 +616,7 @@ public class CoreCommand extends EdenCommand
                         PrintUtils.sendMessage(sender, "§cIf you're absolutely CERTAIN you wish to continue, enter \"§4iknowwhatimdoingiswear§c\".");
                         PrintUtils.sendMessage(sender, "§cThis request will time out in 60 seconds.");
 
-                        CoreModule.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 1));
+                        Rosetta.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 1));
 
                         new BukkitRunnable() 
                         {
@@ -619,7 +624,7 @@ public class CoreCommand extends EdenCommand
                             public void run() 
                             {
                                 try {
-                                    CoreModule.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 1));
+                                    Rosetta.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 1));
                                 } catch (Exception e) {
                                     // In case CORE is our unload target, silently handle
                                 } 
@@ -677,14 +682,13 @@ public class CoreCommand extends EdenCommand
 
                 if (module.getClass().isAnnotationPresent(PreventUnload.class) && sender instanceof ConsoleCommandSender)
                 {
-                    
                     if (module.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
                     {
-                        if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 0))
+                        if (Rosetta.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 0))
                         {
                             PrintUtils.sendMessage(sender, "§6Already warned you about disabling this module, going ahead and disabling it...");
                             
-                            Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.EDEN);
+                            Option option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.EDEN);
 
                             state: switch (option.getState())
                             {
@@ -692,9 +696,9 @@ public class CoreCommand extends EdenCommand
                                     PrintUtils.sendMessage(sender, "Disabled protected module.");
                                     break state;
                                 case SOME:
-                                    PrintUtils.sendMessage(sender, "§cFailed to disable protected module! Performing rollback... (Reason: " + option.unwrap().getReason() + ")");
+                                    PrintUtils.sendMessage(sender, "§cFailed to disable protected module! Performing rollback... (Reason: " + option.unwrap(ModuleDisableFailureData.class).getReason() + ")");
                                     
-                                    if (option.unwrap().performRollback())
+                                    if (option.unwrap(ModuleDisableFailureData.class).performRollback())
                                     {
                                         PrintUtils.sendMessage(sender, "§cRollback complete.");
                                         break state;
@@ -758,14 +762,14 @@ public class CoreCommand extends EdenCommand
                         }
 
 
-                        CoreModule.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 0));
+                        Rosetta.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 0));
 
                         new BukkitRunnable() {
                             @Override
                             public void run()
                             {
                                 try {
-                                    CoreModule.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 0));
+                                    Rosetta.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 0));
                                 } catch (Exception e) {
                                     // In cose CORE is our disable target, handle error silently
                                 }
@@ -776,16 +780,16 @@ public class CoreCommand extends EdenCommand
                     }
                 }
  
-                Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.fromCommandSender(sender));
+                Option option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.fromCommandSender(sender));
 
                 option: switch (option.getState())
                 {
                     case NONE:
                         break option;
                     case SOME:
-                        PrintUtils.sendMessage(sender, "§cFailed to disable module! Performing rollback... (Reason: " + option.unwrap().getReason() + ")");
+                        PrintUtils.sendMessage(sender, "§cFailed to disable module! Performing rollback... (Reason: " + option.unwrap(ModuleDisableFailureData.class).getReason() + ")");
 
-                        if (option.unwrap().performRollback())
+                        if (option.unwrap(ModuleDisableFailureData.class).performRollback())
                         {
                             PrintUtils.sendMessage(sender, "§cRollback complete.");
                             break;
@@ -1198,13 +1202,13 @@ public class CoreCommand extends EdenCommand
 
         if (m.getIsEnabled())
         {
-            Option<ModuleDisableFailureData> result = Eden.getModuleManager().disableModule(m.getName());
+            Option result = Eden.getModuleManager().disableModule(m.getName());
 
             if (result.getState().equals(OptionState.SOME))
             {
-                PrintUtils.sendMessage(sender, "§cFailed to disable \"" + args[1] + "\". Reason: " + result.unwrap().getReason().name() + ". Attempting rollback.");
+                PrintUtils.sendMessage(sender, "§cFailed to disable \"" + args[1] + "\". Reason: " + result.unwrap(ModuleDisableFailureData.class).getReason().name() + ". Attempting rollback.");
 
-                if (!result.unwrap().performRollback())
+                if (!result.unwrap(ModuleDisableFailureData.class).performRollback())
                 {
                     PrintUtils.sendMessage(sender, "§cRollback complete.");
                     return;

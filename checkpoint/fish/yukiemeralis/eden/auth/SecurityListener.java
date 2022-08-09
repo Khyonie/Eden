@@ -15,9 +15,9 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
+import fish.yukiemeralis.eden.utils.option.Some;
+
 
 /**
  * Handler for various smaller security tasks.
@@ -27,12 +27,14 @@ public class SecurityListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onConnect(PlayerJoinEvent event)
     {
-        Option<UuidBanEntry> isBanned = SecurityCore.isBanned(event.getPlayer());
-        if (isBanned.getState().equals(OptionState.SOME))
+        switch (SecurityCore.isBanned(event.getPlayer()))
         {
-            event.getPlayer().kickPlayer(isBanned.unwrap().getBanMessage());
-            event.setJoinMessage("§8[§4§l✕§r§8] §c" + event.getPlayer().getName() + "§7 attempted to connect, but is banned.");
-            return;
+            case Some s -> {
+                event.getPlayer().kickPlayer(s.unwrap(UuidBanEntry.class).getBanMessage());
+                event.setJoinMessage("§8[§4§l✕§r§8] §c" + event.getPlayer().getName() + "§7 attempted to connect, but is banned.");
+                return;
+            }
+            case default -> {}
         }
 
         PlayerData account = Eden.getPermissionsManager().getPlayerData(event.getPlayer());

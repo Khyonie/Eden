@@ -16,7 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.utils.Option;
+import fish.yukiemeralis.eden.utils.option.Option;
+;
 
 public abstract class SurfaceGui implements ISurfaceGui
 {
@@ -324,11 +325,9 @@ public abstract class SurfaceGui implements ISurfaceGui
         OPEN_GUIS.remove(e);
     }
 
-    public static Option<SurfaceGui> getOpenGui(HumanEntity e)
+    public static Option getOpenGui(HumanEntity e)
     {
-        Option<SurfaceGui> option = new Option<>(SurfaceGui.class);
-
-        return OPEN_GUIS.containsKey(e) ? option.some(OPEN_GUIS.get(e)) : option.none();
+        return OPEN_GUIS.containsKey(e) ? Option.some(OPEN_GUIS.get(e)) : Option.none();
     }
 
     public InventoryView display(HumanEntity target)
@@ -346,7 +345,7 @@ public abstract class SurfaceGui implements ISurfaceGui
         // Clean up a little
         if (isInSurfaceGui(target))
         {
-            getOpenGui(target).unwrap().onGuiClose(target, view(target));
+            getOpenGui(target).unwrap(SurfaceGui.class).onGuiClose(target, view(target));
             OPEN_GUIS.remove(target);
         }
 

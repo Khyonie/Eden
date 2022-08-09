@@ -29,14 +29,14 @@ public class TabbedSurfaceGui extends SurfaceGui
     private GuiTab currentTab;
 
     private static final GuiItemStack NEXT_TAB_SECTION = SimpleComponentBuilder.build(Material.PAPER, "§r§f§lNext page", (e) -> {
-            TabbedSurfaceGui gui = (TabbedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap();
+            TabbedSurfaceGui gui = (TabbedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap(SurfaceGui.class);
             gui.updateTabLine(e.getWhoClicked(), gui.getTabPage() + 1); 
         }, 
         "§7§oNavigates to next tabpage."
     );
 
     private static final GuiItemStack PREVIOUS_TAB_SECTION = SimpleComponentBuilder.build(Material.MAP, "§r§f§lPrevious page", (e) -> {
-            TabbedSurfaceGui gui = (TabbedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap();
+            TabbedSurfaceGui gui = (TabbedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap(SurfaceGui.class);
             gui.updateTabLine(e.getWhoClicked(), gui.getTabPage() - 1); 
         }, 
         "§7§oNavigates to previous tabpage."

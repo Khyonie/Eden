@@ -23,6 +23,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.annotation.Branch;
 import fish.yukiemeralis.eden.module.event.EdenFinishLoadingEvent;
@@ -33,13 +36,10 @@ import fish.yukiemeralis.eden.permissions.EmergencyPermissionsManager;
 import fish.yukiemeralis.eden.permissions.PermissionsManager;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.OptionState;
 
 /**
  * Represents the Eden core plugin, with module management and commands.
@@ -267,11 +267,11 @@ public class Eden extends JavaPlugin
 			}
 		}
 
-		Option<EdenModule> host = module_manager.getHostModule(manager.getClass());
+		Option host = module_manager.getHostModule(manager.getClass());
 		String name = "from Unknown module";
 		if (host.getState().equals(OptionState.SOME))
-			 if (host.unwrap() != null)
-				name = "from module \"{" + host.unwrap().getName() + "}\"";
+			 if (host.unwrap(EdenModule.class) != null)
+				name = "from module \"{" + host.unwrap(EdenModule.class).getName() + "}\"";
 				
 		PrintUtils.log("Permissions manager: [" + managerName + "] -> {" + manager.getClass().getSimpleName() + "} \\(" + name + "\\)");
 

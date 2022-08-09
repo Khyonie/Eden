@@ -32,7 +32,7 @@ public class UuidBanCommand extends EdenCommand
             return;
         }
 
-        PrintUtils.sendMessage(sender, "Player \"§c" + args[1] + "§7\" is already UUID-banned. Reason: \"§e" + SecurityCore.isBanned(Eden.getInstance().getServer().getPlayerExact(args[1])).unwrap().getBanMessage() + "§7\".");
+        PrintUtils.sendMessage(sender, "Player \"§c" + args[1] + "§7\" is already UUID-banned. Reason: \"§e" + SecurityCore.isBanned(Eden.getInstance().getServer().getPlayerExact(args[1])).unwrap(UuidBanEntry.class).getBanMessage() + "§7\".");
     }
 
     @EdenCommandHandler(usage = "uuidban remove <PLAYER>", description = "Pardon a UUID-banned player.", argsCount = 2)

@@ -22,9 +22,9 @@ import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
-import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.OptionState;
 
 public class ModuleSubGui extends SurfaceGui
 {
@@ -117,7 +117,7 @@ public class ModuleSubGui extends SurfaceGui
 
         displayedButton = generateDisableActiveItem(e);
 
-        Option<DisableData> option = isDisableDisallowed();
+        Option option = isDisableDisallowed();
         if (module.getClass().isAnnotationPresent(PreventUnload.class) || option.getState().equals(OptionState.SOME))    
             displayedButton = generateDisableInactiveItem(option);
 
@@ -130,7 +130,7 @@ public class ModuleSubGui extends SurfaceGui
         return this.module;
     }
 
-    private GuiItemStack generateDisableInactiveItem(Option<DisableData> data)
+    private GuiItemStack generateDisableInactiveItem(Option data)
     {
         List<String> description = new ArrayList<>();
         description.add("§7§oThis module cannot be disabled for the");
@@ -150,8 +150,8 @@ public class ModuleSubGui extends SurfaceGui
 
         if (data.getState().equals(OptionState.SOME))
         {
-            description.add((!additionalFlag ? "§7§oD" : "§7§oAdditionally, d") + "ependant module " + data.unwrap().getModule().getName() + "'s disable");
-            description.add("§7§opolicy of " + data.unwrap().getToken() + " disallows user disable requests.");
+            description.add((!additionalFlag ? "§7§oD" : "§7§oAdditionally, d") + "ependant module " + data.unwrap(DisableData.class).getModule().getName() + "'s disable");
+            description.add("§7§opolicy of " + data.unwrap(DisableData.class).getToken() + " disallows user disable requests.");
             description.add("");        
         }
 
@@ -177,12 +177,12 @@ public class ModuleSubGui extends SurfaceGui
 
 
         return SimpleComponentBuilder.build(Material.YELLOW_CONCRETE, "§r§6§lDisable module", (e) -> {
-                Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName());
+                Option option = Eden.getModuleManager().disableModule(module.getName());
 
                 if (option.getState().equals(OptionState.SOME))
                 {
-                    PrintUtils.sendMessage(e.getWhoClicked(), "§cFailed to disable " + module.getName() + " v" + module.getVersion() + "! Failure: " + option.unwrap().getReason().name() + ", attempting rollback...");
-                    if (option.unwrap().performRollback()) {
+                    PrintUtils.sendMessage(e.getWhoClicked(), "§cFailed to disable " + module.getName() + " v" + module.getVersion() + "! Failure: " + option.unwrap(ModuleDisableFailureData.class).getReason().name() + ", attempting rollback...");
+                    if (option.unwrap(ModuleDisableFailureData.class).performRollback()) {
                         PrintUtils.sendMessage(e.getWhoClicked(), "§cAttempted rollback failed. Restarting the server or executing /eden restore may fix the problem.");
                         return;
                     }
@@ -207,20 +207,18 @@ public class ModuleSubGui extends SurfaceGui
         return ItemUtils.build(Material.OAK_SAPLING, "§r§9§lDependants", description.toArray(new String[description.size()]));
     }
 
-    private Option<DisableData> isDisableDisallowed()
+    private Option isDisableDisallowed()
     {
-        Option<DisableData> option = new Option<>(DisableData.class);
-
         for (EdenModule m : recurseDependencies(module, new ArrayList<>()))
             if (m.getClass().isAnnotationPresent(PreventUnload.class))
             {
                 if (!m.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.PLAYER))
                 {
-                    return option.some(new DisableData(m, m.getClass().getAnnotation(PreventUnload.class).value().name()));
+                    return Option.some(new DisableData(m, m.getClass().getAnnotation(PreventUnload.class).value().name()));
                 }
             }
 
-        return option;
+        return Option.none();
     }
 
     private List<EdenModule> recurseDependencies(EdenModule m, List<EdenModule> data)

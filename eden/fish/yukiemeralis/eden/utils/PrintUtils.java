@@ -12,7 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 
 import fish.yukiemeralis.eden.Eden;
-
+import fish.yukiemeralis.eden.utils.option.Some;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -232,7 +232,10 @@ public class PrintUtils
             return ecolor_hex;
         if (Eden.getModuleManager().isModulePresent("Rosetta"))
         {
-            ecolor_hex = Eden.getModuleManager().getModuleByName("Rosetta").getConfig().getString("eColor");
+            ecolor_hex = switch (Eden.getModuleManager().getModuleByName("Rosetta").getConfig().getString("eColor")) {
+                case Some s -> s.unwrap(String.class);
+                case default -> "47FF9A";
+            };
             return ecolor_hex;
         }
         

@@ -28,11 +28,14 @@ import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 import fish.yukiemeralis.eden.utils.Result;
 import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.Some;
+
+
 
 /**
  * Represents an Eden module.
@@ -390,15 +393,14 @@ public abstract class EdenModule
      * @param file This module's configuration file.
      * @return An option containing a DefaultConfigWrapper. Always match the OptionState before unwrapping.
      */
-    private Option<DefaultConfigWrapper> getConfigSafe(File file)
+    private Option getConfigSafe(File file)
     {
         Result<DefaultConfigWrapper, DefaultConfigFailure> data = getDefaultConfig();
-        Option<DefaultConfigWrapper> opt = new Option<>(DefaultConfigWrapper.class);
         
         switch (data.getState())
         {
             case OK:
-                return opt.some((DefaultConfigWrapper) data.unwrap());
+                return Option.some((DefaultConfigWrapper) data.unwrap());
             case ERR:
                 switch ((DefaultConfigFailure) data.unwrap())
                 {
@@ -408,40 +410,40 @@ public abstract class EdenModule
                             PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the supplied default configuration is empty! Cannot load module.>", InfoType.ERROR);
                             PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                             PrintUtils.log("§b- If you are a developer: please populate your default configuration, or consider removing the @EdenConfig annotation entirely.");
-                            return opt.none();
+                            return Option.none();
                         }
                         PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is empty! Cannot verify current stored configuration integrity.>", InfoType.ERROR);
                         PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                         PrintUtils.log("§b- If you are a developer: please populate your default configuration.");
-                        return opt.none();
+                        return Option.none();
                     case INVALID_DEFAULT_CONFIG:
                         if (!file.exists())
                         {   
                             PrintUtils.log("<Module \">[" + this.modName + "]<\"requested a new configuration file, but the supplied default configuration is invalid! Cannot load module.>", InfoType.ERROR);
                             PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                             PrintUtils.log("§b- If you are a developer: please ensure your configuration is stored as a Map\\<String, Object\\>.");
-                            return opt.none();
+                            return Option.none();
                         }
                         PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is invalid! Cannot verify current stored configuration integrity.>", InfoType.ERROR);
                         PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                         PrintUtils.log("§b- If you are a developer: please ensure your configuration is stored as a Map\\<String, Object\\>.");
-                        return opt.none();
+                        return Option.none();
                     case NO_DEFAULT_CONFIG_FOUND:
                         if (!file.exists())
                         {
                             PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(EdenConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
                             PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                             PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
-                            return opt.none();
+                            return Option.none();
                         }
                         PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(EdenConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
                         PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
                         PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
-                        return opt.none();
+                        return Option.none();
                     case UNKNOWN_ERROR:
                     default:
                         PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a configuration file, but an error occurred in accessing the default configuration.>", InfoType.ERROR);
-                        return opt.none();
+                        return Option.none();
                 }
             default:
                 throw new TimeSpaceDistortionException(); // This shouldn't fire unless something exceptionally catastrophic happens
@@ -456,16 +458,11 @@ public abstract class EdenModule
         File file = new File("./plugins/Eden/configs/" + this.modName + ".json");
         PrintUtils.logVerbose("Attempting to load \"" + this.modName + "\"'s configuration...", InfoType.INFO);
 
-        // Attempt to pull config data from @DefaultConfig annotation
-        Option<DefaultConfigWrapper> data = getConfigSafe(file);
-        
-        Map<String, Object> defaultConfig = switch (data.getState())
+        // Attempt to pull config data from @EdenConfig annotation
+        Map<String, Object> defaultConfig = switch (getConfigSafe(file))
         {
-            case SOME:
-                yield data.unwrap().getData();
-            case NONE:
-            default:
-                yield null;
+            case Some s -> s.unwrap(DefaultConfigWrapper.class).getData();
+            case default -> null;
         };
 
         if (defaultConfig == null)
@@ -474,7 +471,7 @@ public abstract class EdenModule
         // Generate config file if needed
         if (!file.exists())
         {
-            ModuleConfig config = new ModuleConfig(new HashMap<>(((DefaultConfigWrapper) data.unwrap()).getData()));
+            ModuleConfig config = new ModuleConfig(new HashMap<>(defaultConfig));
 
             JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
         }

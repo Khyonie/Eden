@@ -1,33 +1,27 @@
 package fish.yukiemeralis.eden.surface2;
 
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fish.yukiemeralis.eden.surface2.component.GuiComponent;
+import fish.yukiemeralis.eden.utils.option.Some;
+
 public class SurfaceGuiListener implements Listener 
 {
     @EventHandler
     public void onClose(InventoryCloseEvent event)
     {
-        Option<SurfaceGui> option = SurfaceGui.getOpenGui(event.getPlayer());
-        SurfaceGui gui;
-
-        switch (option.getState())
+        SurfaceGui gui = switch (SurfaceGui.getOpenGui(event.getPlayer()))
         {
-            case NONE:
-                return;
-            case SOME:
-                gui = option.unwrap();
-                break;
-            default:
-                throw new TimeSpaceDistortionException();
-        }
+            case Some s -> s.unwrap(SurfaceGui.class);
+            default -> null;
+        };
+
+        if (gui == null)
+            return;
 
         gui.onGuiClose(event.getPlayer(), event.getView());
 
@@ -38,19 +32,14 @@ public class SurfaceGuiListener implements Listener
     public void onInteract(InventoryClickEvent event)
     {
         try {
-            Option<SurfaceGui> option = SurfaceGui.getOpenGui(event.getWhoClicked());
-            SurfaceGui gui;
-
-            switch (option.getState())
+            SurfaceGui gui = switch (SurfaceGui.getOpenGui(event.getWhoClicked()))
             {
-                case NONE:
-                    return;
-                case SOME:
-                    gui = option.unwrap();
-                    break;
-                default:
-                    throw new TimeSpaceDistortionException();
-            }
+                case Some s -> s.unwrap(SurfaceGui.class);
+                default -> null;
+            };
+
+            if (gui == null)
+                return;
 
             if (event.getRawSlot() >= gui.getSize())
                 return; // Player inventory

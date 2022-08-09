@@ -10,7 +10,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.JsonSyntaxException;
 import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.Result;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;

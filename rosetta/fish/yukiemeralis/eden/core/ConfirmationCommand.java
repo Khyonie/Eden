@@ -11,9 +11,9 @@ import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.utils.Option;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.OptionState;
 
 @HideFromEdenHelpall
 @PreventUnload(CallerToken.EDEN)
@@ -33,48 +33,49 @@ public class ConfirmationCommand extends EdenCommand
             return;
         }
 
-        if (CoreModule.EDEN_DISABLE_REQUESTS.size() == 0)
+        if (Rosetta.EDEN_DISABLE_REQUESTS.size() == 0)
         {
             PrintUtils.sendMessage(sender, "§cNo EDEN module disable/unload requests available.");
             return;
         }
 
-        switch (CoreModule.EDEN_DISABLE_REQUESTS.get(0).getType())
+        switch (Rosetta.EDEN_DISABLE_REQUESTS.get(0).getType())
         {
             case 0:
                 PrintUtils.sendMessage(sender, "§6Attempting to disable an EDEN-level module by elevating to EDEN...");
             
-                Option<ModuleDisableFailureData> data = Eden.getModuleManager().disableModule(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN);
+                Option data = Eden.getModuleManager().disableModule(Rosetta.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN);
         
                 if (data.getState().equals(OptionState.SOME))
                 {
-                    PrintUtils.sendMessage(sender, "§cFailed to disable EDEN-level module " + CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + "! (Reason: " + data.unwrap().getReason().name() + ")");
+                    ModuleDisableFailureData failure = data.unwrap(ModuleDisableFailureData.class);
+                    PrintUtils.sendMessage(sender, "§cFailed to disable EDEN-level module " + Rosetta.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + "! (Reason: " + failure.getReason().name() + ")");
                     
-                    if (data.unwrap().getDownstreamModules().size() != 0)
+                    if (failure.getDownstreamModules().size() != 0)
                     {
                         StringBuilder builder = new StringBuilder();
 
-                        for (EdenModule m : data.unwrap().getDownstreamModules())
+                        for (EdenModule m : failure.getDownstreamModules())
                             builder.append(m.getName() + ", ");
 
                         builder.delete(builder.length() - 2, builder.length() - 1);
 
-                        PrintUtils.sendMessage(sender, "§cDownstream " + PrintUtils.plural(data.unwrap().getDownstreamModules().size(), "module", "modules") + ": " + builder.toString());
+                        PrintUtils.sendMessage(sender, "§cDownstream " + PrintUtils.plural(failure.getDownstreamModules().size(), "module", "modules") + ": " + builder.toString());
                     }
                 }
 
-                CoreModule.EDEN_WARN_DISABLE_REQUESTS.add(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + ":" + 0);
+                Rosetta.EDEN_WARN_DISABLE_REQUESTS.add(Rosetta.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + ":" + 0);
                 break;
             case 1:
                 PrintUtils.sendMessage(sender, "§6Attempting to unload an EDEN-level module by elevating to EDEN...");
-                Eden.getModuleManager().removeModuleFromMemory(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN); //.disableModule(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN);
+                Eden.getModuleManager().removeModuleFromMemory(Rosetta.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN); //.disableModule(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName(), CallerToken.EDEN);
         
-                CoreModule.EDEN_WARN_DISABLE_REQUESTS.add(CoreModule.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + ":" + 1);
+                Rosetta.EDEN_WARN_DISABLE_REQUESTS.add(Rosetta.EDEN_DISABLE_REQUESTS.get(0).getModule().getName() + ":" + 1);
                 break;
             default:
                 return;
         }
 
-        CoreModule.EDEN_DISABLE_REQUESTS.remove(0);
+        Rosetta.EDEN_DISABLE_REQUESTS.remove(0);
     }
 }

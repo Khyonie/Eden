@@ -19,7 +19,7 @@ public class GuiTab implements GuiComponent
     private List<GuiComponent> guests;
 
     private final SimpleComponentAction action = (e) -> {
-        TabbedSurfaceGui gui = (TabbedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap();
+        TabbedSurfaceGui gui = (TabbedSurfaceGui) SurfaceGui.getOpenGui(e.getWhoClicked()).unwrap(SurfaceGui.class);
         gui.changeTab(e.getWhoClicked(), this);
     };
 

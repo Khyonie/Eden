@@ -29,9 +29,9 @@ import fish.yukiemeralis.eden.networking.repos.EdenRepositoryEntry;
 import fish.yukiemeralis.eden.networking.repos.GlobalRepositoryGui;
 import fish.yukiemeralis.eden.networking.repos.RepositoryGui;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.Result;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 @PreventUnload(CallerToken.EDEN)
 public class RepoCommand extends EdenCommand 
@@ -81,17 +81,17 @@ public class RepoCommand extends EdenCommand
 
                 if (enabled)
                 {
-                    Option<ModuleDisableFailureData> result = Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
+                    Option result = Eden.getModuleManager().disableModule(target.getName(), CallerToken.EDEN);
 
                     data: switch (result.getState())
                     {
                         case NONE: // Don't need to do anything
                             break data;
                         case SOME: // Disable failed, reload given modules
-                            PrintUtils.sendMessage(sender, "§cFailed to disable module! Attempting to perform rollback on " + result.unwrap().getDownstreamModules().size() + " " + PrintUtils.plural(result.unwrap().getDownstreamModules().size(), "module", "modules") + "...");
-                            PrintUtils.sendMessage(sender, "§c§oTechnical failure reason: " + result.unwrap().getReason().name());
+                            PrintUtils.sendMessage(sender, "§cFailed to disable module! Attempting to perform rollback on " + result.unwrap(ModuleDisableFailureData.class).getDownstreamModules().size() + " " + PrintUtils.plural(result.unwrap(ModuleDisableFailureData.class).getDownstreamModules().size(), "module", "modules") + "...");
+                            PrintUtils.sendMessage(sender, "§c§oTechnical failure reason: " + result.unwrap(ModuleDisableFailureData.class).getReason().name());
 
-                            if (result.unwrap().performRollback())
+                            if (result.unwrap(ModuleDisableFailureData.class).performRollback())
                             {
                                 PrintUtils.sendMessage(sender, "§cRollback complete.");
                                 return;

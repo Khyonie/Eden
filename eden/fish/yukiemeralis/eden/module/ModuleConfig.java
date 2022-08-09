@@ -6,6 +6,10 @@ import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
+import fish.yukiemeralis.eden.utils.option.None;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.Some;
+
 public class ModuleConfig
 {
     @Expose
@@ -28,22 +32,24 @@ public class ModuleConfig
         return this.data.containsKey(key);
     }
 
-    public <T> T getKey(String key, Class<T> clazz)
+    public Option getKey(String key, Class<?> clazz)
     {
         if (!data.containsKey(key))
-            return null;
+            return Option.none();
         if (!clazz.isAssignableFrom(data.get(key).getClass()))
-            return null;
+            return Option.none();
         
-        return clazz.cast(data.get(key));
+        return Option.some(clazz.cast(data.get(key)));
     }
 
     public <T extends Enum<T>> Enum<T> getEnum(String key, Class<T> clazz)
     {
-        if (getString(key) == null)
-            return null;
-        
-        return Enum.valueOf(clazz, getString(key));
+        return switch (getString(key))
+        {
+            case Some s -> Enum.valueOf(clazz, s.unwrap(String.class));
+            case None n -> null;
+            case default -> null;
+        };
     }
 
     public Object getKey(String key)
@@ -58,20 +64,22 @@ public class ModuleConfig
      */
     public Boolean getBoolean(String key)
     {
-        Boolean val = getKey(key, Boolean.class);
-
-        if (val == null)
-            return false;
+        Boolean val = switch (getKey(key, Boolean.class))
+        {
+            case Some s -> s.unwrap(Boolean.class);
+            case None n -> false;
+            default -> false;
+        };
 
         return val;
     }
 
-    public String getString(String key)
+    public Option getString(String key)
     {
         return getKey(key, String.class);
     }
 
-    public int getInt(String key)
+    public Option getInt(String key)
     {
         return getKey(key, Integer.class);
     }

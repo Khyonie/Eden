@@ -20,9 +20,10 @@ import fish.yukiemeralis.eden.permissions.PermissionsManager;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.option.Option;
+
 
 /**
  * Eden's permissions manager. Supplies default permissions, and supports permissions groups out of the box.
@@ -73,9 +74,9 @@ public class EdenPermissionManager extends PermissionsManager
      * @param name A permissions group with the given name.
      * @return A permissions group with the given name.
      */
-    public Option<PermissionGroup> getGroup(String name)
+    public Option getGroup(String name)
     {
-        return permissionGroups.get(name) == null ? new Option<PermissionGroup>(PermissionGroup.class).some(permissionGroups.get(name)) : new Option<PermissionGroup>(PermissionGroup.class).none();
+        return permissionGroups.get(name) == null ? Option.some(permissionGroups.get(name)) : Option.none();
     }
 
     /**
@@ -102,19 +103,16 @@ public class EdenPermissionManager extends PermissionsManager
      * @param group Permissions group to add.
      * @return The processing result of adding the given group.
      */
-    public Option<String> addGroup(PermissionGroup group)
+    public Option addGroup(PermissionGroup group)
     {
-        Option<String> option = new Option<>(String.class);
-
         if (permissionGroups.containsKey(group.getName()))
         {
-            option.some("A permission group with that name already exists.");
-            return option;
+            return Option.some("A permission group with that name already exists.");
         }
 
         permissionGroups.put(group.getName(), group);
 
-        return option;
+        return Option.none();
     }
 
     /**
