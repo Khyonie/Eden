@@ -1,23 +1,43 @@
 package fish.yukiemeralis.eden.utils.result;
 
+import fish.yukiemeralis.eden.utils.exception.UnwrapException;
+
 public class Err implements Result 
 {
     private Object contained;
+
     public Err(Object contained)
     {
         this.contained = contained;
     }
 
     @Override
-    public <T> T unwrap(Class<? extends T> clazz) 
+    public <T> T unwrapOk(Class<? extends T> clazz) 
+    {
+        throw new UnwrapException("Attempted to unwrap an Err into an Ok type");
+    }
+
+    @Override
+    public <T> T unwrapErr(Class<? extends T> clazz) 
     {
         return clazz.cast(contained);
     }
 
     @Override
-    public <A, B> B unwrapOrElse(Class<? extends A> classA, Class<? extends B> classB, ResultHandler<A, B> func) 
+    public boolean isOk() 
     {
-        throw new UnsupportedOperationException("Attempted to call unwrapOrElse on an ERR value. ERRs cannot support this functionality");
+        return false;
     }
-    
+
+    @Override
+    public boolean isErr() 
+    {
+        return true;
+    }
+
+    @Override
+    public ResultState getState() 
+    {
+        return ResultState.ERR;
+    } 
 }

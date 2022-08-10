@@ -30,10 +30,13 @@ import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-import fish.yukiemeralis.eden.utils.Result;
+
 import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.option.Some;
+import fish.yukiemeralis.eden.utils.result.Err;
+import fish.yukiemeralis.eden.utils.result.Ok;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 
 
@@ -356,9 +359,8 @@ public abstract class EdenModule
      * @return A result containing a DefaultConfigWrapper, or an enum describing the error.
      */
     @SuppressWarnings("unchecked") // Cast is checked
-    public Result<DefaultConfigWrapper, DefaultConfigFailure> getDefaultConfig()
+    public Result getDefaultConfig()
     {
-        Result<DefaultConfigWrapper, DefaultConfigFailure> data = new Result<>(DefaultConfigWrapper.class, DefaultConfigFailure.class);
         Class<? extends EdenModule> clazz = this.getClass();
         
         // if (!clazz.isAnnotationPresent(EdenConfig.class))
@@ -374,17 +376,17 @@ public abstract class EdenModule
             field.setAccessible(true);
             config = (Map<String, Object>) field.get(this);
         } catch (NoSuchFieldException e) { // Map does not exist
-            return data.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_FOUND);
+            return Result.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_FOUND);
         } catch (ClassCastException e) { // Map is not of <String, Object>
-            return data.err(DefaultConfigFailure.INVALID_DEFAULT_CONFIG);
+            return Result.err(DefaultConfigFailure.INVALID_DEFAULT_CONFIG);
         } catch (SecurityException | IllegalAccessException e) { // Other generic errors
-            return data.err(DefaultConfigFailure.UNKNOWN_ERROR);
+            return Result.err(DefaultConfigFailure.UNKNOWN_ERROR);
         }
         
         if (config.isEmpty()) // No keys in map
-            return data.err(DefaultConfigFailure.EMPTY_DEFAULT_CONFIG);
+            return Result.err(DefaultConfigFailure.EMPTY_DEFAULT_CONFIG);
 
-        return data.ok(new DefaultConfigWrapper(config));
+        return Result.ok(new DefaultConfigWrapper(config));
     }
 
     /**
@@ -395,14 +397,12 @@ public abstract class EdenModule
      */
     private Option getConfigSafe(File file)
     {
-        Result<DefaultConfigWrapper, DefaultConfigFailure> data = getDefaultConfig();
-        
-        switch (data.getState())
+        switch (getDefaultConfig())
         {
-            case OK:
-                return Option.some((DefaultConfigWrapper) data.unwrap());
-            case ERR:
-                switch ((DefaultConfigFailure) data.unwrap())
+            case Ok ok:
+                return Option.some(ok.unwrapOk(DefaultConfigWrapper.class));
+            case Err err:
+                switch (err.unwrapErr(DefaultConfigFailure.class))
                 {
                     case EMPTY_DEFAULT_CONFIG:
                         if (!file.exists())
@@ -459,14 +459,15 @@ public abstract class EdenModule
         PrintUtils.logVerbose("Attempting to load \"" + this.modName + "\"'s configuration...", InfoType.INFO);
 
         // Attempt to pull config data from @EdenConfig annotation
-        Map<String, Object> defaultConfig = switch (getConfigSafe(file))
+        Map<String, Object> defaultConfig;
+        switch (getConfigSafe(file))
         {
-            case Some s -> s.unwrap(DefaultConfigWrapper.class).getData();
-            case default -> null;
-        };
-
-        if (defaultConfig == null)
-            return false;
+            case Some s:
+                defaultConfig = s.unwrap(DefaultConfigWrapper.class).getData();
+                break;
+            case default:
+                return false;
+        }
 
         // Generate config file if needed
         if (!file.exists())

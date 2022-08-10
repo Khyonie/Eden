@@ -40,11 +40,11 @@ import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-import fish.yukiemeralis.eden.utils.Result;
-import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
+
 import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.option.OptionState;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 /**
  * Handler for all tasks related to Eden's modules.</p>
@@ -321,39 +321,27 @@ public class ModuleManager
 	 * @param filepath The filepath leading to the module file.
 	 * @return A result of either an EdenModule or a String describing the error.
 	 */
-	public Result<EdenModule, String> loadSingleModule(String filepath)
+	public Result loadSingleModule(String filepath)
 	{
-		Result<EdenModule, String> result = new Result<>(EdenModule.class, String.class);
-		
 		if (!new File(filepath).exists())
-		{
-			try { result.err("File does not exist."); } catch (UndefinedResultException e) {}
-			return result;
-		}
+			return Result.err("File does not exist.");
 
 		ModuleClassLoader mcl = loadModule(new File(filepath));
 
 		if (mcl == null)
-		{
-			try { result.err("File could not be opened."); } catch (UndefinedResultException e) {}
-			return result;
-		}
+			return Result.err("File could not be opened.");
 
 		precacheModuleClasses(mcl, false);
 
 		if (mcl.getModuleClass().isAnnotationPresent(LoadBefore.class))
 			if (!isModuleListPresent(mcl.getModuleClass().getAnnotation(LoadBefore.class).loadBefore()))
-			{
-				try { result.err("Module dependencies are missing."); } catch (UndefinedResultException e) {}
-				return result;
-			}
+				return Result.err("Module dependencies are missing.");
 
 		try {
 			mcl.finalizeLoading();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException e) {
 			PrintUtils.printPrettyStacktrace(e);
-			try { result.err("Module has invalid classes. Failed with error: " + e.getClass().getSimpleName()); } catch (UndefinedResultException e_) {}
-			return result;
+			return Result.err("Module has invalid classes. Failed with error: " + e.getClass().getSimpleName());
 		}
 
 		disabled_modules.add(mcl.getModule());
@@ -370,8 +358,7 @@ public class ModuleManager
 		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleLoadEvent(mcl.getModule(), mcl.getName()));
 		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(mcl.getModule(), filepath));
 
-		try { result.ok(mcl.getModule()); } catch (UndefinedResultException e) { }
-		return result;
+		return Result.ok(mcl.getModule());
 	}
 	// ########################################################################
 	// #################### Enabling, disabling, unloading ####################

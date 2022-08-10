@@ -30,8 +30,9 @@ import fish.yukiemeralis.eden.networking.repos.GlobalRepositoryGui;
 import fish.yukiemeralis.eden.networking.repos.RepositoryGui;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Result;
+
 import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 @PreventUnload(CallerToken.EDEN)
 public class RepoCommand extends EdenCommand 
@@ -126,12 +127,12 @@ public class RepoCommand extends EdenCommand
                             @Override
                             public void run() 
                             {
-                                Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(f.getAbsolutePath());
+                                Result result = Eden.getModuleManager().loadSingleModule(f.getAbsolutePath());
 
                                 switch (result.getState())
                                 {
                                     case ERR:
-                                        PrintUtils.sendMessage(sender, "§cFailed to reload module! (Error: " + result.unwrap() + ")");
+                                        PrintUtils.sendMessage(sender, "§cFailed to reload module! (Error: " + result.unwrapErr(String.class) + ")");
                                         return;
                                     case OK:
                                         if (sender instanceof Player)
@@ -142,7 +143,7 @@ public class RepoCommand extends EdenCommand
                                 }
 
                                 if (enabled)
-                                    Eden.getModuleManager().enableModule((EdenModule) result.unwrap());
+                                    Eden.getModuleManager().enableModule(result.unwrapOk(EdenModule.class));
                             }
                         }.runTask(Eden.getInstance());
                     }

@@ -105,17 +105,6 @@ public class SecurityCore extends EdenModule
         JsonUtils.toJsonFile("./plugins/Eden/banned-uuids.json", new UuidBanList(uuid_bans));
     }
 
-    /**
-     * Gets a list of all account requests.
-     * @return A list of all account requests.
-     * @deprecated Secure player accounts are now deprecated.
-     */
-    @Deprecated
-    public static Map<String, fish.yukiemeralis.eden.auth.old.SecurePlayerAccount> getAccountRequests() 
-    { 
-        throw new UnsupportedOperationException("Secure player accounts are no longer used.");
-    }
-
     static LocalDate date;
     static LocalTime time;
     /**

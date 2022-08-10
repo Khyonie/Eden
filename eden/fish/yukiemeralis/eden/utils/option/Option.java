@@ -12,7 +12,7 @@ package fish.yukiemeralis.eden.utils.option;
  * <code>Option.none()</code>.<p>
  * 
  * To obtain the contained value of a SOME, call {@code .unwrap(Class<? extends T> clazz)} where T is the class to unwrap into. 
- * In the case of NONE, unwrapping will throw an {@link UnsupportedOperationException}.<p>
+ * In the case of NONE, unwrapping will throw an {@link UnwrapException}.<p>
  * 
  * As of Java 17 preview, instanceof switching is supported.
  * <pre><code>
@@ -30,7 +30,7 @@ public interface Option
      * @param <T> Type of contained value
      * @param clazz Class of contained value
      * @return Contained value of T
-     * @throws UnsupportedOperationException When the option is a state of NONE
+     * @throws UnwrapException When the option is a state of NONE
      */
     public <T> T unwrap(Class<? extends T> clazz);
 
@@ -58,7 +58,7 @@ public interface Option
      * @param mappedclazz Output class of contained after mapping
      * @param mapper Function to map output value
      * @return Contained value mapped to type "O"
-     * @throws UnsupportedOperationException When the option is a state of NONE
+     * @throws UnwrapException When the option is a state of NONE
      */
     public <T> T map(Class<? extends T> mappedclazz, OptionMapper<T> mapper);
 

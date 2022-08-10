@@ -52,16 +52,18 @@ import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.HashUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Result;
-import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
+
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.option.OptionState;
 import fish.yukiemeralis.eden.utils.option.Some;
+import fish.yukiemeralis.eden.utils.result.Err;
+import fish.yukiemeralis.eden.utils.result.Ok;
 
 @PreventUnload(CallerToken.EDEN)
 public class CoreCommand extends EdenCommand
@@ -564,28 +566,15 @@ public class CoreCommand extends EdenCommand
         switch (args[1])
         {
             case "load":
-            	Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule("./plugins/Eden/mods/" + args[2] + ".jar");
-            	
-            	switch (result.getState())
+            	switch (Eden.getModuleManager().loadSingleModule("./plugins/Eden/mods/" + args[2] + ".jar"))
             	{
-            		case OK:
-						try {
-							module = (EdenModule) result.unwrap();
-						} catch (UndefinedResultException e1) { return; }
+            		case Ok ok:
+                        module = ok.unwrapOk(EdenModule.class);
             			break;
-            		case ERR:
-            			try {
-            				PrintUtils.sendMessage(sender, "Failed to load module! Error: \"" + result.unwrap() + "\"");
-            				return;
-            			} catch (UndefinedResultException e) { return; }
-            		default: return;
+            		case Err err:
+                        PrintUtils.sendMessage(sender, "Failed to load module! Error: \"" + err.unwrapErr(String.class) + "\"");
+            		default: throw new TimeSpaceDistortionException();
             	}
-
-                if (module == null)
-                {
-                    PrintUtils.sendMessage(sender, "File doesn't exist.");
-                    return;
-                }
 
                 PrintUtils.sendMessage(sender, "Done! You may now enable this module by running \"/eden mm enable " + module.getName() + "\".");
 
@@ -1231,15 +1220,14 @@ public class CoreCommand extends EdenCommand
         PrintUtils.sendMessage(sender, "§aUnload success.");
 
         // Reload
-        Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1]));
-
-        EdenModule mod = switch (result.getState())
+        EdenModule mod = switch (Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1])))
         {
-            case ERR:
-                PrintUtils.sendMessage(sender, "Failed to load module reference to \"" + args[1] + "\". Reason: " + result.unwrap());
+            case Err err:
+                PrintUtils.sendMessage(sender, "Failed to load module reference to \"" + args[1] + "\". Reason: " + err.unwrapErr(String.class));
                 yield null;
-            case OK:
-                yield (EdenModule) result.unwrap();
+            case Ok ok:
+                yield ok.unwrapOk(EdenModule.class);
+            case default: throw new TimeSpaceDistortionException();
         };
 
         if (mod == null)

@@ -25,8 +25,11 @@ import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-import fish.yukiemeralis.eden.utils.Result;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.result.Err;
+import fish.yukiemeralis.eden.utils.result.Ok;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 public class EdenRepositoryEntry implements GuiComponent
 {
@@ -163,18 +166,19 @@ public class EdenRepositoryEntry implements GuiComponent
                                             @Override
                                             public void run() 
                                             {
-                                                Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(MODULE_FOLDER + upstreamFilenameCopy);
-                                                load: switch (result.getState())
+                                                EdenModule mod;
+                                                load: switch (Eden.getModuleManager().loadSingleModule(MODULE_FOLDER + upstreamFilenameCopy))
                                                 {
-                                                    case ERR:
-                                                        PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to load module into memory! See console for details. (Error: " + result.unwrap() + ")");
+                                                    case Err err:
+                                                        PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to load module into memory! See console for details. (Error: " + err.unwrapErr(String.class) + ")");
                                                         return;
-                                                    case OK:
+                                                    case Ok ok:
+                                                        mod = ok.unwrapOk(EdenModule.class);
                                                         PrintUtils.sendMessage(event.getWhoClicked(), "§aLoaded module into memory, enabling...");
                                                         break load;
+                                                    case default: throw new TimeSpaceDistortionException();
                                                 }
-
-                                                EdenModule mod = (EdenModule) result.unwrap();
+                                                
                                                 Eden.getModuleManager().enableModule(mod);
 
                                                 if (Eden.getModuleManager().getEnabledModuleByName(mod.getName()) != null)
@@ -194,17 +198,16 @@ public class EdenRepositoryEntry implements GuiComponent
                                             @Override
                                             public void run() 
                                             {
-                                                Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(MODULE_FOLDER + upstreamFilenameCopy);
-                                                load: switch (result.getState())
+                                                load: switch (Eden.getModuleManager().loadSingleModule(MODULE_FOLDER + upstreamFilenameCopy))
                                                 {
-                                                    case ERR:
-                                                        PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to load module into memory! See console for details. (Error: " + result.unwrap() + ")");
+                                                    case Err err:
+                                                        PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to load module into memory! See console for details. (Error: " + err.unwrapErr(String.class) + ")");
                                                         return;
-                                                    case OK:
+                                                    case Ok ok:
                                                         PrintUtils.sendMessage(event.getWhoClicked(), "§aLoaded module into memory!");
                                                         break load;
+                                                    case default: throw new TimeSpaceDistortionException();
                                                 }
-                                                
                                             }
                                         }.runTask(Eden.getInstance());
 
@@ -289,21 +292,21 @@ public class EdenRepositoryEntry implements GuiComponent
                                     @Override
                                     public void run() 
                                     {
-                                        Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(f.getAbsolutePath());
-
-                                        switch (result.getState())
+                                        Result result = Eden.getModuleManager().loadSingleModule(f.getAbsolutePath());
+                                        switch (result)
                                         {
-                                            case ERR:
-                                                PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to reload module! (Error: " + result.unwrap() + ")");
+                                            case Err err:
+                                                PrintUtils.sendMessage(event.getWhoClicked(), "§cFailed to reload module! (Error: " + err.unwrapErr(String.class) + ")");
                                                 return;
-                                            case OK:
+                                            case Ok ok:
                                                 new RepositoryGui(getInstance().getHostRepo()).display(event.getWhoClicked());
                                                 PrintUtils.sendMessage(event.getWhoClicked(), "§aUpdated " + name + "!");
                                                 break;
+                                            case default: throw new TimeSpaceDistortionException(); 
                                         }
 
                                         if (enabled)
-                                            Eden.getModuleManager().enableModule((EdenModule) result.unwrap());
+                                            Eden.getModuleManager().enableModule(result.unwrapOk(EdenModule.class));
                                     }
                                 }.runTask(Eden.getInstance());
                             }
