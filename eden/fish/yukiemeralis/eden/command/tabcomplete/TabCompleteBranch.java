@@ -8,9 +8,8 @@ import java.util.Map;
 
 /**
  * An object that contains a String label and a list of branches.
- * @Author Yuki_emeralis
+ * @author Yuki_emeralis
  */
-@SuppressWarnings("unused")
 public class TabCompleteBranch 
 {
     private final String label;
@@ -99,5 +98,10 @@ public class TabCompleteBranch
     public boolean isLeaf()
     {
         return attachedBranches.size() == 0;
+    }
+
+    public boolean requiresPassword()
+    {
+        return this.requiresPassword;
     }
 }
