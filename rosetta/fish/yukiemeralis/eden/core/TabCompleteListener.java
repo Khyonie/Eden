@@ -12,7 +12,7 @@ import org.bukkit.util.StringUtil;
 import fish.yukiemeralis.eden.command.CommandManager;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteBranch;
-import fish.yukiemeralis.eden.utils.option.Some;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 /**
  * Listener for Eden TabComplete suggestions.
@@ -34,9 +34,11 @@ public class TabCompleteListener implements Listener
 
         String commandLabel = commandFull[0].substring(1); 
         
-        EdenCommand cmd = switch (CommandManager.getEdenCommand(commandLabel)) {
-            case Some s -> s.unwrap(EdenCommand.class);
-            case default -> null;
+        // TODO Java 17 preview feature
+        Option opt = CommandManager.getEdenCommand(commandLabel);
+        EdenCommand cmd = switch (opt.getState()) {
+            case SOME -> opt.unwrap(EdenCommand.class);
+            default -> null;
         };
 
         if (cmd == null)
@@ -99,7 +101,7 @@ public class TabCompleteListener implements Listener
                 {
                     if (branch.getBranchesFromHere().get(0).startsWith("<") && branch.getBranchesFromHere().get(0).endsWith(">"))
                     {
-                        branch = branch.getBranch(branch.getBranchesFromHere().get(0));
+                        branch = (TabCompleteBranch) branch.getBranch(branch.getBranchesFromHere().get(0));
 
                         if (args.length > (index + 1))
                         {
@@ -116,7 +118,7 @@ public class TabCompleteListener implements Listener
                     break;
                 }
 
-                branch = branch.getBranch(arg);
+                branch = (TabCompleteBranch) branch.getBranch(arg);
                 continue;
             }
 

@@ -7,16 +7,18 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.utils.option.Some;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 public class SurfaceGuiListener implements Listener 
 {
     @EventHandler
     public void onClose(InventoryCloseEvent event)
     {
-        SurfaceGui gui = switch (SurfaceGui.getOpenGui(event.getPlayer()))
+        // TODO Java 17 preview feature
+        Option opt = SurfaceGui.getOpenGui(event.getPlayer());
+        SurfaceGui gui = switch (opt.getState())
         {
-            case Some s -> s.unwrap(SurfaceGui.class);
+            case SOME -> opt.unwrap(SurfaceGui.class);
             default -> null;
         };
 
@@ -32,9 +34,11 @@ public class SurfaceGuiListener implements Listener
     public void onInteract(InventoryClickEvent event)
     {
         try {
-            SurfaceGui gui = switch (SurfaceGui.getOpenGui(event.getWhoClicked()))
+            // TODO Java 17 preview feature
+            Option opt = SurfaceGui.getOpenGui(event.getWhoClicked());
+            SurfaceGui gui = switch (opt.getState())
             {
-                case Some s -> s.unwrap(SurfaceGui.class);
+                case SOME -> opt.unwrap(SurfaceGui.class);
                 default -> null;
             };
 

@@ -52,18 +52,15 @@ import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.HashUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.option.OptionState;
-import fish.yukiemeralis.eden.utils.option.Some;
-import fish.yukiemeralis.eden.utils.result.Err;
-import fish.yukiemeralis.eden.utils.result.Ok;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 @PreventUnload(CallerToken.EDEN)
 public class CoreCommand extends EdenCommand
@@ -383,10 +380,12 @@ public class CoreCommand extends EdenCommand
 
                         if (args.length > 4)
                         {
-                            PermissionGroup baseGroup = switch (((EdenPermissionManager) Eden.getPermissionsManager()).getGroup(args[4]))
+                            // TODO Java 17 preview feature
+                            Option opt = ((EdenPermissionManager) Eden.getPermissionsManager()).getGroup(args[4]);
+                            PermissionGroup baseGroup = switch (opt.getState())
                             {
-                                case Some s -> s.unwrap(PermissionGroup.class);
-                                case default -> null;
+                                case SOME -> opt.unwrap(PermissionGroup.class);
+                                default -> null;
                             };
 
                             if (baseGroup == null)
@@ -566,13 +565,15 @@ public class CoreCommand extends EdenCommand
         switch (args[1])
         {
             case "load":
-            	switch (Eden.getModuleManager().loadSingleModule("./plugins/Eden/mods/" + args[2] + ".jar"))
+                // TODO Java 17 preview feature
+                Result result = Eden.getModuleManager().loadSingleModule("./plugins/Eden/mods/" + args[2] + ".jar");
+            	switch (result.getState())
             	{
-            		case Ok ok:
-                        module = ok.unwrapOk(EdenModule.class);
+            		case OK:
+                        module = result.unwrapOk(EdenModule.class);
             			break;
-            		case Err err:
-                        PrintUtils.sendMessage(sender, "Failed to load module! Error: \"" + err.unwrapErr(String.class) + "\"");
+            		case ERR:
+                        PrintUtils.sendMessage(sender, "Failed to load module! Error: \"" + result.unwrapErr(String.class) + "\"");
             		default: throw new TimeSpaceDistortionException();
             	}
 
@@ -1220,14 +1221,16 @@ public class CoreCommand extends EdenCommand
         PrintUtils.sendMessage(sender, "§aUnload success.");
 
         // Reload
-        EdenModule mod = switch (Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1])))
+        // TODO Java 17 preview feature
+        Result result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1]));
+        EdenModule mod = switch (result.getState())
         {
-            case Err err:
-                PrintUtils.sendMessage(sender, "Failed to load module reference to \"" + args[1] + "\". Reason: " + err.unwrapErr(String.class));
+            case ERR:
+                PrintUtils.sendMessage(sender, "Failed to load module reference to \"" + args[1] + "\". Reason: " + result.unwrapErr(String.class));
                 yield null;
-            case Ok ok:
-                yield ok.unwrapOk(EdenModule.class);
-            case default: throw new TimeSpaceDistortionException();
+            case OK:
+                yield result.unwrapOk(EdenModule.class);
+            default: throw new TimeSpaceDistortionException();
         };
 
         if (mod == null)

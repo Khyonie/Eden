@@ -16,7 +16,9 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteBranch;
+import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteMultiBranch;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteTree;
+import fish.yukiemeralis.eden.command.tabcomplete.TabCompleter;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
@@ -423,12 +425,12 @@ public abstract class EdenCommand extends Command
                 {
                     paramIndexes.add(i);
 
-                    branch = branch.getBranch(branch.getBranchesFromHere().get(0));
+                    branch = (TabCompleteBranch) branch.getBranch(branch.getBranchesFromHere().get(0));
                     continue;
                 }
             }
 
-            branch = branch.getBranch(args[i]);
+            branch = (TabCompleteBranch) branch.getBranch(args[i]);
 
             if (branch == null)
             {
@@ -481,6 +483,16 @@ public abstract class EdenCommand extends Command
     public TabCompleteBranch getBranch(String label)
     {
         return tree.getBranch(label);
+    }
+
+    public TabCompleteMultiBranch getMultiBranch(String... labels)
+    {
+        List<TabCompleter> data = new ArrayList<>();
+
+        for (String label : labels)
+            data.add(this.tree.getBranch(label));
+
+        return new TabCompleteMultiBranch(data);
     }
 
     private EdenCommand getInstance()

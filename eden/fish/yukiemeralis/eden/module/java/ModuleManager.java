@@ -675,6 +675,104 @@ public class ModuleManager
 		loader_cache.remove(name);
 	}
 
+	/**
+	 * Forcibly unloads an EdenModule from memory. This method bypasses {@link CallerToken}s, &#64;{@link PreventUnload} annotations, and other safety checks.<p>
+	 * <b><h2>This is not intended to be a go-around of the standard module removal protocol.</h2></b>
+	 * As such, issues arising from improper usage of this utility will be ignored.
+	 * @param name Module name to unload.
+	 * @see {@link ModuleManager#removeModuleFromMemory(String name, CallerToken token)}
+	 */
+	public void forceRemoveModuleFromMemory(String name)
+	{
+		EdenModule module = getDisabledModuleByName(name);
+
+		if (module == null)
+			return;
+
+		// Disable events
+		module.getListeners().forEach(HandlerList::unregisterAll);
+		
+		// Disable commands
+		module.getCommands().forEach(command -> {
+			CommandManager.unregisterCommand(command.getName());
+		});
+
+		class_cache.clear();
+
+		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleUnloadEvent(name, module, this.module_references.get(name)));
+
+		ModuleFamilyRegistry.unregister(module);
+
+		disabled_modules.remove(module);
+		enabled_modules.remove(module);
+		loader_cache.remove(name);
+	}
+
+	/**
+	 * Forcibly reloads a module.
+	 * @param name Module name to reload.
+	 * @param enableIfDisabled Whether or not to enable the reloaded module, even if it was previously disabled.
+	 * @param continueOnFailure Whether or not to continue on a failure, ensuring that the module will be reloaded. This may result in configs not being updated.
+	 */
+	public void forceReload(String name, boolean enableIfDisabled, boolean continueOnFailure)
+	{
+		EdenModule module = getModuleByName(name);
+		
+		if (module == null)
+			return;
+		
+		boolean enabled = module.getIsEnabled();
+
+		// Disable, potentially continuing on failure
+		if (enabled)
+		{
+			Option option;
+			try {
+				option = disableModule(name, CallerToken.EDEN, new ArrayList<>(), true);
+
+				if (option.isSome())
+					if (!continueOnFailure)
+						return;		
+
+			} catch (Exception e) {
+				PrintUtils.printPrettyStacktrace(e);
+				if (!continueOnFailure)
+					return;
+			}
+
+			enabled_modules.remove(module);
+			disabled_modules.add(module);
+
+			Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
+			module.setDisabled();
+
+			PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
+		}
+
+		// Unload
+		try {
+			forceRemoveModuleFromMemory(name);
+		} catch (Exception e) {
+			PrintUtils.printPrettyStacktrace(e);
+		}
+
+		// Load
+		Result result = loadSingleModule(module_references.get(name));
+
+		if (result.isErr())
+		{
+			PrintUtils.log("Failed to load module \"" + name + "\" after reload! Reason: " + result.unwrapErr(String.class));
+			return;
+		}
+
+		if (!enabled && !enableIfDisabled)
+			return;
+
+		enableModule(result.unwrapOk(EdenModule.class));
+		result.unwrapOk(EdenModule.class).setEnabled();
+		PrintUtils.log("Finished reload.");
+	}
+
 	// #############################################################
 	// #################### Getters and setters ####################
 	// #############################################################

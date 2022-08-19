@@ -9,9 +9,7 @@ import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import fish.yukiemeralis.eden.command.CommandManager;
 import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
-import fish.yukiemeralis.eden.utils.option.None;
-import fish.yukiemeralis.eden.utils.option.Some;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 /**
  * Helper class to obscure commands the player does not have access to.<p>
@@ -28,7 +26,7 @@ public class CommandObscureListener implements Listener
         Iterator<String> iter = event.getCommands().iterator();
         String str;
 
-        while (iter.hasNext())
+        loop: while (iter.hasNext())
         {
             str = iter.next();
 
@@ -39,19 +37,18 @@ public class CommandObscureListener implements Listener
                 continue;
             }
 
-            switch (CommandManager.getEdenCommand(str))
+            // TODO Java 17 preview feature
+            Option opt = CommandManager.getEdenCommand(str);
+            switch (opt.getState())
             {
-                case Some s -> {
-                    if (!s.unwrap(EdenCommand.class).testBasePermission(event.getPlayer(), str))
+                case SOME:
+                    if (!opt.unwrap(EdenCommand.class).testBasePermission(event.getPlayer(), str))
                     {
                         iter.remove();
-                        continue;
+                        continue loop;
                     }
-                }
-                case None n -> { 
-                    continue; 
-                }
-                default -> throw new TimeSpaceDistortionException();
+                    continue loop;
+                default:
             }
 
             // Minecraft/bukkit commands

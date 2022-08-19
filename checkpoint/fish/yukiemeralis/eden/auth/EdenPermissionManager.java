@@ -76,7 +76,7 @@ public class EdenPermissionManager extends PermissionsManager
      */
     public Option getGroup(String name)
     {
-        return permissionGroups.get(name) == null ? Option.some(permissionGroups.get(name)) : Option.none();
+        return permissionGroups.get(name) != null ? Option.some(permissionGroups.get(name)) : Option.none();
     }
 
     /**

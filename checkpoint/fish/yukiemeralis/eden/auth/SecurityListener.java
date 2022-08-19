@@ -16,7 +16,7 @@ import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.option.Some;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 
 /**
@@ -27,14 +27,15 @@ public class SecurityListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onConnect(PlayerJoinEvent event)
     {
-        switch (SecurityCore.isBanned(event.getPlayer()))
+        // TODO Java 17 preview feature
+        Option opt = SecurityCore.isBanned(event.getPlayer());
+        switch (opt.getState())
         {
-            case Some s -> {
-                event.getPlayer().kickPlayer(s.unwrap(UuidBanEntry.class).getBanMessage());
+            case SOME:
+                event.getPlayer().kickPlayer(opt.unwrap(UuidBanEntry.class).getBanMessage());
                 event.setJoinMessage("§8[§4§l✕§r§8] §c" + event.getPlayer().getName() + "§7 attempted to connect, but is banned.");
                 return;
-            }
-            case default -> {}
+            default:
         }
 
         PlayerData account = Eden.getPermissionsManager().getPlayerData(event.getPlayer());

@@ -6,9 +6,7 @@ import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
-import fish.yukiemeralis.eden.utils.option.None;
 import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.option.Some;
 
 public class ModuleConfig
 {
@@ -44,11 +42,12 @@ public class ModuleConfig
 
     public <T extends Enum<T>> Enum<T> getEnum(String key, Class<T> clazz)
     {
-        return switch (getString(key))
+        // TODO Java 17 preview feature
+        Option opt = getString(key);
+        return switch (opt.getState())
         {
-            case Some s -> Enum.valueOf(clazz, s.unwrap(String.class));
-            case None n -> null;
-            case default -> null;
+            case SOME -> Enum.valueOf(clazz, opt.unwrap(String.class));
+            default -> null;
         };
     }
 
@@ -64,10 +63,11 @@ public class ModuleConfig
      */
     public Boolean getBoolean(String key)
     {
-        Boolean val = switch (getKey(key, Boolean.class))
+        // TODO Java 17 preview feature
+        Option opt = getKey(key, Boolean.class);
+        Boolean val = switch (opt.getState())
         {
-            case Some s -> s.unwrap(Boolean.class);
-            case None n -> false;
+            case SOME -> opt.unwrap(Boolean.class);
             default -> false;
         };
 

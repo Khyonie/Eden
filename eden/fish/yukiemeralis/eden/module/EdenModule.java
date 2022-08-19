@@ -30,12 +30,8 @@ import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-
 import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.option.Some;
-import fish.yukiemeralis.eden.utils.result.Err;
-import fish.yukiemeralis.eden.utils.result.Ok;
 import fish.yukiemeralis.eden.utils.result.Result;
 
 
@@ -397,12 +393,14 @@ public abstract class EdenModule
      */
     private Option getConfigSafe(File file)
     {
-        switch (getDefaultConfig())
+        // TODO Java 17 preview feature
+        Result result = getDefaultConfig();
+        switch (result.getState())
         {
-            case Ok ok:
-                return Option.some(ok.unwrapOk(DefaultConfigWrapper.class));
-            case Err err:
-                switch (err.unwrapErr(DefaultConfigFailure.class))
+            case OK:
+                return Option.some(result.unwrapOk(DefaultConfigWrapper.class));
+            case ERR:
+                switch (result.unwrapErr(DefaultConfigFailure.class))
                 {
                     case EMPTY_DEFAULT_CONFIG:
                         if (!file.exists())
@@ -459,13 +457,15 @@ public abstract class EdenModule
         PrintUtils.logVerbose("Attempting to load \"" + this.modName + "\"'s configuration...", InfoType.INFO);
 
         // Attempt to pull config data from @EdenConfig annotation
+        // TODO Java 17 preview feature
         Map<String, Object> defaultConfig;
-        switch (getConfigSafe(file))
+        Option opt = getConfigSafe(file);
+        switch (opt.getState())
         {
-            case Some s:
-                defaultConfig = s.unwrap(DefaultConfigWrapper.class).getData();
+            case SOME:
+                defaultConfig = opt.unwrap(DefaultConfigWrapper.class).getData();
                 break;
-            case default:
+            default:
                 return false;
         }
 
