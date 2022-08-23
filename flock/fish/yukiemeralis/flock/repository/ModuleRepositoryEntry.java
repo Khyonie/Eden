@@ -1,8 +1,17 @@
 package fish.yukiemeralis.flock.repository;
 
+import java.lang.reflect.Field;
+
+import org.bukkit.Material;
+
 import com.google.gson.annotations.Expose;
 
-public class ModuleRepositoryEntry 
+import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
+import fish.yukiemeralis.eden.surface2.component.GuiComponent;
+import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
+import fish.yukiemeralis.flock.gui.EditRepositoryEntryGui;
+
+public class ModuleRepositoryEntry implements GuiComponent
 {
     @Expose
     private String 
@@ -13,7 +22,18 @@ public class ModuleRepositoryEntry
         author;
 
     @Expose
+    private String[] dependencies; // Dependency list, with each entry formatted as "repository:module"
+
+    @Expose
     private double timestamp;
+
+    private ModuleRepository host;
+
+    @Override
+    public GuiItemStack generate()
+    {
+        return SimpleComponentBuilder.build(Material.BOOK, "§9§l" + name, (event) -> new EditRepositoryEntryGui(this, event.getWhoClicked()).display(event.getWhoClicked()));
+    }
 
     public void setName(String name)
     {
@@ -68,5 +88,37 @@ public class ModuleRepositoryEntry
     public double getTimestamp()
     {
         return this.timestamp;
+    }
+
+    public ModuleRepository getHostRepository()
+    {
+        return this.host;
+    }
+
+    public void attachHost(ModuleRepository repo)
+    {
+        this.host = repo;
+    }
+
+    /**
+     * Verifies a repository's validity. A valid repository must not contain any null fields.
+     * @return Whether or not this repository is valid.
+     */
+    public boolean isValid()
+    {
+        for (Field f : this.getClass().getDeclaredFields())
+        {
+            f.setAccessible(true);
+            try {
+                if (f.get(this) == null)
+                    return false;
+            } catch (IllegalAccessException e) {
+                continue;
+            } finally {
+                f.setAccessible(false);   
+            }
+        }
+
+        return true;
     }
 }

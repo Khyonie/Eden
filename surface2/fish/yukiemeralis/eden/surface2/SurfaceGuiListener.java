@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
+import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.option.Option;
 
 public class SurfaceGuiListener implements Listener 
@@ -69,6 +70,7 @@ public class SurfaceGuiListener implements Listener
             if (gui.getData(event.getWhoClicked()).containsKey(event.getSlot()))
                 ((GuiComponent) gui.getData(event.getWhoClicked()).get(event.getSlot())).onInteract(event);
         } catch (Exception e) {
+            PrintUtils.printPrettyStacktrace(e);
             event.setCancelled(true);
         }
     }
