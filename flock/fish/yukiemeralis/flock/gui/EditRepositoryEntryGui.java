@@ -13,6 +13,7 @@ import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
+import fish.yukiemeralis.flock.TextUtils;
 import fish.yukiemeralis.flock.repository.ModuleRepositoryEntry;
 
 public class EditRepositoryEntryGui extends SurfaceGui
@@ -42,7 +43,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
             "§7§omenu."
         );
     
-        setNameButton = SimpleComponentBuilder.build(Material.PAPER, "§9§lSet name", (event) -> {
+        setNameButton = SimpleComponentBuilder.build(Material.NAME_TAG, "§9§lSet name", (event) -> {
             event.getWhoClicked().closeInventory();
             PrintUtils.sendMessage(target, "Enter new name for this repository entry:");
 
@@ -98,6 +99,15 @@ public class EditRepositoryEntryGui extends SurfaceGui
             "",
             "§7§oClick to change. This action will",
             "§7§oregenerate this entry's timestamp."
+        );
+
+        setDescriptionButton = SimpleComponentBuilder.build(Material.PAPER, "§9§lSet description", (event) -> {
+
+        },
+            "§7§oCurrent description:",
+            "§7§o" + TextUtils.pruneStringLength(entry.getDescription() != null ? entry.getDescription() : "Not set", "...", 20),
+            // TODO This
+            ""
         );
     }
 
