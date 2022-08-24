@@ -55,6 +55,11 @@ public class ModuleRepositoryEntry implements GuiComponent
         this.version = version;
     }
 
+    public void setAuthor(String author)
+    {
+        this.author = author;
+    }
+
     public void updateTimestamp()
     {
         this.timestamp = System.currentTimeMillis();

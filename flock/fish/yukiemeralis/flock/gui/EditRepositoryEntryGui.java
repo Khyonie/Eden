@@ -23,7 +23,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
         saveButton,
         setNameButton, 
         setUrlButton, 
-        setAuthorButton = generateTodoButton("Set author"), 
+        setAuthorButton, 
         setDescriptionButton = generateTodoButton("Set description"), 
         setVersionButton = generateTodoButton("Set version"),
         addDependencyButton = generateTodoButton("Add dependency"),
@@ -76,6 +76,25 @@ public class EditRepositoryEntryGui extends SurfaceGui
         },
             "§7§oCurrent URL:",
             "§7§o" + (entry.getUrl() != null ? entry.getUrl() : "not set"),
+            "",
+            "§7§oClick to change. This action will",
+            "§7§oregenerate this entry's timestamp."
+        );
+
+        setAuthorButton = SimpleComponentBuilder.build(Material.PLAYER_HEAD, "§9§lSet author", (event) -> {
+            event.getWhoClicked().closeInventory();
+            PrintUtils.sendMessage(target, "Enter new author for this repository entry:");
+
+            ChatUtils.expectChat(target, () -> {
+                String input = ChatUtils.receiveResult(target);
+                ChatUtils.deleteResult(target);
+
+                entry.setAuthor(input);
+
+                openSync(entry, target);
+            });
+        },
+            "§7§oCurrent author: " + (entry.getAuthor() != null ? entry.getAuthor() : "not set"),
             "",
             "§7§oClick to change. This action will",
             "§7§oregenerate this entry's timestamp."

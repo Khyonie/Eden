@@ -17,7 +17,6 @@ import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.utils.option.Option;
-;
 
 public abstract class SurfaceGui implements ISurfaceGui
 {
