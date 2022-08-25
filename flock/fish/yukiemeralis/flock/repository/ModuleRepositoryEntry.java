@@ -1,6 +1,9 @@
 package fish.yukiemeralis.flock.repository;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.bukkit.Material;
 
@@ -10,6 +13,7 @@ import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.flock.gui.EditRepositoryEntryGui;
+import net.md_5.bungee.api.ChatColor;
 
 public class ModuleRepositoryEntry implements GuiComponent
 {
@@ -22,7 +26,7 @@ public class ModuleRepositoryEntry implements GuiComponent
         author;
 
     @Expose
-    private String[] dependencies; // Dependency list, with each entry formatted as "repository:module"
+    private List<String> dependencies; // Dependency list, with each entry formatted as "repository:module"
 
     @Expose
     private double timestamp;
@@ -72,7 +76,7 @@ public class ModuleRepositoryEntry implements GuiComponent
 
     public String getDescription()
     {
-        return this.description;
+        return ChatColor.stripColor(this.description);
     }
 
     public String getUrl()
@@ -100,9 +104,45 @@ public class ModuleRepositoryEntry implements GuiComponent
         return this.host;
     }
 
+    public void addDependency(String dependency)
+    {
+        if (this.dependencies == null)
+            this.dependencies = new ArrayList<>();
+        this.dependencies.add(dependency);
+    }
+
+    public List<String> getDependencies()
+    {
+        if (this.dependencies == null)
+            this.dependencies = new ArrayList<>();
+        return Collections.unmodifiableList(dependencies);
+    }
+
+    public String removeBottomDependency()
+    {
+        if (this.dependencies == null)
+            this.dependencies = new ArrayList<>();
+
+        if (dependencies.size() == 0)
+            return null;
+        return this.dependencies.remove(this.dependencies.size() - 1);
+    }
+
     public void attachHost(ModuleRepository repo)
     {
         this.host = repo;
+    }
+
+    public void setProperty(RepositoryEntryProperty property, String value)
+    {
+        switch (property)
+        {
+            case AUTHOR -> setAuthor(value);
+            case DESCRIPTION -> setDescription(value);
+            case NAME -> setName(value);
+            case URL -> setUrl(value);
+            case VERSION -> setVersion(value);
+        }
     }
 
     /**
@@ -125,5 +165,14 @@ public class ModuleRepositoryEntry implements GuiComponent
         }
 
         return true;
+    }
+
+    public static enum RepositoryEntryProperty
+    {
+        NAME,
+        DESCRIPTION,
+        AUTHOR,
+        VERSION,
+        URL
     }
 }
