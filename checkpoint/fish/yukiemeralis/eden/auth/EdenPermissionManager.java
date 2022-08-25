@@ -7,6 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.CommandMinecart;
+
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.core.CompletionsManager;
 import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
@@ -14,15 +20,10 @@ import fish.yukiemeralis.eden.permissions.PermissionsManager;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.option.Option;
 
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.minecart.CommandMinecart;
 
 /**
  * Eden's permissions manager. Supplies default permissions, and supports permissions groups out of the box.
@@ -69,13 +70,13 @@ public class EdenPermissionManager extends PermissionsManager
     }
 
     /**
-     * Obtains a permissions group with a given name. May return null if the group does not exist.
+     * Obtains a permissions group with a given name. Has an OptionState of NONE if the group does not exist.
      * @param name A permissions group with the given name.
      * @return A permissions group with the given name.
      */
-    public PermissionGroup getGroup(String name)
+    public Option getGroup(String name)
     {
-        return permissionGroups.get(name);
+        return permissionGroups.get(name) != null ? Option.some(permissionGroups.get(name)) : Option.none();
     }
 
     /**
@@ -102,19 +103,16 @@ public class EdenPermissionManager extends PermissionsManager
      * @param group Permissions group to add.
      * @return The processing result of adding the given group.
      */
-    public Option<String> addGroup(PermissionGroup group)
+    public Option addGroup(PermissionGroup group)
     {
-        Option<String> option = new Option<>(String.class);
-
         if (permissionGroups.containsKey(group.getName()))
         {
-            option.some("A permission group with that name already exists.");
-            return option;
+            return Option.some("A permission group with that name already exists.");
         }
 
         permissionGroups.put(group.getName(), group);
 
-        return option;
+        return Option.none();
     }
 
     /**
@@ -263,17 +261,9 @@ public class EdenPermissionManager extends PermissionsManager
         "Rosetta.eden.perms.group.create",
         "Rosetta.eden.perms.group.delete",
         "Rosetta.eden.perms.group.assign",
-        "Rosetta.eden.perms.group.unassign",
+        "Rosetta.eden.perms.group.unassign"
 
-        // Flock commands
-        "Flock.edenmr",
-        "Flock.edenmr.sync",
-        "Flock.edenmr.upgrade",
-        "Flock.edenmr.add",
-        "Flock.edenmr.remove",
-        "Flock.edenmr.open",
-        "Flock.edenmr.exportblank",
-        "Flock.edenmr.synctimestamps",
-        "Flock.edenmr.gentimestamp"
+        // TODO Flock commands
+        // TODO Add base command for Eden to act as an extremely simple interface to the module manager
     );
 }

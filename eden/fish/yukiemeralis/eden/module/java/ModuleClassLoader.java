@@ -26,8 +26,10 @@ import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
-import fish.yukiemeralis.eden.module.java.annotations.Unimplemented;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.StaticInitialize;
+import fish.yukiemeralis.eden.module.annotation.Unimplemented;
+import fish.yukiemeralis.eden.module.exception.InvalidStaticInitException;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
@@ -94,6 +96,18 @@ public class ModuleClassLoader extends URLClassLoader
 
 			try {
 				Class<?> buffer = Class.forName(entry.getName().replace("/", ".").replace(".class", ""), false, this);
+
+				PrintUtils.logVerbose("Parsing class " + buffer.getName(), InfoType.INFO);
+
+				if (buffer.isAnnotationPresent(StaticInitialize.class))
+				{
+					String staticInitName = buffer.getAnnotation(StaticInitialize.class).value();
+					try {
+						buffer.getDeclaredMethod(staticInitName).invoke(null);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+						PrintUtils.printPrettyStacktrace(new InvalidStaticInitException("Class " + buffer.getName() + " contains an @StaticInitialize annotation, but invoking defined static method \"" + staticInitName + "\" failed", e));
+					}
+				}				
 				
 				if (!EdenModule.class.isAssignableFrom(buffer))
 					continue;

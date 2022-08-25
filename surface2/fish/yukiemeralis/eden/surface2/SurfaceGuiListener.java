@@ -1,33 +1,30 @@
 package fish.yukiemeralis.eden.surface2;
 
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.enums.TimeSpaceDistortionException;
-import fish.yukiemeralis.eden.utils.Option;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
+import fish.yukiemeralis.eden.surface2.component.GuiComponent;
+import fish.yukiemeralis.eden.utils.PrintUtils;
+import fish.yukiemeralis.eden.utils.option.Option;
+
 public class SurfaceGuiListener implements Listener 
 {
     @EventHandler
     public void onClose(InventoryCloseEvent event)
     {
-        Option<SurfaceGui> option = SurfaceGui.getOpenGui(event.getPlayer());
-        SurfaceGui gui;
-
-        switch (option.getState())
+        // TODO Java 17 preview feature
+        Option opt = SurfaceGui.getOpenGui(event.getPlayer());
+        SurfaceGui gui = switch (opt.getState())
         {
-            case NONE:
-                return;
-            case SOME:
-                gui = option.unwrap();
-                break;
-            default:
-                throw new TimeSpaceDistortionException();
-        }
+            case SOME -> opt.unwrap(SurfaceGui.class);
+            default -> null;
+        };
+
+        if (gui == null)
+            return;
 
         gui.onGuiClose(event.getPlayer(), event.getView());
 
@@ -38,19 +35,16 @@ public class SurfaceGuiListener implements Listener
     public void onInteract(InventoryClickEvent event)
     {
         try {
-            Option<SurfaceGui> option = SurfaceGui.getOpenGui(event.getWhoClicked());
-            SurfaceGui gui;
-
-            switch (option.getState())
+            // TODO Java 17 preview feature
+            Option opt = SurfaceGui.getOpenGui(event.getWhoClicked());
+            SurfaceGui gui = switch (opt.getState())
             {
-                case NONE:
-                    return;
-                case SOME:
-                    gui = option.unwrap();
-                    break;
-                default:
-                    throw new TimeSpaceDistortionException();
-            }
+                case SOME -> opt.unwrap(SurfaceGui.class);
+                default -> null;
+            };
+
+            if (gui == null)
+                return;
 
             if (event.getRawSlot() >= gui.getSize())
                 return; // Player inventory
@@ -76,6 +70,7 @@ public class SurfaceGuiListener implements Listener
             if (gui.getData(event.getWhoClicked()).containsKey(event.getSlot()))
                 ((GuiComponent) gui.getData(event.getWhoClicked()).get(event.getSlot())).onInteract(event);
         } catch (Exception e) {
+            PrintUtils.printPrettyStacktrace(e);
             event.setCancelled(true);
         }
     }

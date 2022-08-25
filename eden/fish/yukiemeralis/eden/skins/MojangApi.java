@@ -10,10 +10,11 @@ import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.JsonSyntaxException;
 import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Result;
+
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -51,19 +52,15 @@ public class MojangApi
      * @param classOfT
      * @return
      */
-    public static <T> Result<T, MojangApiStatus> performRequest(MojangRequest<T> request, Class<T> classOfT)
+    public static <T> Result performRequest(MojangRequest<T> request)
     {
-        Result<T, MojangApiStatus> option = new Result<>(classOfT, MojangApiStatus.class);
-
         try {
             if (requests >= 600)
             {
                 PrintUtils.log("Rate-limit for Mojang API has been hit. Delaying execution.", InfoType.WARN);
                 PrintUtils.logVerbose("Request type: " + request.getClass().getName(), InfoType.WARN);
-                queuedRequests.add(new QueuedRequest<>(request, classOfT));
-                option.err(MojangApiStatus.TOO_MANY_REQUESTS);  
-
-                return option;
+                queuedRequests.add(new QueuedRequest<>(request));
+                return Result.err(MojangApiStatus.TOO_MANY_REQUESTS);  
             }
 
             T val = request.performRequest();  
@@ -78,9 +75,11 @@ public class MojangApi
                 }
             }.runTaskLater(Eden.getInstance(), 600*20);
 
-            return option;
+            return Result.ok(val);
+        } catch (JsonSyntaxException e) {
+            return Result.err(MojangApiStatus.CORRUPT_RESPONSE);
         } catch (IOException e) {
-            return null;
+            return Result.err(MojangApiStatus.CONNECTION_FAILED);
         }
     } 
 }

@@ -9,7 +9,6 @@
 	<classpathentry kind="src" path="eden"/>
 	<classpathentry kind="src" path="flock"/>
 	<classpathentry kind="src" path="rosetta"/>
-	<classpathentry kind="src" path="surface"/>
 	<classpathentry kind="src" path="surface2"/>
 	<classpathentry kind="lib" path="lib/fastutil-8.5.6.jar"/>
 	<classpathentry kind="lib" path="lib/spigot-api-1.19-R0.1-SNAPSHOT-shaded.jar"/>

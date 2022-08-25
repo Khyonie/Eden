@@ -18,7 +18,8 @@ import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
 import fish.yukiemeralis.eden.surface2.special.TabbedSurfaceGui;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Result;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 public class ModuleGui
 {
@@ -50,18 +51,18 @@ public class ModuleGui
                 continue;
 
             unloadedComponents.add(SimpleComponentBuilder.build(Material.SALMON_BUCKET, "§r§f§l" + ref, (e) -> {
-                    Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(ref));
+                    // TODO Java 17 preview feature
+                    Result result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(ref));
                     EdenModule mod;
                     switch (result.getState())
                     {
                         case ERR:
-                            PrintUtils.sendMessage(e.getWhoClicked(), "§cFailed to load \"" + ref + "\". Reason: " + result.unwrap());
+                            PrintUtils.sendMessage(e.getWhoClicked(), "§cFailed to load \"" + ref + "\". Reason: " + result.unwrapErr(String.class));
                             return;
                         case OK:
-                            mod = (EdenModule) result.unwrap();
+                            mod = result.unwrapOk(EdenModule.class);
                             break;
-                        default:
-                            return;
+                        default: throw new TimeSpaceDistortionException();
                     }
 
                     new ModuleSubGui(mod, e.getWhoClicked()).display(e.getWhoClicked());

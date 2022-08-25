@@ -24,6 +24,9 @@ public interface PacketUtils
             case "v1_18_R2":
                 new PacketUtils_v1_18_R2().hideEntityInternal(e, player);
                 break;
+            case "v1_19_R1":
+                new PacketUtils_v1_19_R1().hideEntityInternal(e, player);
+                break;
             default:
                 throw new VersionNotHandledException();
         }
@@ -84,5 +87,17 @@ public interface PacketUtils
             
             connection_1_18.a(new net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy(entity_1_18.ae()));
         }
+    }
+
+    public static class PacketUtils_v1_19_R1 implements PacketUtils
+    {
+        @Override
+        public void hideEntityInternal(Entity e, Player player) 
+        {
+            net.minecraft.server.network.PlayerConnection connection_1_19 = ((org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer) player).getHandle().b;
+            net.minecraft.world.entity.Entity entity_1_19 = ((org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity) e).getHandle();
+
+            connection_1_19.a(new net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy(entity_1_19.ae()));
+        }        
     }
 }

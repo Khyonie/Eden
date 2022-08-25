@@ -16,17 +16,17 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.core.CompletionsManager;
 import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
+import fish.yukiemeralis.eden.utils.option.Option;
+
 
 @ModInfo (
     modName = "Checkpoint",
@@ -39,10 +39,6 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @PreventUnload(CallerToken.EDEN)
 @EdenConfig
-@DefaultConfig(
-    keys =   {"notifyElevate", "blockPasswordsInChat", "deopOnIpChange", "obscureDisallowedCommands"},
-    values = {"true",          "true",                 "true",           "true"}
-)
 
 /**
  * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for
@@ -53,6 +49,14 @@ public class SecurityCore extends EdenModule
     private static List<String> security_log = new ArrayList<>();
     private static List<UuidBanEntry> uuid_bans = new ArrayList<>();
     private static EdenModule module;
+
+    @SuppressWarnings("unused")
+    private Map<String, Object> EDEN_DEFAULT_CONFIG = Map.of(
+        "notifyElevate", true,
+        "blockPasswordsInChat", true,
+        "deopOnIpChange", true,
+        "obscureDisallowedCommands", true  
+    );
 
     public SecurityCore()
     {
@@ -99,18 +103,6 @@ public class SecurityCore extends EdenModule
         }
 
         JsonUtils.toJsonFile("./plugins/Eden/banned-uuids.json", new UuidBanList(uuid_bans));
-    }
-
-    /**
-     * Gets a list of all account requests.
-     * @return A list of all account requests.
-     * @deprecated Secure player accounts are now deprecated.
-     */
-    @Deprecated
-    public static Map<String, fish.yukiemeralis.eden.auth.old.SecurePlayerAccount> getAccountRequests() 
-    { 
-        //return Permissions.getAccountRequests();
-        return null;
     }
 
     static LocalDate date;
@@ -181,14 +173,13 @@ public class SecurityCore extends EdenModule
      * @param player The player to check.
      * @return If the player is UUID banned.
      */
-    public static Option<UuidBanEntry> isBanned(Player player)
+    public static Option isBanned(Player player)
     {
-        Option<UuidBanEntry> option = new Option<>(UuidBanEntry.class);
         for (UuidBanEntry ban : uuid_bans)
             if (ban.getUuid().equals(player.getUniqueId().toString()))
-                return option.some(ban);
+                return Option.some(ban);
 
-        return option.none();
+        return Option.none();
     }
 
     /**

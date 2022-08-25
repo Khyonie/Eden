@@ -8,6 +8,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 
 import fish.yukiemeralis.eden.command.CommandManager;
+import fish.yukiemeralis.eden.command.EdenCommand;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 /**
  * Helper class to obscure commands the player does not have access to.<p>
@@ -18,13 +20,13 @@ public class CommandObscureListener implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommandSend(PlayerCommandSendEvent event)
     {
-        if (!SecurityCore.getModuleInstance().getConfig().get("obscureDisallowedCommands").equals("true"))
+        if (!SecurityCore.getModuleInstance().getConfig().getBoolean("obscureDisallowedCommands"))
             return;
 
         Iterator<String> iter = event.getCommands().iterator();
         String str;
 
-        while (iter.hasNext())
+        loop: while (iter.hasNext())
         {
             str = iter.next();
 
@@ -35,12 +37,18 @@ public class CommandObscureListener implements Listener
                 continue;
             }
 
-            if (CommandManager.getEdenCommand(str) != null)
+            // TODO Java 17 preview feature
+            Option opt = CommandManager.getEdenCommand(str);
+            switch (opt.getState())
             {
-                // Eden commands
-                if (!CommandManager.getEdenCommand(str).testBasePermission(event.getPlayer(), str))
-                    iter.remove();
-                continue;
+                case SOME:
+                    if (!opt.unwrap(EdenCommand.class).testBasePermission(event.getPlayer(), str))
+                    {
+                        iter.remove();
+                        continue loop;
+                    }
+                    continue loop;
+                default:
             }
 
             // Minecraft/bukkit commands

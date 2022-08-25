@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 
 @HideFromCollector
 public class PlayerIPListener implements Listener

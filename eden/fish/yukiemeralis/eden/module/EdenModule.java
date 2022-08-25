@@ -5,8 +5,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,22 +19,27 @@ import org.bukkit.plugin.java.JavaPlugin;
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig.DefaultConfigWrapper;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.java.ModuleManager;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
+import fish.yukiemeralis.eden.module.java.enums.DefaultConfigFailure;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.result.Result;
+
+
 
 /**
  * Represents an Eden module.
  * @author Yuki_emeralis
  */
-@SuppressWarnings("unused")
 public abstract class EdenModule
 {
     protected String modName, version, description, maintainer;
@@ -44,7 +49,8 @@ public abstract class EdenModule
     private List<Listener> listeners = new ArrayList<>();
     private List<EdenCommand> commands = new ArrayList<>();
 
-    protected Map<String, String> config;
+    //protected Map<String, String> config;
+    protected ModuleConfig config;
 
     protected List<EdenModule> reliantModules = new ArrayList<>(); // Modules that depend on this module
 
@@ -154,7 +160,7 @@ public abstract class EdenModule
      * Obtains this module's configuration.
      * @return This module's configuration.
      */
-    public Map<String, String> getConfig()
+    public ModuleConfig getConfig()
     {
         return config;
     }
@@ -209,7 +215,7 @@ public abstract class EdenModule
         // For some unholy reason this is faster than Thread.getCurrentThread().getCurrentStacktrace()
         StackTraceElement current = new Throwable().getStackTrace()[1];
         PrintUtils.log("<Method> [" + current.getMethodName() + "] <in> [" + current.getClassName() + "] <requested instance from a module, however this module does not hide EdenModule#getInstance\\\\(\\\\)!>", InfoType.ERROR);
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -318,14 +324,6 @@ public abstract class EdenModule
     }
 
     /**
-     * Annotation to notify Eden that this module has a configuration file.
-     * @author Yuki_emeralis
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public static @interface EdenConfig {}
-
-    /**
      * Required annotation for all Eden modules to set themselves apart from other modules.
      * @author Yuki_emeralis
      */
@@ -347,66 +345,347 @@ public abstract class EdenModule
     }
 
     /**
-     * Loads this module's configuration from a file.
+     * Attempts to obtain the default config for this module. Result states:<p>
+     * <b>Ok</b> - Success. Unwrap to obtain config.<p>
+     * <b>NO_DEFAULT_CONFIG_ANNOTATION</b> - Class does not contain a DefaultConfig annotation.<p>
+     * <b>NO_DEFAULT_CONFIG_FOUND</b> - Field name given by DefaultConfig annotation does not match an existing field.<p>
+     * <i>- Field name can be specified inside annotation, otherwise default is "EDEN_DEFAULT_CONFIG".<p>
+     * <b>INVALID_DEFAULT_CONFIG</b> - Data is not presented in valid format. Config must be a Map of strings and objects.<p>
+     * <b>EMPTY_DEFAULT_CONFIG</b> - Config does not have any entries. Consider removing the DefaultConfig annotation and data.
+     * @return A result containing a DefaultConfigWrapper, or an enum describing the error.
      */
-    @SuppressWarnings("unchecked")
-    public void loadConfig()
+    @SuppressWarnings("unchecked") // Cast is checked
+    public Result getDefaultConfig()
     {
-        File file = new File("./plugins/Eden/configs/" + this.modName + ".json");
+        Class<? extends EdenModule> clazz = this.getClass();
+        
+        // if (!clazz.isAnnotationPresent(EdenConfig.class))
+        //     return data.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_ANNOTATION);
 
-        if (!file.exists())
-        {
-            if (!this.getClass().isAnnotationPresent(DefaultConfig.class))
-            {
-                PrintUtils.log("<Module \">[" + this.modName + "]<\" requests a configuration file, but one doesn't exist nor is a default config specified!>", InfoType.ERROR);
-                return;
-            }
-
-            DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-            Map<String, String> dc = new HashMap<>();
-
-            for (int i = 0; i < defaultconfig.keys().length; i++)
-                dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
-
-            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", dc);
-        }
+        EdenConfig annotation = clazz.getAnnotation(EdenConfig.class);
+        String fieldName = annotation.value();
+        Field field;
+        Map<String, Object> config;
 
         try {
-            this.config = (HashMap<String, String>) JsonUtils.fromJsonFile("./plugins/Eden/configs/" + this.modName + ".json", HashMap.class);
+            field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            config = (Map<String, Object>) field.get(this);
+        } catch (NoSuchFieldException e) { // Map does not exist
+            return Result.err(DefaultConfigFailure.NO_DEFAULT_CONFIG_FOUND);
+        } catch (ClassCastException e) { // Map is not of <String, Object>
+            return Result.err(DefaultConfigFailure.INVALID_DEFAULT_CONFIG);
+        } catch (SecurityException | IllegalAccessException e) { // Other generic errors
+            return Result.err(DefaultConfigFailure.UNKNOWN_ERROR);
+        }
+        
+        if (config.isEmpty()) // No keys in map
+            return Result.err(DefaultConfigFailure.EMPTY_DEFAULT_CONFIG);
+
+        return Result.ok(new DefaultConfigWrapper(config));
+    }
+
+    /**
+     * Safely gets a defaultconfigwrapper. An OptionState of NONE indicates a failure, and an error describing the
+     * issue will be printed.
+     * @param file This module's configuration file.
+     * @return An option containing a DefaultConfigWrapper. Always match the OptionState before unwrapping.
+     */
+    private Option getConfigSafe(File file)
+    {
+        // TODO Java 17 preview feature
+        Result result = getDefaultConfig();
+        switch (result.getState())
+        {
+            case OK:
+                return Option.some(result.unwrapOk(DefaultConfigWrapper.class));
+            case ERR:
+                switch (result.unwrapErr(DefaultConfigFailure.class))
+                {
+                    case EMPTY_DEFAULT_CONFIG:
+                        if (!file.exists())
+                        {                            
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the supplied default configuration is empty! Cannot load module.>", InfoType.ERROR);
+                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                            PrintUtils.log("§b- If you are a developer: please populate your default configuration, or consider removing the @EdenConfig annotation entirely.");
+                            return Option.none();
+                        }
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is empty! Cannot verify current stored configuration integrity.>", InfoType.ERROR);
+                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                        PrintUtils.log("§b- If you are a developer: please populate your default configuration.");
+                        return Option.none();
+                    case INVALID_DEFAULT_CONFIG:
+                        if (!file.exists())
+                        {   
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\"requested a new configuration file, but the supplied default configuration is invalid! Cannot load module.>", InfoType.ERROR);
+                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                            PrintUtils.log("§b- If you are a developer: please ensure your configuration is stored as a Map\\<String, Object\\>.");
+                            return Option.none();
+                        }
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\"'s default configuration is invalid! Cannot verify current stored configuration integrity.>", InfoType.ERROR);
+                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                        PrintUtils.log("§b- If you are a developer: please ensure your configuration is stored as a Map\\<String, Object\\>.");
+                        return Option.none();
+                    case NO_DEFAULT_CONFIG_FOUND:
+                        if (!file.exists())
+                        {
+                            PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(EdenConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
+                            PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                            PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
+                            return Option.none();
+                        }
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a new configuration file, but the given Object name \"" + this.getClass().getAnnotation(EdenConfig.class).value() + "\" does not exist! Cannot load module.>", InfoType.ERROR);
+                        PrintUtils.log("§a- If you are a server owner: please contact this module's maintainer \\(\"" + this.maintainer + "\"\\).");
+                        PrintUtils.log("§b- If you are a developer: please ensure your default configuration mapping is named as seen above. See the wiki for more info.");
+                        return Option.none();
+                    case UNKNOWN_ERROR:
+                    default:
+                        PrintUtils.log("<Module \">[" + this.modName + "]<\" requested a configuration file, but an error occurred in accessing the default configuration.>", InfoType.ERROR);
+                        return Option.none();
+                }
+            default:
+                throw new TimeSpaceDistortionException(); // This shouldn't fire unless something exceptionally catastrophic happens
+        }
+    }
+
+    /**
+     * Loads this module's configuration from a file.
+     */
+    public boolean loadConfig()
+    {
+        File file = new File("./plugins/Eden/configs/" + this.modName + ".json");
+        PrintUtils.logVerbose("Attempting to load \"" + this.modName + "\"'s configuration...", InfoType.INFO);
+
+        // Attempt to pull config data from @EdenConfig annotation
+        // TODO Java 17 preview feature
+        Map<String, Object> defaultConfig;
+        Option opt = getConfigSafe(file);
+        switch (opt.getState())
+        {
+            case SOME:
+                defaultConfig = opt.unwrap(DefaultConfigWrapper.class).getData();
+                break;
+            default:
+                return false;
+        }
+
+        // Generate config file if needed
+        if (!file.exists())
+        {
+            ModuleConfig config = new ModuleConfig(new HashMap<>(defaultConfig));
+
+            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
+        }
+
+        // Proceed to load config from file. If this is a fresh file, should be an exact copy of the default config
+        try {
+            this.config = JsonUtils.fromJsonFile("./plugins/Eden/configs/" + this.modName + ".json", ModuleConfig.class);
 
             if (this.config == null)
                 throw new ClassCastException();
         } catch (Exception e) {
-            PrintUtils.log("<Configuration file for module \">(" + this.modName + ")<\" is corrupt! Moving to lost and found...>", InfoType.ERROR);
+            PrintUtils.log("<Stored configuration file for module \">(" + this.modName + ")<\" is corrupt! Moving to lost and found...>", InfoType.ERROR);
             FileUtils.moveToLostAndFound(file);
 
-            DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-            Map<String, String> dc = new HashMap<>();
+            ModuleConfig config = new ModuleConfig(new HashMap<>(defaultConfig));
 
-            for (int i = 0; i < defaultconfig.keys().length; i++)
-                dc.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
-
-            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", dc);
+            JsonUtils.toJsonFile("./plugins/Eden/configs/" + this.modName + ".json", config);
         }
-        
 
-        // Then do a quick double check to make sure that the config has all the expected values, specified in @DefaultConfig
-        if (this.getClass().isAnnotationPresent(DefaultConfig.class))
+        // Check for missing keys
+        boolean missingValueWarned = false;
+        for (String key : defaultConfig.keySet())
         {
-            if (this.config.size() < this.getClass().getAnnotation(DefaultConfig.class).keys().length)
+            if (config.hasKey(key))
+                continue;
+            
+            if (!missingValueWarned)
             {
-                DefaultConfig defaultconfig = this.getClass().getAnnotation(DefaultConfig.class);
-                PrintUtils.log("<Local config file is missing configuration values. Filling in from default config, please review these new values.>", InfoType.WARN);
+                PrintUtils.log("<Stored configuration file is missing configuration values. Filling in from default configuration, please review these new values.>", InfoType.WARN);
+                missingValueWarned = true;
+            }
 
-                for (int i = 0; i < defaultconfig.keys().length; i++)
-                    if (!this.config.containsKey(defaultconfig.keys()[i]))
+            this.config.setKey(key, defaultConfig.get(key));
+            PrintUtils.log("<" + key + " -\\> " + defaultConfig.get(key) + " \\(of type: " + (defaultConfig.get(key) != null ? defaultConfig.get(key).getClass().getSimpleName() : "null") + "\\)>", InfoType.WARN);
+        }
+
+        // Then do the reverse, checking for keys that aren't needed
+        for (String key : this.config.getKeys())
+        {
+            if (defaultConfig.containsKey(key))
+                continue;
+
+            PrintUtils.log("<Trimming unused key \"" + key + "\"...>");
+            this.config.removeKey(key);
+        }
+
+        // Finally, attempt to update to the 1.6.0 standard of <String, Object>
+        PrintUtils.logVerbose("Attempting to update old configuration data to the 1.6.0 standard...", InfoType.INFO);
+
+        switch (updateOldConfigData(defaultConfig))
+        {
+            case FAILURE:
+                PrintUtils.log("Failed to update configuration data. See stacktrace for details.", InfoType.ERROR);
+                break;
+            case NOTHING_TO_DO:
+                PrintUtils.logVerbose("Nothing to do.", InfoType.INFO);
+                break;
+            case SUCCESS:
+                PrintUtils.log("Successfully updated configuration for module \"" + this.modName + "\".");
+                break;
+        }
+
+        this.saveConfig();
+
+        return true;
+    }
+
+    private ConfigUpdateStatus updateOldConfigData(Map<String, Object> defaultConfig)
+    {
+        try {
+            int updated = 0;
+            loop: for (String key : this.config.getKeys())
+            {
+                Object stored = config.getKey(key);
+                Object defaultVal = defaultConfig.get(key);
+
+                if (stored == null)
+                {
+                    if (defaultVal == null)
                     {
-                        config.put(defaultconfig.keys()[i], defaultconfig.values()[i]);
-                        PrintUtils.log("<" + defaultconfig.keys()[i] + " -\\> " + defaultconfig.values()[i] + ">", InfoType.WARN);
+                        PrintUtils.log("<Both the stored configuration and default configuration value for key \"" + key + "\" is null. Consider removing this key.>");
+                        continue;
                     }
 
-                this.saveConfig();
+                    PrintUtils.log("<Stored value for key \"" + key + "\" is null, filling in from default value...>");
+                    PrintUtils.log("<" + key + ": null -\\> " + defaultVal + " >");
+                    this.config.setKey(key, defaultVal);
+
+                    updated++;
+                    continue;   
+                }
+
+                if (defaultVal.getClass().isAssignableFrom(stored.getClass()))
+                    continue; // Key doesn't need to be updated
+
+                PrintUtils.log("<Stored value and default value for key \"" + key + "\" are of different types! \\(stored: " + stored.getClass().getSimpleName() + " | default: " + defaultVal.getClass().getSimpleName() + "\\) " + (stored instanceof String ? "Attempting to convert..." : "") + ">"); 
+                
+                if (!(stored instanceof String))
+                {
+                    PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                    PrintUtils.log("<" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + defaultVal + " \\(" + defaultVal.getClass().getSimpleName() + "\\)>");
+                    this.config.setKey(key, defaultVal);
+
+                    updated++;
+                    continue;
+                }
+
+                update: switch (defaultVal.getClass().getName())
+                {
+                    case "java.lang.Integer":
+                        try {
+                            Integer i = Integer.parseInt((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Byte":
+                        try {
+                            Byte i = Byte.parseByte((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Short":
+                        try {
+                            Short i = Short.parseShort((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Long":
+                        try {
+                            Long i = Long.parseLong((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Float":
+                        try {
+                            Float i = Float.parseFloat((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Double":
+                        try {
+                            Double i = Double.parseDouble((String) stored);
+                            this.config.setKey(key, i);
+                        } catch (NumberFormatException e) {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                        }
+                        break update;
+                    case "java.lang.Boolean":
+                        String out = ((String) stored).trim().toLowerCase();
+
+                        if (!out.equals("true") && !out.equals("false"))
+                        {
+                            PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                            PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                            this.config.setKey(key, defaultVal);
+
+                            updated++;
+                            break update;
+                        }
+
+                        this.config.setKey(key, Boolean.parseBoolean(out));
+                        updated++;
+                        break update;
+                    default:
+                        PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
+                        PrintUtils.log("<" + key + ": " + stored + " -\\> " + defaultVal + " >");
+                        this.config.setKey(key, defaultVal);
+
+                        updated++;
+                        continue loop;
+                }
+
+                PrintUtils.log("<" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + this.config.getKey(key) + " \\(" + this.config.getKey(key).getClass().getSimpleName() + "\\)>");
             }
+
+            return updated == 0 ? ConfigUpdateStatus.NOTHING_TO_DO : ConfigUpdateStatus.SUCCESS;
+        } catch (Exception e) {
+            PrintUtils.printPrettyStacktrace(e);
+            return ConfigUpdateStatus.FAILURE;
         }
     }
 
@@ -430,5 +709,13 @@ public abstract class EdenModule
     	 * An array of module names that a module depends on.
     	 */
         String[] loadBefore();
+    }
+
+    private static enum ConfigUpdateStatus
+    {
+        SUCCESS,
+        FAILURE,
+        NOTHING_TO_DO
+        ;
     }
 }

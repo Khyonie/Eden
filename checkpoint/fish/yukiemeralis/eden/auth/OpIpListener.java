@@ -24,7 +24,7 @@ public class OpIpListener implements Listener
         if (Eden.getPermissionsManager().getPlayerData(event.getPlayer()).getLastKnownIP().equals(event.getPlayer().getAddress().getAddress().getHostAddress()))
             return;
 
-        if (!SecurityCore.getModuleInstance().getConfig().get("deopOnIpChange").equals("true"))
+        if (!SecurityCore.getModuleInstance().getConfig().getBoolean("deopOnIpChange"))
             return;
 
         // IP doesn't match, deop

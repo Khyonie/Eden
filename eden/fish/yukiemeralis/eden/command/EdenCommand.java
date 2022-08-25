@@ -1,9 +1,5 @@
 package fish.yukiemeralis.eden.command;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,12 +13,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteBranch;
+import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteMultiBranch;
 import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteTree;
+import fish.yukiemeralis.eden.command.tabcomplete.TabCompleter;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
+import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 
 /**
@@ -394,7 +394,10 @@ public abstract class EdenCommand extends Command
 
         // No args are present, return the base as-is
         if (args.length == 0)
+        {
+            PrintUtils.logVerbose("Generated singleton permission \"" + permission + "\"", InfoType.INFO);
             return permission;
+        }
 
         // Traverse tree to see if any given arg is a parameter, or elevated
         List<Integer> paramIndexes = new ArrayList<>();
@@ -425,12 +428,12 @@ public abstract class EdenCommand extends Command
                 {
                     paramIndexes.add(i);
 
-                    branch = branch.getBranch(branch.getBranchesFromHere().get(0));
+                    branch = (TabCompleteBranch) branch.getBranch(branch.getBranchesFromHere().get(0));
                     continue;
                 }
             }
 
-            branch = branch.getBranch(args[i]);
+            branch = (TabCompleteBranch) branch.getBranch(args[i]);
 
             if (branch == null)
             {
@@ -456,6 +459,7 @@ public abstract class EdenCommand extends Command
                 permission = permission + "." + marker + str;
         }
 
+        PrintUtils.logVerbose("Generated permission \"" + permission + "\"", InfoType.INFO);
         return permission;
     }
 
@@ -472,9 +476,7 @@ public abstract class EdenCommand extends Command
     {
         tree.addBranch(labels);
 
-        if (labels.length == 1)
-            return tree.getBranch(labels[0]);
-        return null;
+        return tree.getBranch(labels[0]);
     }
 
     /**
@@ -487,29 +489,18 @@ public abstract class EdenCommand extends Command
         return tree.getBranch(label);
     }
 
+    public TabCompleteMultiBranch getMultiBranch(String... labels)
+    {
+        List<TabCompleter> data = new ArrayList<>();
+
+        for (String label : labels)
+            data.add(this.tree.getBranch(label));
+
+        return new TabCompleteMultiBranch(data);
+    }
+
     private EdenCommand getInstance()
     {
         return this;
-    }
-
-    //
-    // Annotations
-    //
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    protected @interface EdenCommandHandler
-    {
-        String usage();
-        String description();
-        int argsCount();
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    protected @interface EdenCommandRedirect
-    {
-        String[] labels();
-        String command();
     }
 }

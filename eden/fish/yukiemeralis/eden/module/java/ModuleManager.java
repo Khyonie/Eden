@@ -25,23 +25,26 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.CommandManager;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
 import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
-import fish.yukiemeralis.eden.module.event.*;
+import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
+import fish.yukiemeralis.eden.module.event.ModuleDisableEvent;
+import fish.yukiemeralis.eden.module.event.ModuleEnableEvent;
+import fish.yukiemeralis.eden.module.event.ModuleLoadEvent;
+import fish.yukiemeralis.eden.module.event.ModuleUnloadEvent;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.module.java.enums.ModuleDisableFailure;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Result;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
-import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
+
 import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.OptionState;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 /**
  * Handler for all tasks related to Eden's modules.</p>
@@ -318,39 +321,27 @@ public class ModuleManager
 	 * @param filepath The filepath leading to the module file.
 	 * @return A result of either an EdenModule or a String describing the error.
 	 */
-	public Result<EdenModule, String> loadSingleModule(String filepath)
+	public Result loadSingleModule(String filepath)
 	{
-		Result<EdenModule, String> result = new Result<>(EdenModule.class, String.class);
-		
 		if (!new File(filepath).exists())
-		{
-			try { result.err("File does not exist."); } catch (UndefinedResultException e) {}
-			return result;
-		}
+			return Result.err("File does not exist.");
 
 		ModuleClassLoader mcl = loadModule(new File(filepath));
 
 		if (mcl == null)
-		{
-			try { result.err("File could not be opened."); } catch (UndefinedResultException e) {}
-			return result;
-		}
+			return Result.err("File could not be opened.");
 
 		precacheModuleClasses(mcl, false);
 
 		if (mcl.getModuleClass().isAnnotationPresent(LoadBefore.class))
 			if (!isModuleListPresent(mcl.getModuleClass().getAnnotation(LoadBefore.class).loadBefore()))
-			{
-				try { result.err("Module dependencies are missing."); } catch (UndefinedResultException e) {}
-				return result;
-			}
+				return Result.err("Module dependencies are missing.");
 
 		try {
 			mcl.finalizeLoading();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException e) {
 			PrintUtils.printPrettyStacktrace(e);
-			try { result.err("Module has invalid classes. Failed with error: " + e.getClass().getSimpleName()); } catch (UndefinedResultException e_) {}
-			return result;
+			return Result.err("Module has invalid classes. Failed with error: " + e.getClass().getSimpleName());
 		}
 
 		disabled_modules.add(mcl.getModule());
@@ -367,8 +358,7 @@ public class ModuleManager
 		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleLoadEvent(mcl.getModule(), mcl.getName()));
 		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(mcl.getModule(), filepath));
 
-		try { result.ok(mcl.getModule()); } catch (UndefinedResultException e) { }
-		return result;
+		return Result.ok(mcl.getModule());
 	}
 	// ########################################################################
 	// #################### Enabling, disabling, unloading ####################
@@ -461,7 +451,8 @@ public class ModuleManager
 		if (module.getClass().isAnnotationPresent(EdenConfig.class))
 		{
 			PrintUtils.logVerbose("Found module config", InfoType.INFO);
-			module.loadConfig();
+			if (!module.loadConfig())
+				return;
 		}
 
 		PrintUtils.logVerbose("All registered! Enabling " + module.getName() + " " + module.getVersion() + "...", InfoType.INFO);
@@ -493,13 +484,12 @@ public class ModuleManager
 	 * @param caller The token of the requestee.
 	 * @return Whether or not disabling was successful.
 	 */
-	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean force)
+	public Option disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean force)
 	{
-		Option<ModuleDisableFailureData> result = new Option<>(ModuleDisableFailureData.class);
 		EdenModule module = getEnabledModuleByName(name);
 
 		if (module == null)
-			return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.NULL_MODULE));; // Can't disable a module that doesn't exist
+			return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.NULL_MODULE));; // Can't disable a module that doesn't exist
 
 		// Check for a required caller token
 		if (module.getClass().isAnnotationPresent(PreventUnload.class))
@@ -509,7 +499,7 @@ public class ModuleManager
 			if (!CallerToken.isEqualToOrHigher(caller, intendedCaller))
 			{
 				PrintUtils.log("<An attempt was made to disable \"" + name + "\" but this module's @PreventDisable tag prevented it! Expected token: " + intendedCaller.name() + ", given: " + caller.name() + ">", InfoType.WARN);
-				return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNAUTHORIZED_CALLERTOKEN));
+				return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNAUTHORIZED_CALLERTOKEN));
 			}	
 		}
 
@@ -544,7 +534,7 @@ public class ModuleManager
 					// });
 					
 					dependentModuleTree.remove(module.getClass());
-					return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.DOWNSTREAM_DISABLE_FAILURE));
+					return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.DOWNSTREAM_DISABLE_FAILURE));
 				}
 
 				if (!disabledModuleList.contains(mod))
@@ -597,29 +587,29 @@ public class ModuleManager
 				Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
 
 				PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
-				return result.none();
+				return Option.none();
 			}
 		} catch (Exception e) {
 			PrintUtils.log("<Failed to disable module! Stacktrace is below...>", InfoType.ERROR);
 			PrintUtils.printPrettyStacktrace(e);
 
-			return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.JAVA_ERROR));
+			return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.JAVA_ERROR));
 		}
 
-		return result.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNKNOWN_ERROR));
+		return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.UNKNOWN_ERROR));
 	}
 
 	/**
 	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
 	 * @param name The expected name of a module.
 	 */
-	public Option<ModuleDisableFailureData> disableModule(String name)
+	public Option disableModule(String name)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false);
 	}
 
-	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken token)
+	public Option disableModule(String name, CallerToken token)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, token, disabledModuleList, false);
@@ -629,13 +619,13 @@ public class ModuleManager
 	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
 	 * @param name The expected name of a module.
 	 */
-	public Option<ModuleDisableFailureData> disableModule(String name, boolean force)
+	public Option disableModule(String name, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, force);
 	}
 
-	public Option<ModuleDisableFailureData> disableModule(String name, CallerToken token, boolean force)
+	public Option disableModule(String name, CallerToken token, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, token, disabledModuleList, force);
@@ -685,6 +675,104 @@ public class ModuleManager
 		loader_cache.remove(name);
 	}
 
+	/**
+	 * Forcibly unloads an EdenModule from memory. This method bypasses {@link CallerToken}s, &#64;{@link PreventUnload} annotations, and other safety checks.<p>
+	 * <b><h2>This is not intended to be a go-around of the standard module removal protocol.</h2></b>
+	 * As such, issues arising from improper usage of this utility will be ignored.
+	 * @param name Module name to unload.
+	 * @see {@link ModuleManager#removeModuleFromMemory(String name, CallerToken token)}
+	 */
+	public void forceRemoveModuleFromMemory(String name)
+	{
+		EdenModule module = getDisabledModuleByName(name);
+
+		if (module == null)
+			return;
+
+		// Disable events
+		module.getListeners().forEach(HandlerList::unregisterAll);
+		
+		// Disable commands
+		module.getCommands().forEach(command -> {
+			CommandManager.unregisterCommand(command.getName());
+		});
+
+		class_cache.clear();
+
+		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleUnloadEvent(name, module, this.module_references.get(name)));
+
+		ModuleFamilyRegistry.unregister(module);
+
+		disabled_modules.remove(module);
+		enabled_modules.remove(module);
+		loader_cache.remove(name);
+	}
+
+	/**
+	 * Forcibly reloads a module.
+	 * @param name Module name to reload.
+	 * @param enableIfDisabled Whether or not to enable the reloaded module, even if it was previously disabled.
+	 * @param continueOnFailure Whether or not to continue on a failure, ensuring that the module will be reloaded. This may result in configs not being updated.
+	 */
+	public void forceReload(String name, boolean enableIfDisabled, boolean continueOnFailure)
+	{
+		EdenModule module = getModuleByName(name);
+		
+		if (module == null)
+			return;
+		
+		boolean enabled = module.getIsEnabled();
+
+		// Disable, potentially continuing on failure
+		if (enabled)
+		{
+			Option option;
+			try {
+				option = disableModule(name, CallerToken.EDEN, new ArrayList<>(), true);
+
+				if (option.isSome())
+					if (!continueOnFailure)
+						return;		
+
+			} catch (Exception e) {
+				PrintUtils.printPrettyStacktrace(e);
+				if (!continueOnFailure)
+					return;
+			}
+
+			enabled_modules.remove(module);
+			disabled_modules.add(module);
+
+			Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
+			module.setDisabled();
+
+			PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
+		}
+
+		// Unload
+		try {
+			forceRemoveModuleFromMemory(name);
+		} catch (Exception e) {
+			PrintUtils.printPrettyStacktrace(e);
+		}
+
+		// Load
+		Result result = loadSingleModule(module_references.get(name));
+
+		if (result.isErr())
+		{
+			PrintUtils.log("Failed to load module \"" + name + "\" after reload! Reason: " + result.unwrapErr(String.class));
+			return;
+		}
+
+		if (!enabled && !enableIfDisabled)
+			return;
+
+		enableModule(result.unwrapOk(EdenModule.class));
+		result.unwrapOk(EdenModule.class).setEnabled();
+		PrintUtils.log("Finished reload.");
+	}
+
 	// #############################################################
 	// #################### Getters and setters ####################
 	// #############################################################
@@ -726,12 +814,11 @@ public class ModuleManager
 	 * NONE - Class was found outside of a module. 
 	 * @param clazz The class to search with.
 	 */
-	public Option<EdenModule> getHostModule(Class<?> clazz) 
+	public Option getHostModule(Class<?> clazz) 
 	{
-		Option<EdenModule> option = new Option<>(EdenModule.class);
 		try {
 			Class.forName(clazz.getName(), false, this.getClass().getClassLoader()); // Part of Eden, bukkit/spigot, or NMS
-			return option; // Option is none
+			return Option.none(); // Option is none
 		} catch (ClassNotFoundException e) {}
 
 		for (String current : loader_cache.keySet())
@@ -740,15 +827,13 @@ public class ModuleManager
 
 			try {
 				loader.findClass(clazz.getName(), false);
-				option.some(loader.getModule()); // Class found
-				return option;
+				return Option.some(loader.getModule()); // Class found 
 			} catch (ClassNotFoundException e) {
 				continue;
 			}
 		}
 
-		option.some(null); // Class was not found anywhere
-		return option;
+		return Option.some(null); // Class was not found anywhere
 	}
 
 	/**

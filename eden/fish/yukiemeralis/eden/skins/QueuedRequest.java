@@ -3,38 +3,33 @@ package fish.yukiemeralis.eden.skins;
 import java.io.IOException;
 
 import com.google.gson.JsonSyntaxException;
+
 import fish.yukiemeralis.eden.skins.MojangApi.MojangApiStatus;
-import fish.yukiemeralis.eden.utils.Result;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 public class QueuedRequest<T> extends Thread
 {
     final MojangRequest<T> request;
-    final Class<T> classOfT;
-    private Result<T, MojangApiStatus> result;
+    private Result result;
 
-    public QueuedRequest(MojangRequest<T> request, Class<T> classOfT)
+    public QueuedRequest(MojangRequest<T> request)
     {
         this.request = request;
-        this.classOfT = classOfT;
     }
 
     @Override
     public void run()
     {
-        result = new Result<>(classOfT, MojangApiStatus.class);
-
         try {
-            T val = request.performRequest();
-
-            result.ok(val);
+            result = Result.ok(request.performRequest());
         } catch (JsonSyntaxException e) {
-            result.err(MojangApiStatus.CORRUPT_RESPONSE);
+            result = Result.err(MojangApiStatus.CORRUPT_RESPONSE);
         } catch (IOException e) {
-            result.err(MojangApiStatus.CONNECTION_FAILED);;
+            result = Result.err(MojangApiStatus.CONNECTION_FAILED);;
         }
     }
 
-    public Result<T, MojangApiStatus> getResult()
+    public Result getResult()
     {
         return result;
     }

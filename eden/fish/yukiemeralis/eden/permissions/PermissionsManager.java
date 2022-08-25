@@ -18,7 +18,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
 
 /**
  * Base class for all Eden permissions handlers.
- * @Author Yuki_emeralis
+ * @author Yuki_emeralis
  */
 public abstract class PermissionsManager 
 {

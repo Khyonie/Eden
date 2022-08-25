@@ -22,9 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,27 +39,28 @@ import fish.yukiemeralis.eden.auth.PermissionGroup;
 import fish.yukiemeralis.eden.auth.SecurityCore;
 import fish.yukiemeralis.eden.command.CommandManager;
 import fish.yukiemeralis.eden.command.EdenCommand;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
+import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
-import fish.yukiemeralis.eden.core.CoreModule.DisableRequest;
+import fish.yukiemeralis.eden.core.Rosetta.DisableRequest;
 import fish.yukiemeralis.eden.core.modgui.ModuleGui;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
-import fish.yukiemeralis.eden.module.java.annotations.DefaultConfig;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.PreventUnload;
 import fish.yukiemeralis.eden.permissions.PlayerData;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
-import fish.yukiemeralis.eden.utils.Option.OptionState;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.HashUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.Option;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.Result;
-import fish.yukiemeralis.eden.utils.Result.UndefinedResultException;
+import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
+import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.option.OptionState;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 @PreventUnload(CallerToken.EDEN)
 public class CoreCommand extends EdenCommand
@@ -130,7 +129,7 @@ public class CoreCommand extends EdenCommand
             }
 
             new ModuleGui().display((Player) sender);
-            
+
             return;
         }
 
@@ -151,34 +150,41 @@ public class CoreCommand extends EdenCommand
         switch (args[2])
         {
             case "config":
-                if (!ensureArgsCount(args, 5, 2, "config", sender))
-                    break;
+                // if (!ensureArgsCount(args, 5, 2, "config", sender))
+                //     break;
+                
+                // String oldValue = module.getConfig().get(args[3]);
 
-                String oldValue = module.getConfig().get(args[3]);
+                // module.getConfig().put(args[3], args[4]);
 
-                module.getConfig().put(args[3], args[4]);
-
-                // Call an event to notify anything that might want to listen for things like this
-                Eden.getInstance().getServer().getPluginManager().callEvent(new EdenConfigChangeEvent(module, args[3], oldValue, args[4]));
-                PrintUtils.sendMessage(sender, "Entered configuration value \"§a" + args[4] + "§7\" into key \"§b" + args[3] + "§7\" in module " + module.getName() + ".");
+                // // Call an event to notify anything that might want to listen for things like this
+                // Eden.getInstance().getServer().getPluginManager().callEvent(new EdenConfigChangeEvent(module, args[3], oldValue, args[4]));
+                // PrintUtils.sendMessage(sender, "Entered configuration value \"§a" + args[4] + "§7\" into key \"§b" + args[3] + "§7\" in module " + module.getName() + ".");
+                PrintUtils.sendMessage(sender, "This subcommand is under construction.");
                 break;
             case "readconfig":
-                module.getConfig().forEach((key, value) -> {
+                module.getConfig().getKeys().forEach((key) -> {
                     String color = "e";
-                    if (value.equals("true")) {
-                        color = "a";
-                    } else if (value.equals("false")) {
-                        color = "c";
+                    
+                    if (module.getConfig().getBoolean(key) != null)
+                    {
+                        color = module.getConfig().getBoolean(key).booleanValue() ? "a" : "c";
+                        return;
                     }
 
-                    PrintUtils.sendMessage(sender, "Config: §b" + key + "§7 | §" + color + value);
+                    PrintUtils.sendMessage(sender, "Config: §b" + key + "§7 | §" + color + module.getConfig().getKey(key));
                 });
                 break;
             case "reloadconfig":
                 if (module.getClass().isAnnotationPresent(EdenConfig.class))
                 {
-                    module.loadConfig();
-                    PrintUtils.sendMessage(sender, "Reloaded config from file. You should double-check the new values by using /eden mods " + args[1] + " readconfig.");
+                    if (module.loadConfig())
+                    {
+                        PrintUtils.sendMessage(sender, "Reloaded config from file. You should double-check the new values by using /eden mods " + args[1] + " readconfig.");
+                        break;
+                    }
+
+                    PrintUtils.sendMessage(sender, "§cFailed to reload config from file.");
                     break;
                 }
                     
@@ -195,29 +201,30 @@ public class CoreCommand extends EdenCommand
                 PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
                 break;
             case "clean":
-                if (module.getClass().isAnnotationPresent(EdenConfig.class) && module.getClass().isAnnotationPresent(DefaultConfig.class))
-                {
-                    DefaultConfig dc = module.getClass().getAnnotation(DefaultConfig.class);
-                    Map<String, String> config = module.getConfig();
+                // if (module.getClass().isAnnotationPresent(EdenConfig.class) && module.getClass().isAnnotationPresent(DefaultConfig.class))
+                // {
+                //     DefaultConfig dc = module.getClass().getAnnotation(DefaultConfig.class);
+                //     Map<String, String> config = module.getConfig();
                     
-                    Iterator<String> iter = config.keySet().iterator();
-                    int removed = 0;
-                    while (iter.hasNext())
-                    {
-                        String key = iter.next();
+                //     Iterator<String> iter = config.keySet().iterator();
+                //     int removed = 0;
+                //     while (iter.hasNext())
+                //     {
+                //         String key = iter.next();
 
-                        if (!Arrays.asList(dc.keys()).contains(key))
-                        {
-                            iter.remove();
-                            removed++;
-                        }
-                    }
+                //         if (!Arrays.asList(dc.keys()).contains(key))
+                //         {
+                //             iter.remove();
+                //             removed++;
+                //         }
+                //     }
 
-                    PrintUtils.sendMessage(sender, "Cleaned " + removed + " " + PrintUtils.plural(removed, "key", "keys") + " from configuration file.");
-                    break;
-                }
+                //     PrintUtils.sendMessage(sender, "Cleaned " + removed + " " + PrintUtils.plural(removed, "key", "keys") + " from configuration file.");
+                //     break;
+                // }
 
-                PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
+                // PrintUtils.sendMessage(sender, "This module does not have an associated configuration file.");
+                PrintUtils.sendMessage(sender, "This subcommand is under construction.");
                 break;
             case "status": // Query informmation of a module
                 PrintUtils.sendMessage(sender, "§e-----[§6" + module.getName() + "§e]-----");
@@ -373,12 +380,18 @@ public class CoreCommand extends EdenCommand
 
                         if (args.length > 4)
                         {
-                            PermissionGroup baseGroup = ((EdenPermissionManager) Eden.getPermissionsManager()).getGroup(args[4]);
+                            // TODO Java 17 preview feature
+                            Option opt = ((EdenPermissionManager) Eden.getPermissionsManager()).getGroup(args[4]);
+                            PermissionGroup baseGroup = switch (opt.getState())
+                            {
+                                case SOME -> opt.unwrap(PermissionGroup.class);
+                                default -> null;
+                            };
 
                             if (baseGroup == null)
                             {
-                                PrintUtils.sendMessage(sender, "§cUnknown permissions group \"" + args[4] + "\".");
-                                return;
+                                PrintUtils.sendMessage(sender, "§cUnknown permissions group \"" + args[4] + "\".");  
+                                return; 
                             }
 
                             group.addPermissions(baseGroup.getPermissions());
@@ -552,28 +565,17 @@ public class CoreCommand extends EdenCommand
         switch (args[1])
         {
             case "load":
-            	Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule("./plugins/Eden/mods/" + args[2] + ".jar");
-            	
+                // TODO Java 17 preview feature
+                Result result = Eden.getModuleManager().loadSingleModule("./plugins/Eden/mods/" + args[2] + ".jar");
             	switch (result.getState())
             	{
             		case OK:
-						try {
-							module = (EdenModule) result.unwrap();
-						} catch (UndefinedResultException e1) { return; }
+                        module = result.unwrapOk(EdenModule.class);
             			break;
             		case ERR:
-            			try {
-            				PrintUtils.sendMessage(sender, "Failed to load module! Error: \"" + result.unwrap() + "\"");
-            				return;
-            			} catch (UndefinedResultException e) { return; }
-            		default: return;
+                        PrintUtils.sendMessage(sender, "Failed to load module! Error: \"" + result.unwrapErr(String.class) + "\"");
+            		default: throw new TimeSpaceDistortionException();
             	}
-
-                if (module == null)
-                {
-                    PrintUtils.sendMessage(sender, "File doesn't exist.");
-                    return;
-                }
 
                 PrintUtils.sendMessage(sender, "Done! You may now enable this module by running \"/eden mm enable " + module.getName() + "\".");
 
@@ -591,7 +593,7 @@ public class CoreCommand extends EdenCommand
                 {
                     if (module.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
                     {
-                        if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 1))
+                        if (Rosetta.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 1))
                         {
                             PrintUtils.sendMessage(sender, "§Already warned you about unloading this module, going ahead and unloading it...");
                             Eden.getModuleManager().removeModuleFromMemory(module.getName(), CallerToken.EDEN);
@@ -604,7 +606,7 @@ public class CoreCommand extends EdenCommand
                         PrintUtils.sendMessage(sender, "§cIf you're absolutely CERTAIN you wish to continue, enter \"§4iknowwhatimdoingiswear§c\".");
                         PrintUtils.sendMessage(sender, "§cThis request will time out in 60 seconds.");
 
-                        CoreModule.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 1));
+                        Rosetta.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 1));
 
                         new BukkitRunnable() 
                         {
@@ -612,7 +614,7 @@ public class CoreCommand extends EdenCommand
                             public void run() 
                             {
                                 try {
-                                    CoreModule.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 1));
+                                    Rosetta.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 1));
                                 } catch (Exception e) {
                                     // In case CORE is our unload target, silently handle
                                 } 
@@ -670,14 +672,13 @@ public class CoreCommand extends EdenCommand
 
                 if (module.getClass().isAnnotationPresent(PreventUnload.class) && sender instanceof ConsoleCommandSender)
                 {
-                    
                     if (module.getClass().getAnnotation(PreventUnload.class).value().equals(CallerToken.EDEN))
                     {
-                        if (CoreModule.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 0))
+                        if (Rosetta.EDEN_WARN_DISABLE_REQUESTS.contains(module.getName() + ":" + 0))
                         {
                             PrintUtils.sendMessage(sender, "§6Already warned you about disabling this module, going ahead and disabling it...");
                             
-                            Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.EDEN);
+                            Option option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.EDEN);
 
                             state: switch (option.getState())
                             {
@@ -685,9 +686,9 @@ public class CoreCommand extends EdenCommand
                                     PrintUtils.sendMessage(sender, "Disabled protected module.");
                                     break state;
                                 case SOME:
-                                    PrintUtils.sendMessage(sender, "§cFailed to disable protected module! Performing rollback... (Reason: " + option.unwrap().getReason() + ")");
+                                    PrintUtils.sendMessage(sender, "§cFailed to disable protected module! Performing rollback... (Reason: " + option.unwrap(ModuleDisableFailureData.class).getReason() + ")");
                                     
-                                    if (option.unwrap().performRollback())
+                                    if (option.unwrap(ModuleDisableFailureData.class).performRollback())
                                     {
                                         PrintUtils.sendMessage(sender, "§cRollback complete.");
                                         break state;
@@ -751,14 +752,14 @@ public class CoreCommand extends EdenCommand
                         }
 
 
-                        CoreModule.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 0));
+                        Rosetta.EDEN_DISABLE_REQUESTS.add(new DisableRequest(module, 0));
 
                         new BukkitRunnable() {
                             @Override
                             public void run()
                             {
                                 try {
-                                    CoreModule.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 0));
+                                    Rosetta.EDEN_DISABLE_REQUESTS.remove(new DisableRequest(module, 0));
                                 } catch (Exception e) {
                                     // In cose CORE is our disable target, handle error silently
                                 }
@@ -769,16 +770,16 @@ public class CoreCommand extends EdenCommand
                     }
                 }
  
-                Option<ModuleDisableFailureData> option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.fromCommandSender(sender));
+                Option option = Eden.getModuleManager().disableModule(module.getName(), CallerToken.fromCommandSender(sender));
 
                 option: switch (option.getState())
                 {
                     case NONE:
                         break option;
                     case SOME:
-                        PrintUtils.sendMessage(sender, "§cFailed to disable module! Performing rollback... (Reason: " + option.unwrap().getReason() + ")");
+                        PrintUtils.sendMessage(sender, "§cFailed to disable module! Performing rollback... (Reason: " + option.unwrap(ModuleDisableFailureData.class).getReason() + ")");
 
-                        if (option.unwrap().performRollback())
+                        if (option.unwrap(ModuleDisableFailureData.class).performRollback())
                         {
                             PrintUtils.sendMessage(sender, "§cRollback complete.");
                             break;
@@ -1191,13 +1192,13 @@ public class CoreCommand extends EdenCommand
 
         if (m.getIsEnabled())
         {
-            Option<ModuleDisableFailureData> result = Eden.getModuleManager().disableModule(m.getName());
+            Option result = Eden.getModuleManager().disableModule(m.getName());
 
             if (result.getState().equals(OptionState.SOME))
             {
-                PrintUtils.sendMessage(sender, "§cFailed to disable \"" + args[1] + "\". Reason: " + result.unwrap().getReason().name() + ". Attempting rollback.");
+                PrintUtils.sendMessage(sender, "§cFailed to disable \"" + args[1] + "\". Reason: " + result.unwrap(ModuleDisableFailureData.class).getReason().name() + ". Attempting rollback.");
 
-                if (!result.unwrap().performRollback())
+                if (!result.unwrap(ModuleDisableFailureData.class).performRollback())
                 {
                     PrintUtils.sendMessage(sender, "§cRollback complete.");
                     return;
@@ -1220,15 +1221,16 @@ public class CoreCommand extends EdenCommand
         PrintUtils.sendMessage(sender, "§aUnload success.");
 
         // Reload
-        Result<EdenModule, String> result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1]));
-
+        // TODO Java 17 preview feature
+        Result result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1]));
         EdenModule mod = switch (result.getState())
         {
             case ERR:
-                PrintUtils.sendMessage(sender, "Failed to load module reference to \"" + args[1] + "\". Reason: " + result.unwrap());
+                PrintUtils.sendMessage(sender, "Failed to load module reference to \"" + args[1] + "\". Reason: " + result.unwrapErr(String.class));
                 yield null;
             case OK:
-                yield (EdenModule) result.unwrap();
+                yield result.unwrapOk(EdenModule.class);
+            default: throw new TimeSpaceDistortionException();
         };
 
         if (mod == null)

@@ -9,8 +9,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import fish.yukiemeralis.eden.module.java.annotations.HideFromCollector;
-import fish.yukiemeralis.eden.module.java.annotations.Unimplemented;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
+import fish.yukiemeralis.eden.module.annotation.Unimplemented;
 
 @HideFromCollector
 @Unimplemented("Need to determine how to make this work")

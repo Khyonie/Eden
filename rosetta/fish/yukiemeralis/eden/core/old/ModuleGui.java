@@ -23,7 +23,7 @@ import fish.yukiemeralis.zenith.utils.PrintUtils;
 
 import org.bukkit.event.Listener;
 
-import fish.yukiemeralis.eden.module.java.annotations.Unimplemented;
+import fish.yukiemeralis.eden.module.annotation.Unimplemented;
 
 @Unimplemented("Class has been retired in favor of using Surface.")
 public class ModuleGui implements Listener
