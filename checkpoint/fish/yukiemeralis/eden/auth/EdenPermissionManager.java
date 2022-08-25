@@ -261,17 +261,9 @@ public class EdenPermissionManager extends PermissionsManager
         "Rosetta.eden.perms.group.create",
         "Rosetta.eden.perms.group.delete",
         "Rosetta.eden.perms.group.assign",
-        "Rosetta.eden.perms.group.unassign",
+        "Rosetta.eden.perms.group.unassign"
 
-        // Flock commands
-        "Flock.edenmr",
-        "Flock.edenmr.sync",
-        "Flock.edenmr.upgrade",
-        "Flock.edenmr.add",
-        "Flock.edenmr.remove",
-        "Flock.edenmr.open",
-        "Flock.edenmr.exportblank",
-        "Flock.edenmr.synctimestamps",
-        "Flock.edenmr.gentimestamp"
+        // TODO Flock commands
+        // TODO Add base command for Eden to act as an extremely simple interface to the module manager
     );
 }
