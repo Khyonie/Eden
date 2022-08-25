@@ -394,7 +394,10 @@ public abstract class EdenCommand extends Command
 
         // No args are present, return the base as-is
         if (args.length == 0)
+        {
+            PrintUtils.logVerbose("Generated singleton permission \"" + permission + "\"", InfoType.INFO);
             return permission;
+        }
 
         // Traverse tree to see if any given arg is a parameter, or elevated
         List<Integer> paramIndexes = new ArrayList<>();
@@ -456,6 +459,7 @@ public abstract class EdenCommand extends Command
                 permission = permission + "." + marker + str;
         }
 
+        PrintUtils.logVerbose("Generated permission \"" + permission + "\"", InfoType.INFO);
         return permission;
     }
 
