@@ -14,7 +14,7 @@ import org.bukkit.command.CommandMap;
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 
 

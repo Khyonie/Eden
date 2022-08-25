@@ -10,7 +10,7 @@ import org.bukkit.inventory.Recipe;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.DataUtils.KeyValuePair;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 
 public class RecipeManager 
 {

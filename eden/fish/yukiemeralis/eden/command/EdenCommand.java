@@ -23,7 +23,7 @@ import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 
 /**
  * An instance of an Eden command. Please look at the wiki @ https://github.com/YukiEmeralis/Eden for documentation.

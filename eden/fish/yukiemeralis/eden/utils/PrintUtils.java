@@ -1,8 +1,10 @@
 package fish.yukiemeralis.eden.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
@@ -12,6 +14,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.utils.logging.ClassicLogger;
+import fish.yukiemeralis.eden.utils.logging.Logger;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -27,21 +32,7 @@ public class PrintUtils
     private static List<String> log = new ArrayList<>();
     private static String ecolor_hex;
 
-	private static final HashMap<InfoType, String> info_colors = new HashMap<>() {{
-        put(InfoType.INFO, "§e");
-        put(InfoType.WARN, "§6");
-        put(InfoType.ERROR, "§c");
-        put(InfoType.FATAL, "§4");
-    }};
-
-    private static final HashMap<String, String> log_colors = new HashMap<>()
-    {{
-        put("(?<=([^\\\\]|\\A))\\[", "§a");
-        put("(?<=([^\\\\]|\\A))\\{", "§b");
-        put("(?<=([^\\\\]|\\A))\\(", "§e");
-        put("(?<=([^\\\\]|\\A))<", "§c");
-        put("(?<=[^-\\\\])(\\]|\\}|\\)|>)", "§8");
-    }};
+    private static Logger logger;
 
     private static final HashMap<String, String> symbols = new HashMap<>()
     {{
@@ -58,17 +49,30 @@ public class PrintUtils
         put("divided", "÷");
     }};
 
-    /**
-     * Category of information, used for logging.
-     * @author Yuki_emeralis
-     */
-    public static enum InfoType
+    private static final HashMap<InfoType, String> info_colors = new HashMap<>() {{
+        put(InfoType.INFO, "§e");
+        put(InfoType.WARN, "§6");
+        put(InfoType.ERROR, "§c");
+        put(InfoType.FATAL, "§4");
+    }};
+
+    private static final HashMap<String, String> log_colors = new HashMap<>()
+    {{
+        put("(?<=([^\\\\]|\\A))\\[", "§a");
+        put("(?<=([^\\\\]|\\A))\\{", "§b");
+        put("(?<=([^\\\\]|\\A))\\(", "§e");
+        put("(?<=([^\\\\]|\\A))<", "§c");
+        put("(?<=[^-\\\\])(\\]|\\}|\\)|>)", "§8");
+    }};
+
+    public static Map<InfoType, String> getInfoColors()
     {
-        INFO,
-        WARN,
-        ERROR,
-        FATAL 
-        ;   
+        return info_colors;
+    }
+
+    public static Map<String, String> getLogColors()
+    {
+        return log_colors;
     }
 
     public static void printPrettyStacktrace(Throwable error)
@@ -115,7 +119,7 @@ public class PrintUtils
             printPrettyStacktrace(error.getCause(), true);
     }
     
-    private static String saveSpecialCharacters(String input)
+    public static String saveSpecialCharacters(String input)
     {
         return input
             .replace("(", "\\(")
@@ -261,6 +265,7 @@ public class PrintUtils
      */
     public static void sendMessage(String message, InfoType type)
     {
+        log(message, type);
         Eden.getInstance().getServer().getConsoleSender().sendMessage("§8[§de§8]§7 " + info_colors.get(type) + StringUtils.normalizeSpace(message));
     }
 
@@ -295,11 +300,7 @@ public class PrintUtils
      */
     public static void log(String message, InfoType type)
     {
-        // Give some nice formatting to messages
-        String formattedMessage = formatLog(message).replaceAll("\\\\(?=[\\[\\]\\(\\)\\{\\}<>])", "");
-        Eden.getInstance().getServer().getConsoleSender().sendMessage("§8[" + info_colors.get(type) + "e§8]§8 " + StringUtils.normalizeSpace(formattedMessage));
-
-        log.add("[" + type.name() + "] " + formattedMessage.replaceAll("§[a-fA-F0-9klmnor]{1}", ""));
+        log.add("[" + type.name() + "] " + logger.log(message, type).replaceAll("§[a-fA-F0-9klmnor]{1}", ""));
     }
 
     /**
@@ -378,9 +379,27 @@ public class PrintUtils
     public static void logVerbose(String message, InfoType type)
     {
         if (verboseLogging)
-            Eden.getInstance().getServer().getConsoleSender().sendMessage("§8[§ae§8]§7 " + info_colors.get(type)  + StringUtils.normalizeSpace(message));
+            logger.logVerbose(message, type);
 
         log.add("[" + type.name() + "] " + message);
+    }
+
+    public static void setLoggerTheme(Class<? extends Logger> loggerClass)
+    {
+        if (loggerClass == null)
+        {
+            setLoggerTheme(ClassicLogger.class);
+            throw new IllegalArgumentException("Logger class cannot be null");
+        }
+        
+        try {
+            Logger instance = loggerClass.getConstructor().newInstance();
+
+            logger = instance;
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            PrintUtils.printPrettyStacktrace(e);
+            setLoggerTheme(ClassicLogger.class);
+        }
     }
 
     /**
@@ -424,18 +443,5 @@ public class PrintUtils
     public static String plural(long count, String singular, String plural)
     {
         return count == 1 ? singular : plural;
-    }
-
-    /**
-     * Formats a logging message.
-     * @param input A given message.
-     * @return A log message with Eden's formatting.
-     */
-    private static String formatLog(String input)
-    {
-        String buffer = input;
-        for (String regex : log_colors.keySet())
-            buffer = buffer.replaceAll(regex, log_colors.get(regex));
-        return buffer;
     }
 }

@@ -12,7 +12,7 @@ import com.google.gson.JsonSyntaxException;
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.result.Result;
 

@@ -15,7 +15,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 
 /**
  * This class is a little bit interesting: it lets a developer pull a message from a player's chat, and prevents the message from reaching server chat and console logs.

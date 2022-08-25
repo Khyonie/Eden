@@ -39,7 +39,7 @@ import fish.yukiemeralis.eden.module.java.enums.ModuleDisableFailure;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 
 import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
 import fish.yukiemeralis.eden.utils.option.Option;

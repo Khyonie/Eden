@@ -32,7 +32,7 @@ import fish.yukiemeralis.eden.module.annotation.Unimplemented;
 import fish.yukiemeralis.eden.module.exception.InvalidStaticInitException;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 
 /**
  * Special classloader that loads an Eden module from a file.

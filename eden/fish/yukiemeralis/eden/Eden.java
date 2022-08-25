@@ -37,7 +37,9 @@ import fish.yukiemeralis.eden.permissions.PermissionsManager;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.ClassicLogger;
+import fish.yukiemeralis.eden.utils.logging.PrecipiceLogger;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.option.OptionState;
 
@@ -65,7 +67,8 @@ public class Eden extends JavaPlugin
 		"verboseLogging", "false",
 		"flyingSolo", "false",
 		"elevatedUsersIgnorePerms", "true",
-		"preferredPermissionsManager", "fish.yukiemeralis.eden.auth.EdenPermissionManager"
+		"preferredPermissionsManager", "fish.yukiemeralis.eden.auth.EdenPermissionManager",
+		"loggingTheme", "classic" // Options are "classic" and "precipice"
 	));
 
 	@Override
@@ -76,8 +79,6 @@ public class Eden extends JavaPlugin
 
 		String bukkitPackage = Bukkit.getServer().getClass().getPackage().getName();
 		nms_version = bukkitPackage.substring(bukkitPackage.lastIndexOf('.') + 1);
-
-		PrintUtils.log("Server version is determined to be \"[" + nms_version + "]\"", InfoType.INFO);
 
 		module_manager = new ModuleManager();
 
@@ -109,6 +110,20 @@ public class Eden extends JavaPlugin
 			config = new HashMap<>(defaultConfig);
 			JsonUtils.toJsonFile(edenconfig.getAbsolutePath(), config);
 		}
+
+		// Update config keys
+		for (String key : defaultConfig.keySet())
+			if (!config.containsKey(key))
+				config.put(key, defaultConfig.get(key));
+
+		// Load logger
+		switch (config.get("loggingTheme"))
+		{
+			case "classic" -> PrintUtils.setLoggerTheme(ClassicLogger.class);
+			default -> PrintUtils.setLoggerTheme(PrecipiceLogger.class);
+		}
+
+		PrintUtils.log("Server version is determined to be \"[" + nms_version + "]\"", InfoType.INFO);
 
 		// Search for missing keys in the config
 		for (String key : defaultConfig.keySet())

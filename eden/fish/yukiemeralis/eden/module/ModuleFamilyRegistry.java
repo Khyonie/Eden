@@ -8,7 +8,7 @@ import java.util.Map;
 
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils.InfoType;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 
 import org.bukkit.Material;
 
