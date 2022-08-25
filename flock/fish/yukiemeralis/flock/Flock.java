@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bukkit.Material;
 
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.utils.FileUtils;
@@ -28,14 +29,19 @@ import fish.yukiemeralis.flock.repository.ModuleRepositoryEntry;
     supportedApiVersions = { "v1_19_R1" }
 )
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
+@LoadBefore(loadBefore = { "Surface" })
 public class Flock extends EdenModule
 {
     private static final Map<String, ModuleRepository> REPOSITORIES = new HashMap<>();
+    private static Map<String, Double> REPOSITORY_SYNC_TIMES = new HashMap<>(); 
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onEnable() 
     {
         File repoFolder = new File("./plugins/Eden/repositories/");
+        File repoSyncFile = new File("./plugins/Eden/repositories/.syncdata");
+
         FileUtils.ensureFolder(repoFolder.getAbsolutePath());
 
         for (File f : repoFolder.listFiles())
@@ -61,6 +67,11 @@ public class Flock extends EdenModule
             repo.updateReferences(); // Assign all entry references
             REPOSITORIES.put(repo.getName(), repo);
         }
+
+        if (!repoSyncFile.exists())
+            JsonUtils.toJsonFile(repoSyncFile.getAbsolutePath(), REPOSITORY_SYNC_TIMES);
+
+        REPOSITORY_SYNC_TIMES = JsonUtils.fromJsonFile(repoSyncFile.getAbsolutePath(), Map.class);
     }
 
     @Override
@@ -100,6 +111,11 @@ public class Flock extends EdenModule
     public static boolean hasRepository(String name)
     {
         return REPOSITORIES.containsKey(name);
+    }
+
+    public static void updateRepoSyncTime(ModuleRepositoryEntry entry)
+    {
+        
     }
 
     public static Option addRepository(ModuleRepository repository)

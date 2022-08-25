@@ -20,9 +20,9 @@ public class FlockCommand extends EdenCommand
     {
         super("flock", parent_module);
 
-        this.addBranch("sync", "forcesync", "add", "upgrade", "open");
-        this.getMultiBranch("sync", "forcesync", "add", "open").addBranch("<URL>");
-        this.getBranch("upgrade").addBranch("<ALL_MODULES>");
+        this.addBranch("^sync", "^forcesync", "^add", "^upgrade", "^open");
+        this.getMultiBranch("^sync", "^forcesync", "^add", "^open").addBranch("<URL>");
+        this.getBranch("^upgrade").addBranch("<ALL_MODULES>");
     }
 
     @EdenCommandHandler(usage = "flock", description = "Opens the module repository GUI.", argsCount = 0)

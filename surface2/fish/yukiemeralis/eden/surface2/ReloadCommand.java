@@ -28,12 +28,12 @@ public class ReloadCommand extends EdenCommand
     {
         ModuleManager mm = Eden.getModuleManager();
 
-        mm.disableModule("Surface2");
-        mm.getModuleByName("Surface2").setDisabled();
-        mm.removeModuleFromMemory("Surface2", CallerToken.EDEN);
+        mm.disableModule("Surface");
+        mm.getModuleByName("Surface").setDisabled();
+        mm.removeModuleFromMemory("Surface", CallerToken.EDEN);
 
-        mm.loadSingleModule(mm.getReferences().get("Surface2"));
-        mm.enableModule(mm.getModuleByName("Surface2"));
-        mm.getModuleByName("Surface2").setEnabled();
+        mm.loadSingleModule(mm.getReferences().get("Surface"));
+        mm.enableModule(mm.getModuleByName("Surface"));
+        mm.getModuleByName("Surface").setEnabled();
     }
 }

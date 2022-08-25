@@ -9,7 +9,7 @@ import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import org.bukkit.Material;
 
 @ModInfo (
-    modName = "Surface2",
+    modName = "Surface",
     description = "Centralized system for inventory-based GUIs.",
     maintainer = "Yuki_emeralis",
     version = "1.1.1",

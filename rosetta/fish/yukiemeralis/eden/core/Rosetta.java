@@ -44,7 +44,7 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
     supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2", "v1_19_R1"}
 )
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
-@LoadBefore(loadBefore = {"Checkpoint", "Surface2"})
+@LoadBefore(loadBefore = {"Checkpoint", "Surface"})
 @EdenConfig
 @PreventUnload(CallerToken.EDEN)
 public class Rosetta extends EdenModule

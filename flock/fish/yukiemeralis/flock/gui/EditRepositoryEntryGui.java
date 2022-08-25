@@ -61,7 +61,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
             askPropertyChange(target, entry, RepositoryEntryProperty.URL, "url");
         },
             "§7§oCurrent URL:",
-            "§7§o" + (entry.getUrl() != null ? entry.getUrl() : "not set"),
+            "§7§o" + TextUtils.pruneStringLength(entry.getUrl() != null ? entry.getUrl() : "not set", "...", 40),
             "",
             "§7§oClick to change. This action will",
             "§7§oregenerate this entry's timestamp."
@@ -80,7 +80,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
             askPropertyChange(target, entry, RepositoryEntryProperty.DESCRIPTION, "description");
         },
             "§7§oCurrent description:",
-            "§7§o" + TextUtils.pruneStringLength(entry.getDescription() != null ? entry.getDescription() : "Not set", "...", 20),
+            "§7§o" + TextUtils.pruneStringLength(entry.getDescription() != null ? entry.getDescription() : "Not set", "...", 40),
             "",
             "§7§oClick to change. This action will",
             "§7§oregenerate this entry's timestamp."
@@ -155,6 +155,8 @@ public class EditRepositoryEntryGui extends SurfaceGui
                         }
 
                         entry.addDependency(input);
+                        entry.updateTimestamp();
+                        
                         openSync(entry, event.getWhoClicked());
                     });
                     break;
@@ -193,6 +195,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
             ChatUtils.deleteResult(target);
 
             entry.setProperty(property, input);
+            entry.updateTimestamp();
 
             openSync(entry, target);
         });

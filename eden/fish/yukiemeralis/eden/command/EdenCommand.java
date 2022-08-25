@@ -37,38 +37,13 @@ public abstract class EdenCommand extends Command
     private TabCompleteTree tree = new TabCompleteTree();
 
     /**
-     * An Eden command with the specified name.
-     * @param name The name of the command, as in "/name".
-     * @deprecated All commands must specify their parent module, for the sake of permission generation. Will be removed on release.
-     */
-    @Deprecated(forRemoval = true)
-    public EdenCommand(String name) 
-    {
-        super(name, "EdenCommand: " + name, "EdenCommand: " + name, new ArrayList<>());
-        generateRedirects();
-    }
-    
-    /**
-     * An Eden command with the specified name and a list of potential aliases.
-     * @param name The name of the command, as in "/name".
-     * @param aliases A list of potential aliases for this command.
-     * @deprecated All commands must specify their parent module, for the sake of permission generation. Will be removed on release.
-     */
-    @Deprecated(forRemoval = true)
-    public EdenCommand(String name, List<String> aliases) 
-    {
-        super(name, "EdenCommand: " + name, "EdenCommand: " + name, aliases);
-        generateRedirects();
-    }
-
-    /**
      * An Eden command with the specified name and tied to the given module. Commands tied to a module are categorized with the /eden helpall command.
      * @param name The name of the command, as in "/name".
      * @param parent_module The module this command is tied to.
      */
     public EdenCommand(String name, EdenModule parent_module) 
     {
-        super(name, "EdenCommand: " + name, "EdenCommand: " + name, new ArrayList<>());
+        super(name.toLowerCase(), "EdenCommand: " + name, "EdenCommand: " + name, new ArrayList<>());
         generateRedirects();
         this.parent_module = parent_module;
     }
@@ -81,7 +56,7 @@ public abstract class EdenCommand extends Command
      */
     public EdenCommand(String name, List<String> aliases, EdenModule parent_module) 
     {
-        super(name, "EdenCommand: " + name, "EdenCommand: " + name, aliases);
+        super(name.toLowerCase(), "EdenCommand: " + name, "EdenCommand: " + name, aliases);
         generateRedirects();
         this.parent_module = parent_module;
     }

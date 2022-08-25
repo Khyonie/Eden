@@ -6,12 +6,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryAction;
 
 import com.google.gson.annotations.Expose;
 
 import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
+import fish.yukiemeralis.eden.utils.PrintUtils;
+import fish.yukiemeralis.flock.TextUtils;
 import fish.yukiemeralis.flock.gui.EditRepositoryEntryGui;
 import net.md_5.bungee.api.ChatColor;
 
@@ -36,7 +39,24 @@ public class ModuleRepositoryEntry implements GuiComponent
     @Override
     public GuiItemStack generate()
     {
-        return SimpleComponentBuilder.build(Material.BOOK, "§9§l" + name, (event) -> new EditRepositoryEntryGui(this, event.getWhoClicked()).display(event.getWhoClicked()));
+        if (this.dependencies == null) 
+            this.dependencies = new ArrayList<>();
+
+        return SimpleComponentBuilder.build(Material.BOOK, "§9§l" + name, (event) -> {
+            if (event.getAction().equals(InventoryAction.PICKUP_HALF))
+            {
+                new EditRepositoryEntryGui(this, event.getWhoClicked()).display(event.getWhoClicked());
+            }
+        },
+            "§7§o" + TextUtils.pruneStringLength(this.description, "...", 35),
+            "§7§o" + TextUtils.pruneStringLength(this.url, "...", 35),
+            "§7§o" + TextUtils.pruneStringLength(this.author, "...", 35),
+            "§7§o" + TextUtils.pruneStringLength(this.version, "...", 35),
+            "§7§o" + dependencies.size() + PrintUtils.plural(dependencies.size(), " dependency", " dependencies"),
+            "",
+            "§7Left-click to sync repository.",
+            "§7Right-click to edit entry."
+        );
     }
 
     public void setName(String name)

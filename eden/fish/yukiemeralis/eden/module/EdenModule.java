@@ -309,21 +309,6 @@ public abstract class EdenModule
     }
 
     /**
-     * Applies a blank set of info to this module.
-     * @param name The name generated for this module.
-     * @deprecated As of 2.2.0, all modules must now specify an {@link fish.yukiemeralis.eden.module.EdenModule.ModInfo} annotation, rendering this method useless.
-     */
-    @Deprecated(forRemoval = true, since = "2.2.0")
-    public void setBlankInfo(String name)
-    {
-        this.modName = name;
-        this.version = "1.0";
-        this.description = "This module has no information.";
-        this.maintainer = "Unknown";
-        this.modIcon = Material.BARRIER;
-    }
-
-    /**
      * Required annotation for all Eden modules to set themselves apart from other modules.
      * @author Yuki_emeralis
      */
