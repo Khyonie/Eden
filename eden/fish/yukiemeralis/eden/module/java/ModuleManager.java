@@ -123,7 +123,15 @@ public class ModuleManager
 				loader.finalizeLoading();
 				disabled_modules.add(loader.getModule());
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | IOException | NullPointerException e) {
-				PrintUtils.printPrettyStacktrace(e);
+				if (PrintUtils.isVerboseLoggingEnabled() || Eden.getEdenConfig().get("displayModErrorsWithoutVerbose").toLowerCase().equals("true"))
+				{
+					PrintUtils.log("<Failed to load \"" + "\">");
+					PrintUtils.printPrettyStacktrace(e);
+					continue;
+				}
+					
+				PrintUtils.log("<Failed to load \"" + loader.getModuleFileName() + "\". Enable verbose logging or set \"displayModErrorsWithoutVerbose\" to \"true\" inside Eden's configuration file for more details.>");
+				continue;
 			}
 		}
 
@@ -713,13 +721,14 @@ public class ModuleManager
 	 * @param name Module name to reload.
 	 * @param enableIfDisabled Whether or not to enable the reloaded module, even if it was previously disabled.
 	 * @param continueOnFailure Whether or not to continue on a failure, ensuring that the module will be reloaded. This may result in configs not being updated.
+	 * @return Whether or not the reload was successful
 	 */
-	public void forceReload(String name, boolean enableIfDisabled, boolean continueOnFailure)
+	public boolean forceReload(String name, boolean enableIfDisabled, boolean continueOnFailure)
 	{
 		EdenModule module = getModuleByName(name);
 		
 		if (module == null)
-			return;
+			return false;
 		
 		boolean enabled = module.getIsEnabled();
 
@@ -732,12 +741,12 @@ public class ModuleManager
 
 				if (option.isSome())
 					if (!continueOnFailure)
-						return;		
+						return false;		
 
 			} catch (Exception e) {
 				PrintUtils.printPrettyStacktrace(e);
 				if (!continueOnFailure)
-					return;
+					return false;
 			}
 
 			enabled_modules.remove(module);
@@ -762,15 +771,16 @@ public class ModuleManager
 		if (result.isErr())
 		{
 			PrintUtils.log("Failed to load module \"" + name + "\" after reload! Reason: " + result.unwrapErr(String.class));
-			return;
+			return false;
 		}
 
 		if (!enabled && !enableIfDisabled)
-			return;
+			return true;
 
 		enableModule(result.unwrapOk(EdenModule.class));
 		result.unwrapOk(EdenModule.class).setEnabled();
 		PrintUtils.log("Finished reload.");
+		return true;
 	}
 
 	// #############################################################

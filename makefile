@@ -1,5 +1,12 @@
 .PHONY: eden rosetta surface checkpoint flock surface2
 
+all:
+	edex buildfiles/eden.edex
+	edex buildfiles/surface2.edex -noheader
+	edex buildfiles/checkpoint.edex -noheader
+	edex buildfiles/rosetta.edex -noheader
+	edex buildfiles/flock.edex -noheader
+
 eden:
 	edex buildfiles/eden.edex
 rosetta:

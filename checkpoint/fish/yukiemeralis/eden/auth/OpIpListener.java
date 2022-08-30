@@ -12,9 +12,14 @@ import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 /**
  * Helper class to deop oped players when they login from a different IP than they did previously.<p>
  * If <code>deopOnIpChange</code> is set to false, this listener does nothing.
+ * @author Yuki_emeralis
+ * @since 1.5.5
  */
 public class OpIpListener implements Listener
 {
+    /**
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public void onJoin(PlayerJoinEvent event)
     {

@@ -24,14 +24,19 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 
-
 /**
  * Eden's permissions manager. Supplies default permissions, and supports permissions groups out of the box.
+ * @since 1.4.10
+ * @author Yuki_emeralis
  */
 public class EdenPermissionManager extends PermissionsManager
 {
     private Map<String, PermissionGroup> permissionGroups = new HashMap<>(); 
 
+    /**
+     * Eden permissions manager constructor.
+     * @see {@link Eden#setPermissionsManager(PermissionsManager)}
+     */
     public EdenPermissionManager()
     {
         List<File> corruptFiles = new ArrayList<>();

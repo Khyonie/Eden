@@ -9,6 +9,7 @@ import fish.yukiemeralis.eden.permissions.PermissionsManager;
 /**
  * Simple permissions manager with integration with Bukkit's default permissions scheme
  * @author Yuki_emeralis
+ * @since 1.4.10
  */
 public class BukkitPermissionManager extends PermissionsManager 
 {

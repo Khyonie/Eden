@@ -19,7 +19,7 @@ public class RepositoryGui extends PagedSurfaceGui
 
     public RepositoryGui(ModuleRepository repo, HumanEntity target) 
     {
-        super(36, repo.getName(), target, 0, repo.getEntryList(), List.of(QUIT_BUTTON, BACK_BUTTON, generateEditGuiButton(repo)), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF);
+        super(36, repo.getName(), target, 0, repo.getEntryList(), List.of(QUIT_BUTTON, BACK_BUTTON, generateEditGuiButton(repo)), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF, InventoryAction.MOVE_TO_OTHER_INVENTORY);
     }
 
     private static GuiItemStack generateEditGuiButton(ModuleRepository repo)

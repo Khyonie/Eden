@@ -9,8 +9,17 @@ import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 
+/**
+ * UUID ban command for /uuidban
+ * @author Yuki_emeralis
+ * @since 1.5.0
+ */
 public class UuidBanCommand extends EdenCommand
 {
+    /**
+     * Command constructor
+     * @param parent_module
+     */
     public UuidBanCommand(EdenModule parent_module) 
     {
         super("uuidban", parent_module);
@@ -20,6 +29,12 @@ public class UuidBanCommand extends EdenCommand
         this.getBranch("^remove").addBranch("<UUID_BANNED_PLAYERS>");
     }
 
+    /**
+     * /uuidban add <PLAYER> <REASON>
+     * @param sender
+     * @param commandLabel
+     * @param args
+     */
     @EdenCommandHandler(usage = "uuidban add <PLAYER> <REASON>", description = "Issue a UUID ban to a player.", argsCount = 3)
     public void edencommand_add(CommandSender sender, String commandLabel, String[] args)
     {
@@ -35,6 +50,12 @@ public class UuidBanCommand extends EdenCommand
         PrintUtils.sendMessage(sender, "Player \"§c" + args[1] + "§7\" is already UUID-banned. Reason: \"§e" + SecurityCore.isBanned(Eden.getInstance().getServer().getPlayerExact(args[1])).unwrap(UuidBanEntry.class).getBanMessage() + "§7\".");
     }
 
+    /**
+     * /uuidban remove <PLAYER>
+     * @param sender
+     * @param commandLabel
+     * @param args
+     */
     @EdenCommandHandler(usage = "uuidban remove <PLAYER>", description = "Pardon a UUID-banned player.", argsCount = 2)
     public void edencommand_remove(CommandSender sender, String commandLabel, String[] args)
     {

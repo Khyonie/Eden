@@ -17,10 +17,10 @@ import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 
-
 /**
  * General-purpose handler for registering and unregistering Eden commands into the server.
  * @author Yuki_emeralis
+ * @since 1.0
  */
 public class CommandManager 
 {
@@ -54,6 +54,10 @@ public class CommandManager
         }
     }
     
+    /**
+     * Removes an command from the commandmap
+     * @param commandName
+     */
     public static void unregisterCommand(String commandName)
     {
         unregisterCommand(commandName, false);
@@ -62,6 +66,7 @@ public class CommandManager
     /**
      * Removes a command from the commandmap
      * @param commandName The name of the command to remove
+     * @param force Whether or not to force-remove the command, ignoring the {@link PreventUnload} annotation, if present
      */
     public static void unregisterCommand(String commandName, boolean force)
     {

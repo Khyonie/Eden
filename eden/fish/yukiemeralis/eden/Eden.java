@@ -34,12 +34,13 @@ import fish.yukiemeralis.eden.module.java.enums.BranchType;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.permissions.EmergencyPermissionsManager;
 import fish.yukiemeralis.eden.permissions.PermissionsManager;
+import fish.yukiemeralis.eden.precipice.Prelude;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.logging.ClassicLogger;
-import fish.yukiemeralis.eden.utils.logging.PrecipiceLogger;
 import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import fish.yukiemeralis.eden.utils.logging.PrecipiceLogger;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.option.OptionState;
 
@@ -68,7 +69,9 @@ public class Eden extends JavaPlugin
 		"flyingSolo", "false",
 		"elevatedUsersIgnorePerms", "true",
 		"preferredPermissionsManager", "fish.yukiemeralis.eden.auth.EdenPermissionManager",
-		"loggingTheme", "classic" // Options are "classic" and "precipice"
+		"displayModErrorsWithoutVerbose", "false",
+		"loggingTheme", "classic", // Options are "classic" and "precipice"
+		"prelude", "true"
 	));
 
 	@Override
@@ -162,6 +165,10 @@ public class Eden extends JavaPlugin
 
 		module_manager.performFullLoad();
 		module_manager.enableAllModules();
+
+		// Hotload prelude
+		Prelude preludeModule = new Prelude();
+		module_manager.enableModule(preludeModule);
 
 		// Ensure a permissions manager is in play
 		Class<?> pmClass = module_manager.getCachedClass(Eden.getEdenConfig().get("preferredPermissionsManager"));
@@ -313,4 +320,30 @@ public class Eden extends JavaPlugin
 	{
 		return isBeingDisabled;
 	}
+
+	private static String version = null;
+	/**
+	 * Returns the current version of Eden, derived from the file name.
+	 * @return The current version of Eden.
+	 */
+    public static String getEdenVersion()
+    {
+        if (version == null)
+        {
+            for (String filename : new File("./plugins/").list())
+            {
+                if (filename.startsWith("Eden-"))
+                {
+                    PrintUtils.logVerbose("Found Eden plugin, pulling the version from that...", InfoType.INFO);
+                    version = "v" + filename.replaceAll("Eden-|.jar", "");
+                    return version;
+                }
+            }
+
+            PrintUtils.log("<Failed to locate the Eden plugin file! Version has been set to \"unknown\". Please ensure that the plugin starts with \"Eden-\".>", InfoType.WARN);
+            version = "Unknown";
+        }
+
+        return version;
+    }
 }

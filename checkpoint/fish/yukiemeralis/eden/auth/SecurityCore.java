@@ -21,13 +21,17 @@ import fish.yukiemeralis.eden.module.annotation.EdenConfig;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.option.Option;
 
-
+/**
+ * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for
+ * permissions managers in EdenPermissionManager and BukkitPermissionManager.
+ * @since 1.0
+ * @author Yuki_emeralis
+ */
 @ModInfo (
     modName = "Checkpoint",
     description = "Provides permissions for users and commands.",
@@ -39,11 +43,6 @@ import fish.yukiemeralis.eden.utils.option.Option;
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
 @PreventUnload(CallerToken.EDEN)
 @EdenConfig
-
-/**
- * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for
- * permissions managers in EdenPermissionManager and BukkitPermissionManager.
- */
 public class SecurityCore extends EdenModule
 {
     private static List<String> security_log = new ArrayList<>();
@@ -57,13 +56,6 @@ public class SecurityCore extends EdenModule
         "deopOnIpChange", true,
         "obscureDisallowedCommands", true  
     );
-
-    public SecurityCore()
-    {
-        addListener(
-            new ChatUtils()
-        );
-    }
 
     @Override
     public void onEnable() 
@@ -105,8 +97,8 @@ public class SecurityCore extends EdenModule
         JsonUtils.toJsonFile("./plugins/Eden/banned-uuids.json", new UuidBanList(uuid_bans));
     }
 
-    static LocalDate date;
-    static LocalTime time;
+    private static LocalDate date;
+    private static LocalTime time;
     /**
      * Prints a message to the console, and saves it to the log.
      * @param message
@@ -196,7 +188,7 @@ public class SecurityCore extends EdenModule
         return data;
     }
 
-    static PrintWriter writer;
+    private static PrintWriter writer;
     /**
      * Exports the current log to a text file.
      */

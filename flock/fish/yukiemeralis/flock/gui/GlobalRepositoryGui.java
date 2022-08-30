@@ -69,8 +69,9 @@ public class GlobalRepositoryGui extends PagedSurfaceGui
                 }
 
                 PrintUtils.sendMessage(event.getWhoClicked(), "§aSuccessfully synchronized new repository \"" + repo.getName() + "\"!");
+                Flock.addRepository(repo);
 
-                new GlobalRepositoryGui(event.getWhoClicked()).display(event.getWhoClicked());
+                Bukkit.getScheduler().runTask(Eden.getInstance(), () -> new GlobalRepositoryGui(event.getWhoClicked()).display(event.getWhoClicked()));
             });
         },
         "§7§oSynchronizes a new repository."

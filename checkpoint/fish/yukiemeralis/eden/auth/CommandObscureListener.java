@@ -14,9 +14,15 @@ import fish.yukiemeralis.eden.utils.option.Option;
 /**
  * Helper class to obscure commands the player does not have access to.<p>
  * If <code>obscureDisallowedCommands</code> is set to false, this listener does nothing.
+ * @author Yuki_emeralis
+ * @since 1.5.5
  */
 public class CommandObscureListener implements Listener
 {
+    /**
+     * Listener event to handle command obfuscation
+     * @param event PlayerCommandSendEvent
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommandSend(PlayerCommandSendEvent event)
     {

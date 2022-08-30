@@ -23,8 +23,6 @@ import java.util.Map;
 import org.bukkit.Material;
 
 import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.listeners.PlayerIPListener;
-import fish.yukiemeralis.eden.listeners.UuidCacheListener;
 import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
@@ -59,12 +57,6 @@ public class Rosetta extends EdenModule
         "prettyLoginMessage", false,
         "eColor", "47FF9A"
     );
-
-    public Rosetta()
-    {
-        addListener(new UuidCacheListener());
-        addListener(new PlayerIPListener());
-    }
 
     @Override
     public void onEnable() 

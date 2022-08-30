@@ -7,6 +7,7 @@ public class TextUtils
      * @param input Input string
      * @param suffix String to be appended to the shortened input
      * @param maxLength Maximum String length before pruning, in characters
+     * @return The string, shortened to the specified length, up to a maximum of <code>maxLength + suffix.size()</code>.
      */
     public static String pruneStringLength(String input, String suffix, int maxLength)
     {

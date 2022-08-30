@@ -9,9 +9,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 
+/**
+ * Listener to update player UUID cache 
+ */
 @HideFromCollector // Just in case Eden gets installed as a module on accident
 public class UuidCacheListener implements Listener
 {
+    /**
+     * On player join event handler
+     * @param event
+     */
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {

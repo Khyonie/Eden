@@ -34,11 +34,10 @@ import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.result.Result;
 
-
-
 /**
  * Represents an Eden module.
  * @author Yuki_emeralis
+ * @since 1.0
  */
 public abstract class EdenModule
 {
@@ -486,12 +485,12 @@ public abstract class EdenModule
             
             if (!missingValueWarned)
             {
-                PrintUtils.log("<Stored configuration file is missing configuration values. Filling in from default configuration, please review these new values.>", InfoType.WARN);
+                PrintUtils.log("(Stored configuration file is missing configuration values. Filling in from default configuration, please review these new values.)", InfoType.WARN);
                 missingValueWarned = true;
             }
 
             this.config.setKey(key, defaultConfig.get(key));
-            PrintUtils.log("<" + key + " -\\> " + defaultConfig.get(key) + " \\(of type: " + (defaultConfig.get(key) != null ? defaultConfig.get(key).getClass().getSimpleName() : "null") + "\\)>", InfoType.WARN);
+            PrintUtils.log("(" + key + " -\\> " + defaultConfig.get(key) + " \\(of type: " + (defaultConfig.get(key) != null ? defaultConfig.get(key).getClass().getSimpleName() : "null") + "\\))", InfoType.WARN);
         }
 
         // Then do the reverse, checking for keys that aren't needed
@@ -500,7 +499,7 @@ public abstract class EdenModule
             if (defaultConfig.containsKey(key))
                 continue;
 
-            PrintUtils.log("<Trimming unused key \"" + key + "\"...>");
+            PrintUtils.log("(Trimming unused key \"" + key + "\"...)");
             this.config.removeKey(key);
         }
 
@@ -538,12 +537,12 @@ public abstract class EdenModule
                 {
                     if (defaultVal == null)
                     {
-                        PrintUtils.log("<Both the stored configuration and default configuration value for key \"" + key + "\" is null. Consider removing this key.>");
+                        PrintUtils.log("(Both the stored configuration and default configuration value for key \"" + key + "\" is null. Consider removing this key.)");
                         continue;
                     }
 
-                    PrintUtils.log("<Stored value for key \"" + key + "\" is null, filling in from default value...>");
-                    PrintUtils.log("<" + key + ": null -\\> " + defaultVal + " >");
+                    PrintUtils.log("(Stored value for key \"" + key + "\" is null, filling in from default value...)");
+                    PrintUtils.log("(" + key + ": null -\\> " + defaultVal + " )");
                     this.config.setKey(key, defaultVal);
 
                     updated++;
@@ -553,12 +552,12 @@ public abstract class EdenModule
                 if (defaultVal.getClass().isAssignableFrom(stored.getClass()))
                     continue; // Key doesn't need to be updated
 
-                PrintUtils.log("<Stored value and default value for key \"" + key + "\" are of different types! \\(stored: " + stored.getClass().getSimpleName() + " | default: " + defaultVal.getClass().getSimpleName() + "\\) " + (stored instanceof String ? "Attempting to convert..." : "") + ">"); 
+                PrintUtils.log("(Stored value and default value for key \"" + key + "\" are of different types! \\(stored: " + stored.getClass().getSimpleName() + " | default: " + defaultVal.getClass().getSimpleName() + "\\) " + (stored instanceof String ? "Attempting to convert..." : "") + ")"); 
                 
                 if (!(stored instanceof String))
                 {
                     PrintUtils.log("<Cannot automatically convert \"" + key + "\". Filling in from default value...>");
-                    PrintUtils.log("<" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + defaultVal + " \\(" + defaultVal.getClass().getSimpleName() + "\\)>");
+                    PrintUtils.log("(" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + defaultVal + " \\(" + defaultVal.getClass().getSimpleName() + "\\))");
                     this.config.setKey(key, defaultVal);
 
                     updated++;
@@ -664,7 +663,7 @@ public abstract class EdenModule
                         continue loop;
                 }
 
-                PrintUtils.log("<" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + this.config.getKey(key) + " \\(" + this.config.getKey(key).getClass().getSimpleName() + "\\)>");
+                PrintUtils.log("(" + key + ": " + stored + " \\(" + stored.getClass().getSimpleName() + "\\) -\\> " + this.config.getKey(key) + " \\(" + this.config.getKey(key).getClass().getSimpleName() + "\\))");
             }
 
             return updated == 0 ? ConfigUpdateStatus.NOTHING_TO_DO : ConfigUpdateStatus.SUCCESS;

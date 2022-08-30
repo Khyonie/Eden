@@ -8,7 +8,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
@@ -150,9 +149,16 @@ public class ItemUtils
         return buffer;
     }
 
-    public void applySkullMeta(ItemStack target, SkullMeta meta)
+    @SuppressWarnings("unchecked")
+    public static <T extends ItemMeta> void editItemMeta(Class<T> metaClass, ItemStack item, EditMetaAction<T> action)
     {
+        if (item == null)
+            throw new IllegalArgumentException("Item cannot be null");
 
+        if (!item.hasItemMeta())
+            throw new IllegalArgumentException("Item must have item meta");
+
+        item.setItemMeta(action.run(item, (T) item.getItemMeta()));
     }
 
     /**
@@ -170,5 +176,10 @@ public class ItemUtils
         applyLore(item, lore);
 
         return item;
+    }
+
+    public static interface EditMetaAction<T extends ItemMeta>
+    {
+        public ItemMeta run(ItemStack item, T meta);
     }
 }

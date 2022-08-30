@@ -80,6 +80,8 @@ public class Flock extends EdenModule
         REPOSITORIES.forEach((name, repo) -> {
             repo.save();
         });
+
+        JsonUtils.toJsonFile("./plugins/Eden/repositories/.syncdata", REPOSITORY_SYNC_TIMES);
     }
 
     /**
@@ -113,9 +115,34 @@ public class Flock extends EdenModule
         return REPOSITORIES.containsKey(name);
     }
 
-    public static void updateRepoSyncTime(ModuleRepositoryEntry entry)
+    public static void updateEntrySyncTime(ModuleRepositoryEntry entry)
     {
-        
+        REPOSITORY_SYNC_TIMES.put(entry.getHostRepository().getName() + ":" + entry.getName(), entry.getTimestamp());
+    }
+
+    public static void updateRepoSyncTime(ModuleRepository repo)
+    {
+        REPOSITORY_SYNC_TIMES.put(repo.getName(), repo.getTimestamp());
+    }
+
+    public static boolean hasEntrySyncTime(ModuleRepositoryEntry entry)
+    {
+        return REPOSITORY_SYNC_TIMES.containsKey(entry.getHostRepository().getName() + ":" + entry.getName());
+    }
+
+    public static boolean hasRepoSyncTime(ModuleRepository repo)
+    {
+        return REPOSITORY_SYNC_TIMES.containsKey(repo.getName());
+    }
+
+    public static double getEntrySyncTime(ModuleRepositoryEntry entry)
+    {
+        return REPOSITORY_SYNC_TIMES.get(entry.getHostRepository().getName() + ":" + entry.getName());
+    }
+
+    public static double getRepoSyncTime(ModuleRepository repo)
+    {
+        return REPOSITORY_SYNC_TIMES.get(repo.getName());
     }
 
     public static Option addRepository(ModuleRepository repository)

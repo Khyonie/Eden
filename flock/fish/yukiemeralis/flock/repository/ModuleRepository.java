@@ -20,6 +20,7 @@ import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.result.Result;
 import fish.yukiemeralis.flock.DownloadUtils;
+import fish.yukiemeralis.flock.Flock;
 import fish.yukiemeralis.flock.enums.JsonDownloadStatus;
 import fish.yukiemeralis.flock.gui.RepositoryGui;
 import net.md_5.bungee.api.ChatColor;
@@ -75,8 +76,23 @@ public class ModuleRepository implements GuiComponent
             "§7§o" + this.entries.size() + " " + PrintUtils.plural(this.entries.size(), "module", "modules") + " available (" + this.getNumberInstalled() + " installed)",
             "",
             "§7Left-click to open repository.",
-            "§7Right-click to sync repository."
+            canUpdate() ? "§aRight-click to sync repository." : "§7This repository is up to date."
         );
+    }
+
+    public boolean canUpdate()
+    {
+        Result result = DownloadUtils.downloadJson(this.url, ModuleRepository.class);
+
+        switch (result.getState())
+        {
+            case OK:
+                return result.unwrapOk(ModuleRepository.class).getTimestamp() > this.timestamp;        
+            default:
+                break;
+        }
+
+        return false;
     }
 
     public List<ModuleRepositoryEntry> getEntryList()
@@ -122,6 +138,7 @@ public class ModuleRepository implements GuiComponent
     public void updateTimestamp(double timestamp)
     {
         this.timestamp = timestamp;
+        Flock.updateRepoSyncTime(this);
     }
 
     public double getTimestamp()
@@ -135,6 +152,11 @@ public class ModuleRepository implements GuiComponent
             throw new IllegalArgumentException("Entry name must not be null.");
 
         this.entries.put(entry.getName(), entry);
+    }
+
+    public void removeEntry(ModuleRepositoryEntry entry)
+    {
+        this.entries.remove(entry.getName());
     }
 
     /**

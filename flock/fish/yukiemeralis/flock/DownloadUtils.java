@@ -39,6 +39,13 @@ public class DownloadUtils
         return Result.ok(obj);
     }
 
+    /**
+     * Downloads a file from a URL. Threaded to prevent blocking. 
+     * @param urlString
+     * @param fileTarget
+     * @param downloadFinishThread
+     * @throws MalformedURLException
+     */
     public static void downloadFile(String urlString, String fileTarget, DownloadFinishedThread downloadFinishThread) throws MalformedURLException
     {
         URL url = new URL(urlString);

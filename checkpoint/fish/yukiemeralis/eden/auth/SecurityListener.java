@@ -24,6 +24,10 @@ import fish.yukiemeralis.eden.utils.option.Option;
  */
 public class SecurityListener implements Listener
 {
+    /**
+     * On player join event handler
+     * @param event
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onConnect(PlayerJoinEvent event)
     {
@@ -44,6 +48,10 @@ public class SecurityListener implements Listener
 
     private static final List<Player> blockedPasswords = new ArrayList<>(); 
 
+    /**
+     * On player chat event handler
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event)
     {
@@ -76,6 +84,10 @@ public class SecurityListener implements Listener
         event.setCancelled(true);
     }
 
+    /**
+     * On player disconnect event handler
+     * @param event
+     */
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event)
     {
