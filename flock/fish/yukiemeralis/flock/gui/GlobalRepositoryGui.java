@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.InventoryView;
 
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
@@ -130,6 +131,32 @@ public class GlobalRepositoryGui extends PagedSurfaceGui
     {
         super(36, "Module Repositories", target, 0, Flock.getRepositories(), List.of(QUIT_BUTTON, ADD_NEW_BUTTON, CREATE_NEW_BUTTON), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF);
     }   
+
+    private int prefetched = 0;
+    @Override
+    public InventoryView display(HumanEntity e)
+    {
+        // Wait for all the repos to prefetch
+        for (ModuleRepository repo : Flock.getRepositories())
+            repo.prefetch(() -> prefetched++);
+
+        Runnable prefetchChecker = () -> {
+            long currentTime = System.currentTimeMillis(); // We want to wait 60 seconds/6000ms
+            while (prefetched < Flock.getRepositories().size())
+            {
+                if (System.currentTimeMillis() - currentTime > 6000) // Timeout timer
+                {
+                    break;
+                }
+            }
+
+            Flock.getRepositories().forEach(repo -> repo.cleanupPrefetch());
+            super.display(e); // If all the repos were prefetched or the timeout threshold was reached, open the global GUI
+        };
+        new Thread(prefetchChecker).start();
+        
+        return new SnakeLoadingGui().display(e);
+    }
 
     public static class ModuleRepositoryBuilder
     {

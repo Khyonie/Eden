@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import com.google.gson.annotations.Expose;
@@ -22,6 +23,7 @@ import fish.yukiemeralis.flock.DownloadUtils;
 import fish.yukiemeralis.flock.Flock;
 import fish.yukiemeralis.flock.TextUtils;
 import fish.yukiemeralis.flock.gui.EditRepositoryEntryGui;
+import fish.yukiemeralis.flock.gui.RepositoryGui;
 import net.md_5.bungee.api.ChatColor;
 
 public class ModuleRepositoryEntry implements GuiComponent
@@ -54,6 +56,7 @@ public class ModuleRepositoryEntry implements GuiComponent
                 case PICKUP_ALL -> { // Update
                     if (!this.isInstalled())
                     { 
+                        event.getWhoClicked().closeInventory();
                         // Fresh install
                         try {
                             DownloadUtils.downloadFile(this.url, "./plugins/Eden/mods/" + this.name + ".jar", new DownloadFinishedThread() {
@@ -67,6 +70,8 @@ public class ModuleRepositoryEntry implements GuiComponent
                                     }    
 
                                     PrintUtils.sendMessage(event.getWhoClicked(), "§aDownload complete.");
+
+                                    Bukkit.getScheduler().runTask(Eden.getInstance(), () -> new RepositoryGui(getHostRepository(), event.getWhoClicked()).display(event.getWhoClicked()));
                                 }
                             });
                         } catch (MalformedURLException e) {
@@ -101,6 +106,9 @@ public class ModuleRepositoryEntry implements GuiComponent
                                     return;
                                 }
 
+                                Flock.updateEntrySyncTime(getReference());
+                                Bukkit.getScheduler().runTask(Eden.getInstance(), () -> new RepositoryGui(getHostRepository(), event.getWhoClicked()).display(event.getWhoClicked()));
+
                                 if (Eden.getModuleManager().getModuleByName(getName()).getIsEnabled())
                                     PrintUtils.sendMessage(event.getWhoClicked(), "Successfully enabled " + getName() + "!");
                             }
@@ -125,10 +133,9 @@ public class ModuleRepositoryEntry implements GuiComponent
             "§7§o" + TextUtils.pruneStringLength(this.version == null ? "No version set" : this.version, "...", 35),
             "§7§o" + dependencies.size() + PrintUtils.plural(dependencies.size(), " dependency", " dependencies"),
             "",
-            "§7" + (this.isInstalled() ? (this.canUpdate() ? "Left-click to update module." : "This module is up to date.") : "Left-click to install module."),
+            "§7" + (this.isInstalled() ? (this.canUpdate() ? "§9Left-click to update module." : "§aThis module is up to date.") : "§aLeft-click to install module."),
             "§7Right-click to edit entry.",
-            "§7Shift + Left-click to remove.",
-            "§7entry"
+            "§7Shift + Left-click to remove entry."
         );
     }
 
@@ -293,6 +300,11 @@ public class ModuleRepositoryEntry implements GuiComponent
         }
 
         return true;
+    }
+
+    private ModuleRepositoryEntry getReference()
+    {
+        return this;
     }
 
     public static enum RepositoryEntryProperty

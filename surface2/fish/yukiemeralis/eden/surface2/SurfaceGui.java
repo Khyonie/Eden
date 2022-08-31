@@ -359,8 +359,7 @@ public abstract class SurfaceGui implements ISurfaceGui
         {
             init(target, view);
             onGuiOpen(target, view);
-        }
-        
+        } 
 
         return view;
     }

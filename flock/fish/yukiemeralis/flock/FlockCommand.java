@@ -12,6 +12,7 @@ import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.result.Result;
 import fish.yukiemeralis.flock.enums.JsonDownloadStatus;
 import fish.yukiemeralis.flock.gui.GlobalRepositoryGui;
+import fish.yukiemeralis.flock.gui.SnakeLoadingGui;
 import fish.yukiemeralis.flock.repository.ModuleRepository;
 
 public class FlockCommand extends EdenCommand 
@@ -20,9 +21,15 @@ public class FlockCommand extends EdenCommand
     {
         super("flock", parent_module);
 
-        this.addBranch("^sync", "^forcesync", "^add", "^upgrade", "^open");
+        this.addBranch("^sync", "^forcesync", "^add", "^upgrade", "^open", "testload");
         this.getMultiBranch("^sync", "^forcesync", "^add", "^open").addBranch("<URL>");
         this.getBranch("^upgrade").addBranch("<ALL_MODULES>");
+    }
+
+    @EdenCommandHandler(usage = "flock testload", description = "Test loading screen", argsCount = 1)
+    public void edencommand_testload(CommandSender sender, String label, String[] args)
+    {
+        new SnakeLoadingGui().display((Player) sender);
     }
 
     @EdenCommandHandler(usage = "flock", description = "Opens the module repository GUI.", argsCount = 0)

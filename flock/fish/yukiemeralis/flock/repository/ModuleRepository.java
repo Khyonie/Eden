@@ -45,6 +45,8 @@ public class ModuleRepository implements GuiComponent
         this.timestamp = System.currentTimeMillis();
     }
 
+    
+
     public Option sync()
     {
         Result result = DownloadUtils.downloadJson(this.url, ModuleRepository.class);
@@ -80,8 +82,48 @@ public class ModuleRepository implements GuiComponent
         );
     }
 
+    public void prefetch(Runnable toNotify)
+    {
+        PrintUtils.log("Prefetching " + this.name);
+        synchronized (toNotify)
+        {
+            try {
+                toNotify.wait();
+            } catch (InterruptedException e) {
+                prefetched = true;
+                toNotify.notify();
+            }
+        }
+
+        new Thread()
+        {
+            @Override
+            public void run()
+            {
+                canUpdate();
+                synchronized(toNotify)
+                {
+                    toNotify.notify();
+                    prefetched = true;
+                }
+            }
+        }.start();
+    }
+
+    private boolean prefetched = false;
+    private boolean prefetchedCanUpdate = false;
+
+    public void cleanupPrefetch()
+    {
+        prefetched = false;
+        prefetchedCanUpdate = false;
+    }
+
     public boolean canUpdate()
     {
+        if (prefetched)
+            return prefetchedCanUpdate;
+
         Result result = DownloadUtils.downloadJson(this.url, ModuleRepository.class);
 
         switch (result.getState())

@@ -71,6 +71,6 @@ public class DownloadUtils
             }   
         };
 
-        thread.run();
+        new Thread(thread).start();
     }
 }
