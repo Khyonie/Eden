@@ -82,7 +82,7 @@ public class PagedSurfaceGui extends SurfaceGui
             updateSingleComponent(e, (row * 9) + 7, BACK_PAGE_ITEM);
 
         PrintUtils.log("Page " + page + " * \\(" + this.getSize() + " - 9\\) = " + (page * (this.getSize() - 9)) + " | " + components.size());
-        if (page * (this.getSize() - 9) < components.size())
+        if ((page + 1) * (this.getSize() - 9) < components.size())
         {
             updateSingleComponent(e, (row * 9) + 8, NEXT_PAGE_ITEM);
         }
