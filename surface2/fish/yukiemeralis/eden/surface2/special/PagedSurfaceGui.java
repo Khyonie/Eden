@@ -3,17 +3,18 @@ package fish.yukiemeralis.eden.surface2.special;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.InventoryView;
+
 import fish.yukiemeralis.eden.surface2.GuiUtils;
 import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
 import fish.yukiemeralis.eden.surface2.SurfaceGui;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-
-import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.inventory.InventoryView;
+import fish.yukiemeralis.eden.utils.PrintUtils;
 
 public class PagedSurfaceGui extends SurfaceGui 
 {
@@ -80,8 +81,11 @@ public class PagedSurfaceGui extends SurfaceGui
         if (page != 0)
             updateSingleComponent(e, (row * 9) + 7, BACK_PAGE_ITEM);
 
+        PrintUtils.log("Page " + page + " * \\(" + this.getSize() + " - 9\\) = " + (page * (this.getSize() - 9)) + " | " + components.size());
         if (page * (this.getSize() - 9) < components.size())
+        {
             updateSingleComponent(e, (row * 9) + 8, NEXT_PAGE_ITEM);
+        }
 
         generateListData(e);
     }

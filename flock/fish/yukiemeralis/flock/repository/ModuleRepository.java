@@ -43,9 +43,7 @@ public class ModuleRepository implements GuiComponent
         this.name = ChatColor.stripColor(name);
         this.url = url;
         this.timestamp = System.currentTimeMillis();
-    }
-
-    
+    } 
 
     public Option sync()
     {
@@ -82,30 +80,21 @@ public class ModuleRepository implements GuiComponent
         );
     }
 
+    /**
+     * Checks for updates in a thread, and notifies a secondary thread when it is finished.
+     * After {@link ModuleRepository#canUpdate()} is called, call {@link ModuleRepository#cleanupPrefetch()} to allow for another prefetch.
+     * @param toNotify
+     */
     public void prefetch(Runnable toNotify)
     {
-        PrintUtils.log("Prefetching " + this.name);
-        synchronized (toNotify)
-        {
-            try {
-                toNotify.wait();
-            } catch (InterruptedException e) {
-                prefetched = true;
-                toNotify.notify();
-            }
-        }
-
         new Thread()
         {
             @Override
             public void run()
             {
                 canUpdate();
-                synchronized(toNotify)
-                {
-                    toNotify.notify();
-                    prefetched = true;
-                }
+                prefetched = true;
+                new Thread(toNotify).start();
             }
         }.start();
     }
@@ -113,7 +102,7 @@ public class ModuleRepository implements GuiComponent
     private boolean prefetched = false;
     private boolean prefetchedCanUpdate = false;
 
-    public void cleanupPrefetch()
+    public synchronized void cleanupPrefetch()
     {
         prefetched = false;
         prefetchedCanUpdate = false;

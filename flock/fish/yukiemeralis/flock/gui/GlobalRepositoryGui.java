@@ -150,8 +150,10 @@ public class GlobalRepositoryGui extends PagedSurfaceGui
                 }
             }
 
-            Flock.getRepositories().forEach(repo -> repo.cleanupPrefetch());
-            super.display(e); // If all the repos were prefetched or the timeout threshold was reached, open the global GUI
+            Bukkit.getScheduler().runTask(Eden.getInstance(), () -> {
+                super.display(e);
+                Flock.getRepositories().forEach(repo -> repo.cleanupPrefetch());
+            }); // If all the repos were prefetched or the timeout threshold was reached, open the global GUI
         };
         new Thread(prefetchChecker).start();
         

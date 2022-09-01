@@ -205,12 +205,6 @@ public class ModuleClassLoader extends URLClassLoader
 
 		jar.close();
 	}
-	
-	@Override
-	protected Class<?> findClass(String name) throws ClassNotFoundException
-	{
-		return findClass(name, true);
-	}
 
 	/**
 	 * Obtains the module loaded by this classloader.
@@ -310,6 +304,12 @@ public class ModuleClassLoader extends URLClassLoader
 		if (obj.hashCode() == this.hashCode())
 			return true;
 		return false;
+	}
+
+	@Override
+	protected Class<?> findClass(String name) throws ClassNotFoundException
+	{
+		return findClass(name, true);
 	}
 	
 	Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException

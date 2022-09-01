@@ -7,12 +7,12 @@ import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.module.EdenModule;
+import fish.yukiemeralis.eden.surface2.test.ExtendedPageTestGui;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.result.Result;
 import fish.yukiemeralis.flock.enums.JsonDownloadStatus;
 import fish.yukiemeralis.flock.gui.GlobalRepositoryGui;
-import fish.yukiemeralis.flock.gui.SnakeLoadingGui;
 import fish.yukiemeralis.flock.repository.ModuleRepository;
 
 public class FlockCommand extends EdenCommand 
@@ -29,7 +29,7 @@ public class FlockCommand extends EdenCommand
     @EdenCommandHandler(usage = "flock testload", description = "Test loading screen", argsCount = 1)
     public void edencommand_testload(CommandSender sender, String label, String[] args)
     {
-        new SnakeLoadingGui().display((Player) sender);
+        new ExtendedPageTestGui((Player) sender).display((Player) sender);
     }
 
     @EdenCommandHandler(usage = "flock", description = "Opens the module repository GUI.", argsCount = 0)

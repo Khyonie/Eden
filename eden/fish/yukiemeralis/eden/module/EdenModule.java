@@ -20,6 +20,7 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
 import fish.yukiemeralis.eden.module.annotation.EdenConfig;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 import fish.yukiemeralis.eden.module.annotation.EdenConfig.DefaultConfigWrapper;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.module.annotation.PreventUnload;
@@ -39,6 +40,7 @@ import fish.yukiemeralis.eden.utils.result.Result;
  * @author Yuki_emeralis
  * @since 1.0
  */
+@HideFromCollector
 public abstract class EdenModule
 {
     protected String modName, version, description, maintainer;
