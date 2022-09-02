@@ -381,7 +381,16 @@ public class ModuleManager
 
 		// Core loads first, as long as we aren't flying solo
 		if (!Eden.getEdenConfig().get("flyingSolo").equals("true"))
-			enableModule(getDisabledModuleByName("Rosetta"));
+		{
+			EdenModule rosettaModule;
+			if ((rosettaModule = getDisabledModuleByName("Rosetta")) != null)
+			{
+				enableModule(rosettaModule);
+			} else {
+				PrintUtils.log("<Failed to load Rosetta! Eden will now fly solo.>");
+				Eden.getEdenConfig().put("flyingSolo", "true");
+			}
+		}
 
 		// Load other modules
 		new ArrayList<>(disabled_modules).forEach(this::enableModule); // Construct a new list to avoid a ConcurrentModificationException

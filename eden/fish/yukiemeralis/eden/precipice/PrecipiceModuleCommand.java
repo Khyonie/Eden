@@ -25,7 +25,7 @@ public class PrecipiceModuleCommand extends EdenCommand
     {
         super("pre", List.of("prelude", "precipice"), parent_module);
 
-        this.addBranch("^load", "^unload", "^enable", "^disable", "^reload").addBranch("<MODULE>");
+        this.addBranch("^load", "^unload", "^enable", "^disable", "^reload").addBranch("<ALL_MODULES>");
     }
 
     /**
@@ -37,7 +37,7 @@ public class PrecipiceModuleCommand extends EdenCommand
     @EdenCommandHandler(usage = "pre load <module>", description = "Loads a module.", argsCount = 1)
     public void edencommand_load(CommandSender sender, String commandLabel, String[] args)
     {
-
+        
     }
 
     /**

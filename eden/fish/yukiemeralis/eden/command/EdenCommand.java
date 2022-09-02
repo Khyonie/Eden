@@ -365,6 +365,8 @@ public abstract class EdenCommand extends Command
     protected String generatePermission(EdenModule module, String base, String[] args)
     {
         // Start with a base permission, with the module and command label
+        if (!this.getLabel().equals(base))
+            base = this.getLabel();
         String permission = module.getName() + "." + base;
 
         // No args are present, return the base as-is
@@ -447,11 +449,22 @@ public abstract class EdenCommand extends Command
         return this.tree;
     }
 
-    protected TabCompleteBranch addBranch(String... labels)
+    protected TabCompleter addBranch(String... labels)
     {
-        tree.addBranch(labels);
+        if (labels.length == 0)
+            throw new UnsupportedOperationException("Must add at least one branch");
 
-        return tree.getBranch(labels[0]);
+        if (labels.length == 1)
+        {
+            tree.addBranch(labels);
+            return tree.getBranch(labels[0]);
+        }
+
+        List<TabCompleter> branches = new ArrayList<>();
+        for (String branch : labels)
+            branches.add(tree.addBranch(branch));
+            
+        return new TabCompleteMultiBranch(branches);
     }
 
     /**

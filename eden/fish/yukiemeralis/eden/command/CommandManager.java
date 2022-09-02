@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ public class CommandManager
 {
     private static CommandMap commandMap;
     private static List<EdenCommand> knownEdenCommands = new ArrayList<>();
+    private static Map<String, EdenCommand> aliasFallbacks = new HashMap<>();
 
     /**
      * Registers a command to the commandmap.</p>
@@ -46,6 +48,10 @@ public class CommandManager
 
             if (knownEdenCommands.contains(command))
                 return;
+
+            if (command.getAliases().size() != 0)
+                for (String alias : command.getAliases())
+                    aliasFallbacks.put(alias, command);
 
             commandMap.register(fallback, command);
             knownEdenCommands.add(command);
@@ -116,6 +122,11 @@ public class CommandManager
         for (EdenCommand cmd : knownEdenCommands)
             if (cmd.getLabel().equals(name))
                 return Option.some(cmd);
+
+        // Check for aliases
+        if (aliasFallbacks.containsKey(name))
+            return Option.some(aliasFallbacks.get(name));
+            
         return Option.none();
     }
 

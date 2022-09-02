@@ -14,7 +14,6 @@ import fish.yukiemeralis.eden.surface2.SurfaceGui;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.utils.PrintUtils;
 
 public class PagedSurfaceGui extends SurfaceGui 
 {
