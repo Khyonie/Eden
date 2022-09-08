@@ -39,9 +39,8 @@ import fish.yukiemeralis.eden.module.java.enums.ModuleDisableFailure;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-
 import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.option.OptionState;
 import fish.yukiemeralis.eden.utils.result.Result;
@@ -329,7 +328,7 @@ public class ModuleManager
 	 * @param filepath The filepath leading to the module file.
 	 * @return A result of either an EdenModule or a String describing the error.
 	 */
-	public Result loadSingleModule(String filepath)
+	public Result loadSingleModule(String filepath, boolean syncEvent)
 	{
 		if (!new File(filepath).exists())
 			return Result.err("File does not exist.");
@@ -363,10 +362,15 @@ public class ModuleManager
 			}
 		}
 
-		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleLoadEvent(mcl.getModule(), mcl.getName()));
-		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(mcl.getModule(), filepath));
+		Eden.callEvent(new ModuleLoadEvent(mcl.getModule(), mcl.getName()), syncEvent);
+		Eden.callEvent(new ModuleDisableEvent(mcl.getModule(), filepath), syncEvent);
 
 		return Result.ok(mcl.getModule());
+	}
+
+	public Result loadSingleModule(String filepath)
+	{
+		return loadSingleModule(filepath, false);
 	}
 	// ########################################################################
 	// #################### Enabling, disabling, unloading ####################
@@ -491,6 +495,7 @@ public class ModuleManager
 		disabled_modules.remove(module);
 		enabled_modules.add(module);
 
+		// TODO Make sync option
 		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleEnableEvent(module, this.module_references.get(module.getName())));
 	}
 
@@ -499,9 +504,13 @@ public class ModuleManager
 	 * Disables a module, unregistering its commands and listeners.
 	 * @param name The expected name of a module.
 	 * @param caller The token of the requestee.
+	 * @param disabledModuleList A list to be populated with a number of downstream disabled modules.
+	 * @param syncEvent Whether or not the {@link ModuleDisableEvent} should be triggered synchronously.<p>
+	 * - If you are unsure, <code>false</code> is generally safe.
+	 * @param force Whether or not to force downstream modules to be disabled as well.
 	 * @return Whether or not disabling was successful.
 	 */
-	public Option disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean force)
+	public Option disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean syncEvent, boolean force)
 	{
 		EdenModule module = getEnabledModuleByName(name);
 
@@ -539,16 +548,9 @@ public class ModuleManager
 					continue;
 				}
 
-				if (!disableModule(mod.getName(), caller, disabledModuleList, force).getState().equals(OptionState.NONE)) // If we can't disable a reliant module, reload all disabled modules and abort
+				if (!disableModule(mod.getName(), caller, disabledModuleList, syncEvent, force).getState().equals(OptionState.NONE)) // If we can't disable a reliant module, reload all disabled modules and abort
 				{
 					PrintUtils.log("<Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.>", InfoType.ERROR);
-					
-					// This is now the job of downstream code
-					
-					// disabledMods.forEach(mod_ -> { 
-					// 	enableModule(mod_);
-					// 	mod_.setEnabled();
-					// });
 					
 					dependentModuleTree.remove(module.getClass());
 					return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.DOWNSTREAM_DISABLE_FAILURE));
@@ -601,9 +603,16 @@ public class ModuleManager
 				enabled_modules.remove(module);
 				disabled_modules.add(module);
 
-				Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
+				if (!syncEvent)
+				{
+					Eden.callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
+					PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
+					return Option.none();
+				}
 
-				PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
+				Eden.callSyncEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
+				PrintUtils.log("Successfully disabled [" + module.getName() + "]! (SYNCHRONIZED FOR NEXT TICK)");
+
 				return Option.none();
 			}
 		} catch (Exception e) {
@@ -623,13 +632,13 @@ public class ModuleManager
 	public Option disableModule(String name)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
-		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false);
+		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false, false);
 	}
 
 	public Option disableModule(String name, CallerToken token)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
-		return disableModule(name, token, disabledModuleList, false);
+		return disableModule(name, token, disabledModuleList, false, false);
 	}
 
 	/**
@@ -639,13 +648,45 @@ public class ModuleManager
 	public Option disableModule(String name, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
-		return disableModule(name, CallerToken.PLAYER, disabledModuleList, force);
+		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false, force);
 	}
 
 	public Option disableModule(String name, CallerToken token, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
-		return disableModule(name, token, disabledModuleList, force);
+		return disableModule(name, token, disabledModuleList, false, force);
+	}
+
+	/**
+	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * @param name The expected name of a module.
+	 */
+	public Option disableModuleSync(String name)
+	{
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, CallerToken.PLAYER, disabledModuleList, true, false);
+	}
+
+	public Option disableModuleSync(String name, CallerToken token)
+	{
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, token, disabledModuleList, true, false);
+	}
+
+	/**
+	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * @param name The expected name of a module.
+	 */
+	public Option disableModuleSync(String name, boolean force)
+	{
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, CallerToken.PLAYER, disabledModuleList, true, force);
+	}
+
+	public Option disableModuleSync(String name, CallerToken token, boolean force)
+	{
+		List<EdenModule> disabledModuleList = new ArrayList<>();
+		return disableModule(name, token, disabledModuleList, true, force);
 	}
 
 	/**
@@ -694,12 +735,12 @@ public class ModuleManager
 
 	/**
 	 * Forcibly unloads an EdenModule from memory. This method bypasses {@link CallerToken}s, &#64;{@link PreventUnload} annotations, and other safety checks.<p>
-	 * <b><h2>This is not intended to be a go-around of the standard module removal protocol.</h2></b>
+	 * <b><h2>This is not intended to be a bypass of the standard module removal protocol.</h2></b>
 	 * As such, issues arising from improper usage of this utility will be ignored.
 	 * @param name Module name to unload.
 	 * @see {@link ModuleManager#removeModuleFromMemory(String name, CallerToken token)}
 	 */
-	public void forceRemoveModuleFromMemory(String name)
+	public void forceRemoveModuleFromMemory(String name, boolean syncEvent)
 	{
 		EdenModule module = getDisabledModuleByName(name);
 
@@ -716,7 +757,7 @@ public class ModuleManager
 
 		class_cache.clear();
 
-		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleUnloadEvent(name, module, this.module_references.get(name)));
+		Eden.callEvent(new ModuleUnloadEvent(name, module, this.module_references.get(name)), syncEvent);
 
 		ModuleFamilyRegistry.unregister(module);
 
@@ -732,7 +773,7 @@ public class ModuleManager
 	 * @param continueOnFailure Whether or not to continue on a failure, ensuring that the module will be reloaded. This may result in configs not being updated.
 	 * @return Whether or not the reload was successful
 	 */
-	public boolean forceReload(String name, boolean enableIfDisabled, boolean continueOnFailure)
+	public boolean forceReload(String name, boolean enableIfDisabled, boolean syncEvent, boolean continueOnFailure)
 	{
 		EdenModule module = getModuleByName(name);
 		
@@ -746,7 +787,7 @@ public class ModuleManager
 		{
 			Option option;
 			try {
-				option = disableModule(name, CallerToken.EDEN, new ArrayList<>(), true);
+				option = disableModule(name, CallerToken.EDEN, new ArrayList<>(), syncEvent, true);
 
 				if (option.isSome())
 					if (!continueOnFailure)
@@ -761,7 +802,7 @@ public class ModuleManager
 			enabled_modules.remove(module);
 			disabled_modules.add(module);
 
-			Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
+			//Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleDisableEvent(module, this.module_references.get(module.getName())));
 			module.setDisabled();
 
 			PrintUtils.log("Successfully disabled [" + module.getName() + "]!", InfoType.INFO);
@@ -769,13 +810,13 @@ public class ModuleManager
 
 		// Unload
 		try {
-			forceRemoveModuleFromMemory(name);
+			forceRemoveModuleFromMemory(name, syncEvent);
 		} catch (Exception e) {
 			PrintUtils.printPrettyStacktrace(e);
 		}
 
 		// Load
-		Result result = loadSingleModule(module_references.get(name));
+		Result result = loadSingleModule(module_references.get(name), syncEvent);
 
 		if (result.isErr())
 		{

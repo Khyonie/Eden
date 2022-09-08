@@ -100,7 +100,7 @@ public class ModuleRepositoryEntry implements GuiComponent
                                 }    
 
                                 PrintUtils.sendMessage(event.getWhoClicked(), "§aDownload complete.");
-                                if (!Eden.getModuleManager().forceReload(name, enabled, false))
+                                if (!Eden.getModuleManager().forceReload(name, enabled, true, false))
                                 {
                                     PrintUtils.sendMessage(event.getWhoClicked(), "Failed to automatically reload " + getName() + ". See console for details.");
                                     return;

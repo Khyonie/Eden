@@ -320,6 +320,17 @@ public class Eden extends JavaPlugin
 		getInstance().getServer().getPluginManager().callEvent(event);
 	}
 
+	public static void callEvent(Event event, boolean sync)
+	{
+		if (sync)
+		{
+			callSyncEvent(event);
+			return;
+		}
+
+		callEvent(event);
+	}
+
 	public static void callSyncEvent(Event event)
 	{
 		Bukkit.getScheduler().runTask(getInstance(), () -> callEvent(event));
@@ -336,9 +347,12 @@ public class Eden extends JavaPlugin
 
 	private static String version = null;
 	/**
-	 * Returns the current version of Eden, derived from the file name.
+	 * Returns the current version of Eden, derived from the file name. This may not be accurate.
 	 * @return The current version of Eden.
+	 * @see {@link DataUtils#getEdenVersion()} for friendly version name and {@link DataUtils#getMetaVersion()} for meta versioning
+	 * @deprecated Use DataUtils implementation instead. This method will remain for backwards compatibility until further notice.
 	 */
+	@Deprecated(forRemoval = false, since = "1.7.3")
     public static String getEdenVersion()
     {
         if (version == null)

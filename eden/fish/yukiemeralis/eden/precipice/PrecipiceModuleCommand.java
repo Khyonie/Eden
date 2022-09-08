@@ -85,7 +85,7 @@ public class PrecipiceModuleCommand extends EdenCommand
     @EdenCommandHandler(usage = "pre reload <module>", description = "Reloads a module, retaining its enabled/disabled state.", argsCount = 1)
     public void edencommand_reload(CommandSender sender, String commandLabel, String[] args)
     {
-        if (Eden.getModuleManager().forceReload(args[1], false, false))
+        if (Eden.getModuleManager().forceReload(args[1], false, false, false))
         {
             PrintUtils.sendMessage(sender, "Reload success.");
             return;
