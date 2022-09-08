@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fish.yukiemeralis.eden.module.EdenModule;
@@ -35,6 +36,7 @@ import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.permissions.EmergencyPermissionsManager;
 import fish.yukiemeralis.eden.permissions.PermissionsManager;
 import fish.yukiemeralis.eden.precipice.Prelude;
+import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
@@ -127,6 +129,7 @@ public class Eden extends JavaPlugin
 		}
 
 		PrintUtils.log("Server version is determined to be \"[" + nms_version + "]\"", InfoType.INFO);
+		PrintUtils.log("Eden API version is determined to be \"[" + DataUtils.getMetaVersion() + "]\" | \"(" + DataUtils.getEdenVersion() + ")\"");
 
 		// Search for missing keys in the config
 		for (String key : defaultConfig.keySet())
@@ -310,6 +313,16 @@ public class Eden extends JavaPlugin
 	public static Map<String, String> getEdenConfig()
 	{
 		return config;
+	}
+
+	public static void callEvent(Event event)
+	{
+		getInstance().getServer().getPluginManager().callEvent(event);
+	}
+
+	public static void callSyncEvent(Event event)
+	{
+		Bukkit.getScheduler().runTask(getInstance(), () -> callEvent(event));
 	}
 
 	/**
