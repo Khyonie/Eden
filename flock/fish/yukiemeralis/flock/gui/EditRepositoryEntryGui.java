@@ -33,11 +33,14 @@ public class EditRepositoryEntryGui extends SurfaceGui
         setDescriptionButton, 
         setVersionButton,
         addDependencyButton,
+        updateTimestampButton,
         importFromModuleButton = generateTodoButton("Import from module");
     
     public EditRepositoryEntryGui(ModuleRepositoryEntry entry, HumanEntity target) 
     {
-        super(9, entry.getName(), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF);
+        super(18, entry.getName(), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF);
+
+        paintBlack();
 
         saveButton = SimpleComponentBuilder.build(Material.LIME_CONCRETE, "§a§lSave and go back", (event) -> {
             entry.getHostRepository().updateEntry(entry);
@@ -95,6 +98,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
             "§7§oregenerate this entry's timestamp."
         );
 
+        updateTimestampButton = generateUpdateTimestampButton(target, this, entry);
         addDependencyButton = generateAddDependencyButton(target, entry, this);
     }
 
@@ -103,13 +107,27 @@ public class EditRepositoryEntryGui extends SurfaceGui
     {
         updateSingleComponent(e, 0, CLOSE_BUTTON);
         updateSingleComponent(e, 1, saveButton);
-        updateSingleComponent(e, 2, setNameButton);
-        updateSingleComponent(e, 3, setUrlButton);
-        updateSingleComponent(e, 4, setDescriptionButton);
-        updateSingleComponent(e, 5, setAuthorButton);
-        updateSingleComponent(e, 6, setVersionButton);
-        updateSingleComponent(e, 7, addDependencyButton);
-        updateSingleComponent(e, 8, importFromModuleButton);
+        updateSingleComponent(e, 2, importFromModuleButton);
+        updateSingleComponent(e, 3, updateTimestampButton);
+        
+        updateSingleComponent(e, 9, setNameButton);
+        updateSingleComponent(e, 10, setUrlButton);
+        updateSingleComponent(e, 11, setDescriptionButton);
+        updateSingleComponent(e, 12, setAuthorButton);
+        updateSingleComponent(e, 13, setVersionButton);
+        updateSingleComponent(e, 14, addDependencyButton);
+    }
+
+    private static GuiItemStack generateUpdateTimestampButton(HumanEntity target, SurfaceGui gui, ModuleRepositoryEntry entry)
+    {
+        return SimpleComponentBuilder.build(Material.CLOCK, "§9§lUpdate timestamp", (event) -> {
+            entry.updateTimestamp();
+            gui.updateSingleComponent(target, event.getSlot(), generateUpdateTimestampButton(target, gui, entry));
+        }, 
+            "§7§oCurrent timestamp: " + entry.getTimestamp(),
+            "",
+            "§7§oClick to update timestamp."
+        );
     }
 
     private static GuiItemStack generateTodoButton(String input)

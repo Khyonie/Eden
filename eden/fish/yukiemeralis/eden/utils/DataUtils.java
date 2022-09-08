@@ -1,6 +1,7 @@
 package fish.yukiemeralis.eden.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -8,11 +9,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.map.IDataListMap;
 
 /**
@@ -57,6 +61,37 @@ public class DataUtils
             PrintUtils.printPrettyStacktrace(e);
             return null;
         }
+    }
+
+    private static int cachedVersion = Integer.MIN_VALUE;
+    private static String edenVersion;
+    public static int getMetaVersion()
+    {
+        if (cachedVersion != Integer.MIN_VALUE)
+            return cachedVersion;
+        
+        try {
+            JarFile file = new JarFile(getEdenJar());
+            Scanner scanner = new Scanner(file.getInputStream(file.getEntry("version.meta")));
+
+            cachedVersion = Integer.parseInt(scanner.nextLine());
+            edenVersion = scanner.nextLine();
+
+            scanner.close();
+            file.close();
+        } catch (IOException e) {
+            cachedVersion = Integer.MAX_VALUE;
+            PrintUtils.log("<Failed to get Eden's internal version! Internal version is set to " + cachedVersion + ".>", InfoType.ERROR);
+        }
+
+        return cachedVersion;
+    }
+
+    public static String getEdenVersion()
+    {
+        getMetaVersion();
+
+        return edenVersion;
     }
 
     /**
