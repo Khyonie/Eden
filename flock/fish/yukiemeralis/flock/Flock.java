@@ -72,6 +72,8 @@ public class Flock extends EdenModule
             JsonUtils.toJsonFile(repoSyncFile.getAbsolutePath(), REPOSITORY_SYNC_TIMES);
 
         REPOSITORY_SYNC_TIMES = JsonUtils.fromJsonFile(repoSyncFile.getAbsolutePath(), Map.class);
+
+        // TODO Check for eden updates
     }
 
     @Override
