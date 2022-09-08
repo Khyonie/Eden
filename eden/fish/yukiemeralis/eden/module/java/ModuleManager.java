@@ -550,7 +550,7 @@ public class ModuleManager
 
 				if (!disableModule(mod.getName(), caller, disabledModuleList, syncEvent, force).getState().equals(OptionState.NONE)) // If we can't disable a reliant module, reload all disabled modules and abort
 				{
-					PrintUtils.log("<Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.>", InfoType.ERROR);
+					PrintUtils.log("<Failed to unload module \"" + module.getName() + "\"'s dependencies. Aborting disable.>", InfoType.ERROR);	
 					
 					dependentModuleTree.remove(module.getClass());
 					return Option.some(new ModuleDisableFailureData(disabledModuleList, ModuleDisableFailure.DOWNSTREAM_DISABLE_FAILURE));

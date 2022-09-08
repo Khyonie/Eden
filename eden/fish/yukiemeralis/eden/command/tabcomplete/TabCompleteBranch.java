@@ -124,6 +124,9 @@ public class TabCompleteBranch implements TabCompleter
         return attachedBranches.size() == 0;
     }
 
+    /**
+     * @return Whether or not this branch requires elevation.
+     */
     public boolean requiresPassword()
     {
         return this.requiresPassword;
