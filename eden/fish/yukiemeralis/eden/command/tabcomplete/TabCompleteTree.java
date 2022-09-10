@@ -6,10 +6,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * An instance of a TabComplete tree. Note that this class does NOT implement {@link TabCompleter}, and does not fulfill 
+ * the contract of such classes.
+ * @since 1.3.0
+ * @author Yuki_emeralis
+ */
 public class TabCompleteTree 
 {
     private Map<String, TabCompleteBranch> branches = new HashMap<>();
 
+    /**
+     * Adds a branch to this tree, returning the created branch if only one is made, otherwise returns null.
+     * @param labels Labels of branches to be created
+     * @return The newly created branch.
+     */
     public TabCompleteBranch addBranch(String... labels)
     {
         for (String str : labels)
@@ -20,9 +31,14 @@ public class TabCompleteTree
         return null;
     }
 
+    /**
+     * Gets a branch from this node.
+     * @param label
+     * @return
+     */
     public TabCompleteBranch getBranch(String label)
     {
-        if (label.startsWith("<") && label.startsWith(">"))
+        if (label.startsWith("<") && label.endsWith(">"))
         {
             if (branches.size() > 1 || branches.size() == 0)
                 throw new IllegalArgumentException("Requested branch from tree using user parameter, yet tree has " + branches.size() + " branches. Must be 1 branch.");

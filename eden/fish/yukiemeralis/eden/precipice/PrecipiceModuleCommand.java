@@ -56,11 +56,15 @@ public class PrecipiceModuleCommand extends EdenCommand
     @EdenCommandHandler(usage = "pre unload <module>", description = "Unloads a disabled module.", argsCount = 1)
     public void edencommand_unload(CommandSender sender, String commandLabel, String[] args)
     {
-        if (Eden.getModuleManager().getDisabledModuleByName(args[1]) == null)
+        EdenModule target = Eden.getModuleManager().getDisabledModuleByName(args[1]);
+
+        if (target == null)
         {
             PrintUtils.sendMessage(sender, "§cNo disabled module by that name was found.");
             return;
         }
+
+        Eden.getModuleManager().removeModuleFromMemory(target.getName(), CallerToken.fromCommandSender(sender));
     }
 
     /**

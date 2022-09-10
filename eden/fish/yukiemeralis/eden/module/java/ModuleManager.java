@@ -411,12 +411,17 @@ public class ModuleManager
 
 		PrintUtils.log("Enabled [" + enabled_modules.size() + "]/[" + getAllModules().size() + "] " + PrintUtils.plural(getAllModules().size(), "module", "modules") + "!", InfoType.INFO);
 	}
+
+	public void enableModule(EdenModule module)
+	{
+		enableModule(module, false);
+	}
  
 	/**
 	 * Loads a module, calling it's onEnable() and registering its commands and listeners.
 	 * @param module The module to load.
 	 */
-	public void enableModule(EdenModule module)
+	public void enableModule(EdenModule module, boolean syncEvent)
 	{
 		if (module == null)
 		{
