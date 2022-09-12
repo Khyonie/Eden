@@ -142,6 +142,9 @@ public class ModuleClassLoader extends URLClassLoader
 		return clazz;
 	}
 
+	/**
+	 * Caches all commands and listeners
+	 */
 	void cacheCommandsAndEvents()
 	{
 		commandClasses.addAll(findSubclasses(true, EdenCommand.class));
@@ -150,6 +153,16 @@ public class ModuleClassLoader extends URLClassLoader
 		listenerClasses.forEach(clazz -> { PrintUtils.logVerbose("Found listener class \"" + clazz.getName() + "\"", InfoType.INFO); });
 	}
 
+	/**
+	 * Loads this module, registering everything
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IOException
+	 */
 	void finalizeLoading() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException
 	{
 		// Put it all together
@@ -311,7 +324,14 @@ public class ModuleClassLoader extends URLClassLoader
 	{
 		return findClass(name, true);
 	}
-	
+
+	/**
+	 * Finds a class.
+	 * @param name Class package
+	 * @param checkGlobal Whether or not to check the global cache
+	 * @return A class with the matching package and name
+	 * @throws ClassNotFoundException Class was not found
+	 */
 	Class<?> findClass(String name, boolean checkGlobal) throws ClassNotFoundException
 	{
 		if (unimplemented_classes.containsKey(name))
@@ -342,6 +362,10 @@ public class ModuleClassLoader extends URLClassLoader
 		return result;
 	}
 
+	/**
+	 * Obtains the .jar filename for the module this is tied to.
+	 * @return .jar filename that this module is loaded from
+	 */
 	public String getModuleFileName()
 	{
 		return this.file.getName();

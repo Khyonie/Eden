@@ -13,7 +13,7 @@ import fish.yukiemeralis.eden.module.exception.InvalidStaticInitException;
  * 
  * A string can optionally be supplied to call a different static method instead.<p>
  * 
- * If no such static method can be found or invokation fails, a {@link InvalidStaticInitException} will be thrown, containing details of the error.<p>
+ * If no such static method can be found or invokation fails, an {@link InvalidStaticInitException} will be thrown, containing details of the error.<p>
  * 
  *<pre><code>
 &#64;StaticInitialize
@@ -29,11 +29,13 @@ public class ClassExample
  *</code></pre><p>
  *
  * @param value An optional String supplying the name of the static method to call. Defaults to "initStatic".
+ * @throws InvalidStaticInitException If no such static method can be found, or invokation fails.
  * @see https://docs.oracle.com/javase/specs/jls/se18/html/jls-12.html
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface StaticInitialize 
 {
+    /** Target static method name */
     String value() default "initStatic";
 }

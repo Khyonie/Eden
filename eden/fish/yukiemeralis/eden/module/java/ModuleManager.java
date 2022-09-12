@@ -326,6 +326,7 @@ public class ModuleManager
 	/**
 	 * Loads a single module from a filepath.
 	 * @param filepath The filepath leading to the module file.
+	 * @param syncEvent Whether or not to synchronize the resulting {@link ModuleLoadEvent}. <b>This is required when attempting to asynchronously load modules.</b>
 	 * @return A result of either an EdenModule or a String describing the error.
 	 */
 	public Result loadSingleModule(String filepath, boolean syncEvent)
@@ -368,6 +369,11 @@ public class ModuleManager
 		return Result.ok(mcl.getModule());
 	}
 
+	/**
+	 * Loads a single module from a filepath without synchronizing the resulting {@link ModuleLoadEvent}.
+	 * @param filepath The filepath leading to the module file.
+	 * @return A result of either an EdenModule or a String describing the error.
+	 */
 	public Result loadSingleModule(String filepath)
 	{
 		return loadSingleModule(filepath, false);
@@ -412,6 +418,10 @@ public class ModuleManager
 		PrintUtils.log("Enabled [" + enabled_modules.size() + "]/[" + getAllModules().size() + "] " + PrintUtils.plural(getAllModules().size(), "module", "modules") + "!", InfoType.INFO);
 	}
 
+	/**
+	 * Loads a module, calling it's onEnable() and registering its commands and listeners, and does not attempt to synchronize the resulting {@link ModuleEnableEvent}.
+	 * @param module The module to load.
+	 */
 	public void enableModule(EdenModule module)
 	{
 		enableModule(module, false);
@@ -420,6 +430,7 @@ public class ModuleManager
 	/**
 	 * Loads a module, calling it's onEnable() and registering its commands and listeners.
 	 * @param module The module to load.
+	 * @param syncEvent Whether or not to synchronize the resulting {@link ModuleEnableEvent}. <b>This is required when attempting to asynchronously enable modules.</b>
 	 */
 	public void enableModule(EdenModule module, boolean syncEvent)
 	{
@@ -500,8 +511,7 @@ public class ModuleManager
 		disabled_modules.remove(module);
 		enabled_modules.add(module);
 
-		// TODO Make sync option
-		Eden.getInstance().getServer().getPluginManager().callEvent(new ModuleEnableEvent(module, this.module_references.get(module.getName())));
+		Eden.callEvent(new ModuleEnableEvent(module, this.module_references.get(module.getName())), syncEvent);
 	}
 
 	private static List<Class<? extends EdenModule>> dependentModuleTree = new ArrayList<>();
@@ -631,8 +641,10 @@ public class ModuleManager
 	}
 
 	/**
-	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * Attempts to disable an enabled module. Runs with caller token PLAYER, and does not attempt to force a disable if a downstream module fails to be disabled.
+	 * The resulting {@link ModuleDisableEvent} will be run asynchronously. See {@link ModuleManager#disableModuleSync(String name)} if synchronization is needed.
 	 * @param name The expected name of a module.
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
 	 */
 	public Option disableModule(String name)
 	{
@@ -640,15 +652,25 @@ public class ModuleManager
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false, false);
 	}
 
+	/**
+	 * Attempts to disable an enabled module. Does not attempt to force a disable if a downstream module fails to be disabled.
+	 * The resulting {@link ModuleDisableEvent} will be run asynchronously. See {@link ModuleManager#disableModuleSync(String name, CallerToken token)} if synchronization is needed.
+	 * @param name The expected name of a module.
+	 * @param token Privilege level of caller
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 */
 	public Option disableModule(String name, CallerToken token)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
 		return disableModule(name, token, disabledModuleList, false, false);
 	}
-
+	
 	/**
 	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * The resulting {@link ModuleDisableEvent} will be run asynchronously. See {@link ModuleManager#disableModuleSync(String name, boolean force)} if synchronization is needed.
 	 * @param name The expected name of a module.
+	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
 	 */
 	public Option disableModule(String name, boolean force)
 	{
@@ -656,6 +678,14 @@ public class ModuleManager
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, false, force);
 	}
 
+	/**
+	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * The resulting {@link ModuleDisableEvent} will be run asynchronously. See {@link ModuleManager#disableModuleSync(String name, CallerToken token, boolean force)} if synchronization is needed.
+	 * @param name The expected name of a module.
+	 * @param token Privilege level of caller
+	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 */
 	public Option disableModule(String name, CallerToken token, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
@@ -663,8 +693,12 @@ public class ModuleManager
 	}
 
 	/**
-	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * Attempts to disable an enabled module, running the resulting {@link ModuleDisableEvent} in sync with the server. Runs with caller token PLAYER, 
+	 * and does not attempt to force a disable if a downstream module fails to be disabled.
 	 * @param name The expected name of a module.
+	 * @param token Privilege level of caller
+	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
 	 */
 	public Option disableModuleSync(String name)
 	{
@@ -672,6 +706,13 @@ public class ModuleManager
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, true, false);
 	}
 
+	/**
+	 * Attempts to disable an enabled module, running the resulting {@link ModuleDisableEvent} in sync with the server. Does not attempt to force a disable 
+	 * if a downstream module fails to be disabled.
+	 * @param name The expected name of a module.
+	 * @param token Privilege level of caller
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 */
 	public Option disableModuleSync(String name, CallerToken token)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
@@ -679,8 +720,10 @@ public class ModuleManager
 	}
 
 	/**
-	 * Attempts to disable an enabled module. Runs with caller token PLAYER.
+	 * Attempts to disable an enabled module, running the resulting {@link ModuleDisableEvent} in sync with the server.
 	 * @param name The expected name of a module.
+	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
 	 */
 	public Option disableModuleSync(String name, boolean force)
 	{
@@ -688,6 +731,13 @@ public class ModuleManager
 		return disableModule(name, CallerToken.PLAYER, disabledModuleList, true, force);
 	}
 
+	/**
+	 * Attempts to disable an enabled module, running the resulting {@link ModuleDisableEvent} in sync with the server.
+	 * @param name The expected name of a module.
+	 * @param token Privilege level of caller
+	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
+	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 */
 	public Option disableModuleSync(String name, CallerToken token, boolean force)
 	{
 		List<EdenModule> disabledModuleList = new ArrayList<>();
@@ -743,6 +793,7 @@ public class ModuleManager
 	 * <b><h2>This is not intended to be a bypass of the standard module removal protocol.</h2></b>
 	 * As such, issues arising from improper usage of this utility will be ignored.
 	 * @param name Module name to unload.
+	 * @param syncEvent Whether or not to synchronize the resulting {@link ModuleUnloadEvent}
 	 * @see {@link ModuleManager#removeModuleFromMemory(String name, CallerToken token)}
 	 */
 	public void forceRemoveModuleFromMemory(String name, boolean syncEvent)
@@ -775,6 +826,7 @@ public class ModuleManager
 	 * Forcibly reloads a module.
 	 * @param name Module name to reload.
 	 * @param enableIfDisabled Whether or not to enable the reloaded module, even if it was previously disabled.
+	 * @param syncEvent Whether or not to synchronize all the events generated by this method
 	 * @param continueOnFailure Whether or not to continue on a failure, ensuring that the module will be reloaded. This may result in configs not being updated.
 	 * @return Whether or not the reload was successful
 	 */
@@ -832,7 +884,7 @@ public class ModuleManager
 		if (!enabled && !enableIfDisabled)
 			return true;
 
-		enableModule(result.unwrapOk(EdenModule.class));
+		enableModule(result.unwrapOk(EdenModule.class), syncEvent);
 		result.unwrapOk(EdenModule.class).setEnabled();
 		PrintUtils.log("Finished reload.");
 		return true;
@@ -878,6 +930,7 @@ public class ModuleManager
 	 * SOME - A module was found. Unwrap to obtain module. If null, class was not found anywhere.<p>
 	 * NONE - Class was found outside of a module. 
 	 * @param clazz The class to search with.
+	 * @return Option containing a module on SOME, no module if NONE, or Some(null) if a class was not found anywhere
 	 */
 	public Option getHostModule(Class<?> clazz) 
 	{
@@ -902,7 +955,9 @@ public class ModuleManager
 	}
 
 	/**
-	 * @return
+	 * Obtains a list of reliant (dependencies from the module being depended on's perspective) modules related to the given module. 
+	 * @param target Module to obtain a list of reliant modules with
+	 * @return A list of reliant modules that depend on the given module.
 	 */
 	public List<EdenModule> getReliantModules(EdenModule target)
 	{
@@ -1079,6 +1134,11 @@ public class ModuleManager
 		return null;
 	}
 
+	/**
+	 * Validates if a list of NMS versions contains the current running server version.
+	 * @param versions Variable-args array of NMS versions (I.E "v1_16_R3", "v1_19_R1", etc.)
+	 * @return Whether or not a list of versions contains the current running server version
+	 */
 	public boolean isCompatible(String... versions)
 	{
 		for (String v : versions)
@@ -1087,16 +1147,31 @@ public class ModuleManager
 		return false;
 	}
 
+	/**
+	 * Validates if a list of NMS versions contains the current running server version.
+	 * @param versions List of NMS versions (I.E "v1_16_R3", "v1_19_R1", etc.)
+	 * @return Whether or not a list of versions contains the current running server version
+	 */
 	public boolean isCompatible(List<String> versions)
 	{
 		return versions.contains(Eden.getNMSVersion());
 	}
 
+	/**
+	 * Registers the time it took to load something.
+	 * @param name
+	 * @param time
+	 */
 	void registerLoadTime(String name, long time)
 	{
 		load_times.put(name, time);
 	}
 
+	/**
+	 * Obtains the previous load time for a given target
+	 * @param name
+	 * @return
+	 */
 	public long getLastLoadTime(String name)
 	{
 		if (!load_times.containsKey(name))
@@ -1104,6 +1179,11 @@ public class ModuleManager
 		return load_times.get(name);
 	}
 
+	/**
+	 * Obtains the previous load time for a given module
+	 * @param mod
+	 * @return
+	 */
 	public long getLastLoadTime(EdenModule mod)
 	{
 		return getLastLoadTime(mod.getName());

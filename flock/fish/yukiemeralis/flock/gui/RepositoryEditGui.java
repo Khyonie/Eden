@@ -88,7 +88,8 @@ public class RepositoryEditGui extends PagedSurfaceGui
     private static GuiItemStack generateExitEditModeButton(ModuleRepository repo)
     {
         return SimpleComponentBuilder.build(Material.RED_CONCRETE, "§r§c§lExit edit mode", (event) -> {
+            repo.save();
             new RepositoryGui(repo, event.getWhoClicked()).display(event.getWhoClicked());
-        }, "§7§oRe-opens this repository in normal", "§7§omode.");
+        }, "§7§oRe-opens this repository in normal", "§7§omode, and writes all changes to disk.");
     }
 }

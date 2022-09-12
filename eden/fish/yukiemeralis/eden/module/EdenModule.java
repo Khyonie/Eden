@@ -43,17 +43,27 @@ import fish.yukiemeralis.eden.utils.result.Result;
 @HideFromCollector
 public abstract class EdenModule
 {
-    protected String modName, version, description, maintainer;
+    /** Module name */
+    protected String modName;
+    /** Module version */
+    protected String version;
+    /** Module description */
+    protected String description;
+    /** Module maintainer */
+    protected String maintainer;
+    /** Module material icon */
     protected Material modIcon;
+    
     private boolean isEnabled = false;
 
     private List<Listener> listeners = new ArrayList<>();
     private List<EdenCommand> commands = new ArrayList<>();
 
-    //protected Map<String, String> config;
+    /** Module config data */
     protected ModuleConfig config;
 
-    protected List<EdenModule> reliantModules = new ArrayList<>(); // Modules that depend on this module
+    /** Modules that depend on this module */
+    protected List<EdenModule> reliantModules = new ArrayList<>();
 
     /**
      * Runs once when the module is first loaded.
@@ -93,6 +103,10 @@ public abstract class EdenModule
         return this.isEnabled;
     }
 
+    /**
+     * Obtains the module icon for this module.
+     * @return This module's icon.
+     */
     public Material getModIcon()
     {
         return this.modIcon;
@@ -123,11 +137,19 @@ public abstract class EdenModule
         return this.modName;
     }
 
+    /**
+     * Obtains this module's description.
+     * @return This module's description.
+     */
     public String getDescription()
     {
         return this.description;
     }
 
+    /**
+     * Obtains this module's maintainer.
+     * @return This module's mantainer.
+     */
     public String getMaintainer()
     {
         return this.maintainer;
@@ -142,6 +164,10 @@ public abstract class EdenModule
         return this.version;
     }
 
+    /**
+     * Obtains this module's {@link ModuleFamilyEntry}.
+     * @return This module's module family entry.
+     */
     public ModuleFamilyEntry getFamily()
     {
         return ModuleFamilyRegistry.getFamily(this);
@@ -211,6 +237,11 @@ public abstract class EdenModule
         this.reliantModules.remove(module);
     }
 
+    /**
+     * Obtains this module's Object instance. Must be shadowed in order to not throw an {@link UnsupportedOperationException}.
+     * @return This module's Object instance.
+     * @throws UnsupportedOperationException When this method is not shadowed by a subclass 
+     */
     public static EdenModule getModuleInstance()
     {
         // For some unholy reason this is faster than Thread.getCurrentThread().getCurrentStacktrace()
@@ -327,6 +358,7 @@ public abstract class EdenModule
         String description();
         /** This module's maintainer */
         String maintainer();
+        /** Supported NMS API versions */
         String[] supportedApiVersions();
     }
 
@@ -436,6 +468,7 @@ public abstract class EdenModule
 
     /**
      * Loads this module's configuration from a file.
+     * @return Whether or not loading was successful
      */
     public boolean loadConfig()
     {

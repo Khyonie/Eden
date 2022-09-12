@@ -9,11 +9,13 @@ import java.lang.annotation.Target;
  * Annotation for modules that have an @EdenConfig annotation. Provides the keys and values for a default config. Default field mapping is <code>EDEN_DEFAULT_CONFIG</code>.
  * @author Yuki_emeralis
  * @deprecated {@link EdenConfig} annotation now handles this annotation's function.
+ * @see {@link EdenConfig}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Deprecated
 public @interface DefaultConfig
 {
+	/** Field name for a Map of keys and values for a default configuration. */
 	String value() default "EDEN_DEFAULT_CONFIG";
 }

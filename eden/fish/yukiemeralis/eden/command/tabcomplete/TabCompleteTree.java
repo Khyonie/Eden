@@ -54,6 +54,10 @@ public class TabCompleteTree
         return branches.get(label);
     }
 
+    /**
+     * Obtains a list of branches extending from this node.
+     * @return A list of branches extending from this node.
+     */
     public List<String> getBranchesFromHere()
     {
         return Collections.unmodifiableList(new ArrayList<>(branches.keySet())); 

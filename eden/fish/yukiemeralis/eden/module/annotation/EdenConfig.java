@@ -14,17 +14,29 @@ import java.util.Map;
 @Target(ElementType.TYPE)
 public @interface EdenConfig 
 {
+	/** Field name for a Map of keys and values for a default configuration. */
     String value() default "EDEN_DEFAULT_CONFIG";   
 
+	/**
+	 * JSON-serializable type that wraps around a supplied Map of Strings and Objects
+	 */
     public static class DefaultConfigWrapper
 	{
 		private final Map<String, Object> data;
 
+		/**
+		 * DefaultConfigWrapper constructor
+		 * @param data Map data
+		 */
 		public DefaultConfigWrapper(Map<String, Object> data)
 		{
 			this.data = data;
 		}
 
+		/**
+		 * Obtains the contained Map data
+		 * @return The contained Map data
+		 */
 		public Map<String, Object> getData()
 		{
 			return this.data;

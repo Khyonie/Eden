@@ -28,6 +28,7 @@ import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 /**
  * An instance of an Eden command. Please look at the wiki @ https://github.com/YukiEmeralis/Eden for documentation.
  * @author Yuki_emeralis
+ * @since 1.0
  */
 public abstract class EdenCommand extends Command
 {
@@ -308,20 +309,38 @@ public abstract class EdenCommand extends Command
         Eden.getInstance().getServer().dispatchCommand(sender, newCommand);
     }
 
+    /**
+     * Whether an inputted subcommand should be redirected to a main command.
+     * @param label Subcommand input
+     * @return Whether or not the given input should be redirected into a main command
+     */
     protected boolean isRedirect(String label)
     {
         return redirects.containsKey(label);
     }
 
+    /**
+     * Attempts to ensure a sufficient number of arguments are supplied to satisfy a command's expected inputs.
+     * @param args User supplied arguments
+     * @param expected Number of expected arguments
+     * @param label Subcommand label
+     * @param sender Command sender
+     * @return Whether or not the user supplied enough arguments to meet a command's requirements
+     */
     protected boolean ensureArgsCount(String[] args, int expected, String label, CommandSender sender)
     {
-        if (args.length >= expected)
-            return true;
-
-        PrintUtils.sendMessage(sender, "§cSubcommand \"" + label + "\" requires " + (expected - 1) + " arguments, but " + (args.length - 1) + " " + PrintUtils.indicative(args.length - 1) + " provided!");
-        return false;
+        return ensureArgsCount(args, expected, 0, label, sender);
     }
 
+    /**
+     * Attempts to ensure a sufficient number of arguments, subtracted by a given offset, are supplied to satisfy a command's expected inputs.
+     * @param args User supplied arguments
+     * @param expected Number of expected arguments
+     * @param offset Number of arguments to offset
+     * @param label Subcommand label
+     * @param sender Command sender
+     * @return Whether or not the user supplied enough arguments to meet a command's requirements
+     */
     protected boolean ensureArgsCount(String[] args, int expected, int offset, String label, CommandSender sender)
     {
         if (args.length >= expected)
@@ -331,6 +350,12 @@ public abstract class EdenCommand extends Command
         return false;
     }
 
+    /**
+     * Validates a user as having a permission to execute a command.
+     * @param sender Command sender
+     * @param permission Eden command permission
+     * @return Whether or not a user has permission to execute a command
+     */
     protected boolean ensurePermission(CommandSender sender, String permission)
     {
         if (!Eden.getPermissionsManager().isAuthorized(sender, permission))
@@ -357,11 +382,24 @@ public abstract class EdenCommand extends Command
     // Permissions
     //
 
+    /**
+     * Tests whether or not a user should have access to a base command
+     * @param sender Command sender
+     * @param label Command label
+     * @return Whether or not a user should have access to a base command
+     */
     public boolean testBasePermission(CommandSender sender, String label)
     {
         return Eden.getPermissionsManager().isAuthorized(sender, this.parent_module.getName() + "." + label);
     }
 
+    /**
+     * Generates a permission based navigation of a TabComplete tree using supplied user arguments
+     * @param module Module this command belongs to
+     * @param base This command's base permission
+     * @param args User supplied arguments
+     * @return Generated permission
+     */
     protected String generatePermission(EdenModule module, String base, String[] args)
     {
         // Start with a base permission, with the module and command label
@@ -449,6 +487,12 @@ public abstract class EdenCommand extends Command
         return this.tree;
     }
 
+    /**
+     * Adds a branch to this command's TabComplete tree. While this class does not implement {@link TabCompleter}, it does abide by the contract of such classes.
+     * @param labels The labels of branches to add
+     * @return A TabCompleteBranch of only one branch is specified, or a TabCompleteMultiBranch if two or more branches are specified
+     * @throws UnsupportedOperationException If zero branches are supplied
+     */
     protected TabCompleter addBranch(String... labels)
     {
         if (labels.length == 0)
@@ -477,6 +521,11 @@ public abstract class EdenCommand extends Command
         return tree.getBranch(label);
     }
 
+    /**
+     * Obtains a TabCompleteMultiBranch with the specified labels
+     * @param labels Labels of a MultiBranch to obtain
+     * @return A TabCompleteMultiBranch with the specified labels
+     */
     public TabCompleteMultiBranch getMultiBranch(String... labels)
     {
         List<TabCompleter> data = new ArrayList<>();

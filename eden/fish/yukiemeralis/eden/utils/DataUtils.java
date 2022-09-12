@@ -43,6 +43,48 @@ public class DataUtils
     }
 
     /**
+     * Obtains a declared method from anywhere in a class hierarchy.
+     * @param clazz
+     * @param name
+     * @param args
+     * @return A declared method
+     * @throws NoSuchMethodException The class hierarchy does not declare such a method 
+     * @throws SecurityException Java security manager prohibits obtaining this method
+     * @since 1.7.3
+     */
+    public static Method getRecursiveSuperMethod(Class<?> clazz, String name, Class<?> args) throws NoSuchMethodException, SecurityException
+    {
+        // Check if the given class declares such a method, otherwise recurse
+        try {
+            Method method = clazz.getDeclaredMethod(name, args);
+            return method;
+        } catch (NoSuchMethodException e) {}
+
+        // Recurse down to java.lang.Object if need be
+        return getRecursiveSuperMethod(clazz, clazz, name, args);
+    }
+
+    private static Method getRecursiveSuperMethod(Class<?> parent, Class<?> clazz, String name, Class<?>... args) throws NoSuchMethodException, SecurityException
+    {
+        if (name == null)
+            throw new IllegalArgumentException("No method name was supplied");
+
+        Method method;
+
+        Class<?> superClass = clazz.getSuperclass();
+        
+        if (superClass == null) // Current class is java.lang.Object or related, with no superclass
+            throw new NoSuchMethodException("Class hierarchy for " + parent.getName() + " does not declare a method named " + name + " with " + args.length + " parameters");
+
+        try {
+            method = superClass.getDeclaredMethod(name, args);
+            return method;
+        } catch (NoSuchMethodException e) {
+            return getRecursiveSuperMethod(parent, superClass, name, args);
+        }
+    }
+
+    /**
      * Obtains the plugin .jar for Eden.
      * @return The plugin .jar for Eden.
      */
@@ -154,8 +196,24 @@ public class DataUtils
         return (long) Math.pow(value1Matches + value2Matches + value3Matches, input.length());
     }
 
+    /**
+     * Attempts to infer missing data for a 24 bit (#RRGGBB) hex color.<p>
+     * - # -> #000000 (Black)<p>
+     * - #D -> #DDDDDD<p>
+     * - #DD -> #DDDDDD<p>
+     * - #RGB -> #R*G*B*<p>
+     * - #RRGB -> #RRG*B*<p>
+     * - #RRGGB -> #RRGGB*
+     * @param in Input hex color, starting with "#"
+     * @return Input hex color, converted to a color with 6 hex digits
+     */
     public static String fixColor(String in)
     {
+        if (in == null)
+            throw new IllegalArgumentException("Input cannot be null");
+        if (in.length() == 0)
+            in = "#";
+
         // Trim # 
         String buffer = in.substring(1);
         // We can try to make some assumptions:
@@ -185,6 +243,24 @@ public class DataUtils
         }
     }
 
+    /**
+     * Converts a Map<K, V> to a list of individual key/value pairs. List is populated in the order returned by the map's iterator.
+     * <pre><code>
+     *Map&lt;String, Integer&gt; mapData = Map.of(
+     *   "a", 42, 
+     *   "b", 7, 
+     *   "c", 11 );
+     *
+     *List&lt;KeyValuePair&lt;String, Integer&gt;&gt; kvPairList = DataUtils.toKeyValuePairSet(mapData);
+     *
+     *assert kvPairList.get(0).getKey().equals("a");
+     *assert kvPairList.get(0).getValue().equals(42);
+     * </code></pre>
+     * @param <K> Key type
+     * @param <V> Value type
+     * @param map Map input
+     * @return A list containing the ordered pairs contained in the given map
+     */
     public static <K, V> List<KeyValuePair<K, V>> toKeyValuePairSet(Map<K, V> map)
     {
         List<KeyValuePair<K, V>> buffer = new ArrayList<>();
@@ -217,6 +293,10 @@ public class DataUtils
     }
 
     private static int cachedJavaVersion = -1;
+    /**
+     * Obtains the current Java version running on this server.
+     * @return JRE version in use by the server 
+     */
     public static int getJavaVersion()
     {
         if (cachedJavaVersion != -1)
@@ -255,20 +335,18 @@ public class DataUtils
      * Gets the stacktrace element before the method that called this method.<p>
      * <p>
      * For example:
-     * <pre>
-     * <code>
-     * void methodA() {
-     *    methodB();
-     * }
+     * <pre><code>
+     *void methodA() {
+     *   methodB();
+     *}
      * 
-     * void methodB() {
-     *    StackTraceElement element = getPreviousCaller(Thread.currentThread());
-     * 
-     *    // Obtain the stacktrace element for the previous method
-     *    assert element.getMethodName().equals("methodA");
-     * }
-     * </code>
-     * </pre>
+     *void methodB() {
+     *   StackTraceElement element = getPreviousCaller(Thread.currentThread());
+     *
+     *   // Obtain the stacktrace element for the previous method
+     *   assert element.getMethodName().equals("methodA");
+     *}
+     * </code></pre>
      * This method will fail and return {@code null} if there isn't a method called before the caller (such as {@code main} or {@link Thread#start()}).
      * 
      * @param thread The thread to obtain a stacktrace element from.
