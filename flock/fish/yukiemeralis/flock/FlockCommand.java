@@ -7,7 +7,6 @@ import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
 import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.surface2.test.ExtendedPageTestGui;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.result.Result;
@@ -15,21 +14,18 @@ import fish.yukiemeralis.flock.enums.JsonDownloadStatus;
 import fish.yukiemeralis.flock.gui.GlobalRepositoryGui;
 import fish.yukiemeralis.flock.repository.ModuleRepository;
 
+/**
+ * Flock command class
+ */
 public class FlockCommand extends EdenCommand 
 {
     public FlockCommand(EdenModule parent_module) 
     {
         super("flock", parent_module);
 
-        this.addBranch("^sync", "^forcesync", "^add", "^upgrade", "^open", "testload");
+        this.addBranch("^sync", "^forcesync", "^add", "^upgrade", "^open"); // TODO Add these
         this.getMultiBranch("^sync", "^forcesync", "^add", "^open").addBranch("<URL>");
         this.getBranch("^upgrade").addBranch("<ALL_MODULES>");
-    }
-
-    @EdenCommandHandler(usage = "flock testload", description = "Test loading screen", argsCount = 1)
-    public void edencommand_testload(CommandSender sender, String label, String[] args)
-    {
-        new ExtendedPageTestGui((Player) sender).display((Player) sender);
     }
 
     @EdenCommandHandler(usage = "flock", description = "Opens the module repository GUI.", argsCount = 0)
@@ -58,7 +54,9 @@ public class FlockCommand extends EdenCommand
         }
 
         upstream = syncResult.unwrapOk(ModuleRepository.class);
-        ModuleRepository syncedRepo;
+        upstream.updateReferences();
+        
+        ModuleRepository local;
 
         Option opt = Flock.getRepository(upstream.getName()); 
         if (opt.isNone())
@@ -68,16 +66,16 @@ public class FlockCommand extends EdenCommand
             return;
         }    
         
-        syncedRepo = opt.unwrap(ModuleRepository.class);
+        local = opt.unwrap(ModuleRepository.class);
 
         // Check timestamps to see if we should attempt to synchronize
-        if (upstream.getTimestamp() <= syncedRepo.getTimestamp())
+        if (upstream.getTimestamp() <= local.getTimestamp())
         {
             PrintUtils.sendMessage(sender, "Local repository \"" + args[1] + "\" is already up to date. To sync anyways, run §e\"/flock forcesync " + args[1] + "\"§7.");
             return;
         }
 
-        syncedRepo.sync(upstream);
-        syncedRepo.updateTimestamp(upstream.getTimestamp());
+        local.sync(upstream);
+        local.updateTimestamp(upstream.getTimestamp());
     }
 }

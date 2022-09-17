@@ -3,9 +3,7 @@ package fish.yukiemeralis.eden.module.java;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -24,8 +22,8 @@ import org.bukkit.event.Listener;
 import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
 import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
+import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
 import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 import fish.yukiemeralis.eden.module.annotation.StaticInitialize;
 import fish.yukiemeralis.eden.module.annotation.Unimplemented;
@@ -33,6 +31,7 @@ import fish.yukiemeralis.eden.module.exception.InvalidStaticInitException;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import fish.yukiemeralis.eden.utils.option.Option;
 
 /**
  * Special classloader that loads an Eden module from a file.

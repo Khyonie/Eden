@@ -15,6 +15,7 @@ import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.flock.enums.AddRepositoryStatus;
 import fish.yukiemeralis.flock.repository.ModuleRepository;
@@ -25,7 +26,7 @@ import fish.yukiemeralis.flock.repository.ModuleRepositoryEntry;
     description = "Handler for module repositories.",
     maintainer = "Yuki_emeralis",
     modIcon = Material.END_PORTAL,
-    version = "2.0",
+    version = "2.0.0",
     supportedApiVersions = { "v1_19_R1" }
 )
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)
@@ -72,6 +73,10 @@ public class Flock extends EdenModule
             JsonUtils.toJsonFile(repoSyncFile.getAbsolutePath(), REPOSITORY_SYNC_TIMES);
 
         REPOSITORY_SYNC_TIMES = JsonUtils.fromJsonFile(repoSyncFile.getAbsolutePath(), Map.class);
+
+        PrintUtils.log("Developer note: There is a known issue where updating a module via a Flock repository will cause a LinkageError to be thrown.", InfoType.WARN);
+        PrintUtils.log("The cause is currently unknown, and is tracked here:", InfoType.WARN);
+        PrintUtils.log("https://github.com/YukiEmeralis/Eden/issues/24", InfoType.WARN);
 
         // TODO Check for eden updates
     }

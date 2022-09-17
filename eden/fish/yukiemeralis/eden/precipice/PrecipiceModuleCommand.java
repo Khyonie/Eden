@@ -13,6 +13,7 @@ import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.eden.utils.option.Option;
+import fish.yukiemeralis.eden.utils.result.Result;
 
 /**
  * Simple module manager interface command.
@@ -28,7 +29,7 @@ public class PrecipiceModuleCommand extends EdenCommand
     {
         super("pre", List.of("prelude", "precipice"), parent_module);
 
-        this.addBranch("^load", "^unload", "^enable", "^disable", "^reload").addBranch("<ALL_MODULES>");
+        this.addBranch("^load", "^unload", "^enable", "^disable", "^reload", "^test").addBranch("<ALL_MODULES>");
     }
 
     /**
@@ -40,11 +41,36 @@ public class PrecipiceModuleCommand extends EdenCommand
     @EdenCommandHandler(usage = "pre load <module>", description = "Loads a module.", argsCount = 1)
     public void edencommand_load(CommandSender sender, String commandLabel, String[] args)
     {
-        if (Eden.getModuleManager().getModuleByName(args[1]) == null)
+        if (Eden.getModuleManager().hasReferenceTo(args[1]))
         {
-            PrintUtils.sendMessage(sender, "§cNo module by that name was found.");
+            if (Eden.getModuleManager().isModulePresent(args[1]))
+            {
+                PrintUtils.sendMessage(sender, "§cA named \"" + args[1] + "\" is already loaded.");
+                return;
+            }
+
+            Result result = Eden.getModuleManager().loadSingleModule(Eden.getModuleManager().getReferences().get(args[1]));
+
+            if (result.isErr())
+            {
+                PrintUtils.sendMessage(sender, "§cFailed to load module reference for \"" + args[1] + "\". Reason: " + result.unwrapErr(String.class));
+                return;
+            }
+
+            PrintUtils.sendMessage(sender, "Reference load complete.");
             return;
         }
+
+        String path = "./plugins/Eden/mods/" + args[1] + ".jar";
+        Result result = Eden.getModuleManager().loadSingleModule(path);
+
+        if (result.isErr())
+        {
+            PrintUtils.sendMessage(sender, "§cFailed to load module \"" + args[1] + "\". Reason: " + result.unwrapErr(String.class));
+            return;
+        }
+
+        PrintUtils.sendMessage(sender, "Load complete.");
     }
 
     /**
