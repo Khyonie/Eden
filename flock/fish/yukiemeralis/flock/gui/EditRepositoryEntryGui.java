@@ -11,10 +11,13 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.InventoryView;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.module.EdenModule;
 import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
 import fish.yukiemeralis.eden.surface2.SurfaceGui;
+import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
 import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
+import fish.yukiemeralis.eden.surface2.special.PagedSurfaceGui;
 import fish.yukiemeralis.eden.utils.ChatUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
 import fish.yukiemeralis.flock.TextUtils;
@@ -34,7 +37,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
         setVersionButton,
         addDependencyButton,
         updateTimestampButton,
-        importFromModuleButton = generateTodoButton("Import from module");
+        importFromModuleButton;
     
     public EditRepositoryEntryGui(ModuleRepositoryEntry entry, HumanEntity target) 
     {
@@ -100,6 +103,7 @@ public class EditRepositoryEntryGui extends SurfaceGui
 
         updateTimestampButton = generateUpdateTimestampButton(target, this, entry);
         addDependencyButton = generateAddDependencyButton(target, entry, this);
+        importFromModuleButton = generateImportFromModuleButton(target, entry);
     }
 
     @Override
@@ -130,10 +134,10 @@ public class EditRepositoryEntryGui extends SurfaceGui
         );
     }
 
-    private static GuiItemStack generateTodoButton(String input)
-    {
-        return SimpleComponentBuilder.build(Material.GRAY_CONCRETE, "§8§lTODO Button: " + input, (event) -> {}, "§7§oThis button hasn't been created yet.");
-    }
+    // private static GuiItemStack generateTodoButton(String input)
+    // {
+    //     return SimpleComponentBuilder.build(Material.GRAY_CONCRETE, "§8§lTODO Button: " + input, (event) -> {}, "§7§oThis button hasn't been created yet.");
+    // }
 
     private static GuiItemStack generateAddDependencyButton(HumanEntity target, ModuleRepositoryEntry entry, SurfaceGui gui)
     {
@@ -198,6 +202,18 @@ public class EditRepositoryEntryGui extends SurfaceGui
         );
     }
 
+    private GuiItemStack generateImportFromModuleButton(HumanEntity target, ModuleRepositoryEntry entry)
+    {
+        return SimpleComponentBuilder.build(Material.ENDER_CHEST, "§9§lImport from module", (event) -> {
+            List<GuiComponent> data = new ArrayList<>();
+
+            for (EdenModule module : Eden.getModuleManager().getAllModules())
+                data.add(new ModuleImportButton(module, entry));
+
+            new PagedSurfaceGui(54, "Import from module", event.getWhoClicked(), 0, data, List.of(CLOSE_BUTTON), DefaultClickAction.CANCEL, InventoryAction.PICKUP_ALL, InventoryAction.PICKUP_HALF).display(event.getWhoClicked());
+        });
+    }
+
     private static void openSync(ModuleRepositoryEntry entry, HumanEntity e)
     {
         Bukkit.getScheduler().runTask(Eden.getInstance(), () -> new EditRepositoryEntryGui(entry, e).display(e));
@@ -217,6 +233,37 @@ public class EditRepositoryEntryGui extends SurfaceGui
 
             openSync(entry, target);
         });
+    }
+
+    private static class ModuleImportButton implements GuiComponent
+    {
+        private EdenModule module;
+        private ModuleRepositoryEntry entry;
+
+        public ModuleImportButton(EdenModule module, ModuleRepositoryEntry entry)
+        {
+            this.module = module;
+            this.entry = entry;
+        }
+
+        @Override
+        public GuiItemStack generate()
+        {
+            return SimpleComponentBuilder.build(module.getModIcon(), "§a§lImport from " + module.getName(), (event) -> {
+                entry.setProperty(RepositoryEntryProperty.NAME, module.getName());
+                entry.setProperty(RepositoryEntryProperty.DESCRIPTION, module.getDescription());
+                entry.setProperty(RepositoryEntryProperty.AUTHOR, module.getMaintainer());
+                entry.setProperty(RepositoryEntryProperty.VERSION, module.getVersion());
+
+                new EditRepositoryEntryGui(entry, event.getWhoClicked()).display(event.getWhoClicked());
+            },
+                "§7§oImports name, description, author,",
+                "§7§oand version from this loaded module.",
+                "",
+                "§7§oA URL and any dependencies will",
+                "§7§ostill need to be specified manually."
+            );
+        }
     }
 }
 

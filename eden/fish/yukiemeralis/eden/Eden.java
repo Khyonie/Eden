@@ -35,7 +35,7 @@ import fish.yukiemeralis.eden.module.java.enums.BranchType;
 import fish.yukiemeralis.eden.module.java.enums.CallerToken;
 import fish.yukiemeralis.eden.permissions.EmergencyPermissionsManager;
 import fish.yukiemeralis.eden.permissions.PermissionsManager;
-import fish.yukiemeralis.eden.precipice.Prelude;
+import fish.yukiemeralis.eden.prelude.Prelude;
 import fish.yukiemeralis.eden.utils.DataUtils;
 import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
@@ -50,7 +50,7 @@ import fish.yukiemeralis.eden.utils.option.OptionState;
  * Represents the Eden core plugin, with module management and commands.
  * @author Yuki_emeralis
  */
-@Branch(BranchType.FEATURE)
+@Branch(BranchType.RELEASE_CANDIDATE)
 public class Eden extends JavaPlugin
 {
 	private static Eden server_instance;

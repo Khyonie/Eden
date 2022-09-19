@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.precipice;
+package fish.yukiemeralis.eden.prelude;
 
 import java.util.List;
 
@@ -19,17 +19,17 @@ import fish.yukiemeralis.eden.utils.result.Result;
  * Simple module manager interface command.
  */
 @HideFromCollector
-public class PrecipiceModuleCommand extends EdenCommand
+public class PreludeModuleCommand extends EdenCommand
 {
     /**
      * Module command constructor
      * @param parent_module
      */
-    public PrecipiceModuleCommand(EdenModule parent_module) 
+    public PreludeModuleCommand(EdenModule parent_module) 
     {
-        super("pre", List.of("prelude", "precipice"), parent_module);
+        super("pre", List.of("prelude"), parent_module);
 
-        this.addBranch("^load", "^unload", "^enable", "^disable", "^reload", "^test").addBranch("<ALL_MODULES>");
+        this.addBranch("^load", "^unload", "^enable", "^disable", "^reload").addBranch("<ALL_MODULES>");
     }
 
     /**

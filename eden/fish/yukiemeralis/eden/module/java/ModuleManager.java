@@ -901,7 +901,6 @@ public class ModuleManager
 	 */
 	public Class<?> getCachedClass(String name)
 	{
-		PrintUtils.log("Checking if class " + name + " is cached");
 		Class<?> class_ = class_cache.get(name);
 		
 		if (class_ != null)

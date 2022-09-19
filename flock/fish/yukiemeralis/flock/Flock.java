@@ -74,9 +74,11 @@ public class Flock extends EdenModule
 
         REPOSITORY_SYNC_TIMES = JsonUtils.fromJsonFile(repoSyncFile.getAbsolutePath(), Map.class);
 
+        PrintUtils.log("", InfoType.WARN);
         PrintUtils.log("Developer note: There is a known issue where updating a module via a Flock repository will cause a LinkageError to be thrown.", InfoType.WARN);
         PrintUtils.log("The cause is currently unknown, and is tracked here:", InfoType.WARN);
         PrintUtils.log("https://github.com/YukiEmeralis/Eden/issues/24", InfoType.WARN);
+        PrintUtils.log("", InfoType.WARN);
 
         // TODO Check for eden updates
     }

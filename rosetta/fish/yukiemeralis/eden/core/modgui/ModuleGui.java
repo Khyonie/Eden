@@ -37,9 +37,11 @@ public class ModuleGui
             List<GuiComponent> components = new ArrayList<>();
             
             for (EdenModule m : e.getData())
+            {
                 components.add(new ModuleGuiAdapter(m, (event) -> {
                     new ModuleSubGui(m, target).display(event.getWhoClicked());
                 }));
+            }
 
             data.add(new GuiTab(ItemUtils.build(e.getMaterial(), "§r§9§l" + e.getName(), "§7§o" + e.getData().size() + " " + PrintUtils.plural(e.getData().size(), "module", "modules")), components));
         }

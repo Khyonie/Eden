@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.precipice;
+package fish.yukiemeralis.eden.prelude;
 
 import org.bukkit.Material;
 
@@ -18,7 +18,7 @@ import fish.yukiemeralis.eden.utils.ChatUtils;
 @HideFromCollector
 @ModInfo(
     modName = "Prelude",
-    description = "Eden's internal interface for various tasks.",
+    description = "Module interface for Eden internals.",
     maintainer = "Yuki_emeralis",
     modIcon = Material.WHITE_CONCRETE,
     version = "1.0.0",
@@ -35,7 +35,7 @@ public class Prelude extends EdenModule
     {
         this.setInfo(this.getClass().getAnnotation(ModInfo.class));
         this.addListener(new UuidCacheListener(), new PlayerIPListener(), new ChatUtils());
-        this.addCommand(new PrecipiceModuleCommand(this));
+        this.addCommand(new PreludeModuleCommand(this));
     }
 
     @Override

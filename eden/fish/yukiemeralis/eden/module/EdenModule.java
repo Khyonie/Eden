@@ -20,8 +20,8 @@ import fish.yukiemeralis.eden.Eden;
 import fish.yukiemeralis.eden.command.EdenCommand;
 import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
 import fish.yukiemeralis.eden.module.annotation.EdenConfig;
-import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 import fish.yukiemeralis.eden.module.annotation.EdenConfig.DefaultConfigWrapper;
+import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
 import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
 import fish.yukiemeralis.eden.module.annotation.PreventUnload;
 import fish.yukiemeralis.eden.module.java.enums.DefaultConfigFailure;
@@ -30,10 +30,11 @@ import fish.yukiemeralis.eden.utils.FileUtils;
 import fish.yukiemeralis.eden.utils.ItemUtils;
 import fish.yukiemeralis.eden.utils.JsonUtils;
 import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
+import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
 import fish.yukiemeralis.eden.utils.option.Option;
 import fish.yukiemeralis.eden.utils.result.Result;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Represents an Eden module.
@@ -333,11 +334,17 @@ public abstract class EdenModule
      */
     public void setInfo(ModInfo info)
     {
-        this.modName = info.modName();
+        this.modName = ChatColor.stripColor(info.modName());
         this.version = info.version();
         this.description = info.description();
         this.maintainer = info.maintainer();
         this.modIcon = info.modIcon();
+
+        if (!this.modIcon.isItem())
+        {
+            PrintUtils.log("Module \"" + this.modName + "\"'s declared module icon is \"" + this.modIcon.name() + "\" which cannot be displayed in a GUI! Changing to PUMPKIN...", InfoType.WARN);
+            this.modIcon = Material.PUMPKIN;
+        }
     }
 
     /**
