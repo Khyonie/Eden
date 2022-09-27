@@ -207,6 +207,9 @@ public class ModuleSubGui extends SurfaceGui
         return ItemUtils.build(Material.OAK_SAPLING, "§r§9§lDependants", description.toArray(new String[description.size()]));
     }
 
+    /**
+     * @eden.optional {@link fish.yukiemeralis.eden.core.modgui.ModuleSubGui.DisableData}
+     */
     private Option isDisableDisallowed()
     {
         for (EdenModule m : recurseDependencies(module, new ArrayList<>()))
