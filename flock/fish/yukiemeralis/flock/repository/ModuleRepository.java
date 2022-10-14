@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import com.google.gson.annotations.Expose;
 
 import fish.yukiemeralis.eden.Eden;
+import fish.yukiemeralis.eden.marker.Nullable;
 import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
 import fish.yukiemeralis.eden.surface2.component.GuiComponent;
 import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
@@ -49,12 +50,18 @@ public class ModuleRepository implements GuiComponent
         this.timestamp = System.currentTimeMillis();
     } 
 
+    /** 
+     * @eden.optional {@link fish.yukiemeralis.flock.enums.JsonDownloadStatus}
+     */
     public Option sync()
     {
         return sync((Runnable) null);
     }
 
-    public Option sync(Runnable toRun)
+    /** 
+     * @eden.optional {@link fish.yukiemeralis.flock.enums.JsonDownloadStatus}
+     */
+    public Option sync(@Nullable Runnable toRun)
     {
         PrintUtils.logVerbose("Synchronizing " + this.name + " with upstream...", InfoType.INFO);
         Result result = DownloadUtils.downloadJson(this.url, ModuleRepository.class);

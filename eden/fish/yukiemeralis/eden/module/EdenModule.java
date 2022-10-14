@@ -414,7 +414,8 @@ public abstract class EdenModule
      * Safely gets a defaultconfigwrapper. An OptionState of NONE indicates a failure, and an error describing the
      * issue will be printed.
      * @param file This module's configuration file.
-     * @return An option containing a DefaultConfigWrapper. Always match the OptionState before unwrapping.
+     * @return An option containing a DefaultConfigWrapper.
+     * @eden.optional {@link fish.yukiemeralis.eden.module.annotation.EdenConfig.DefaultConfigWrapper}
      */
     private Option getConfigSafe(File file)
     {

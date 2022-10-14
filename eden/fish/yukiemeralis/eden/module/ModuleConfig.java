@@ -30,6 +30,9 @@ public class ModuleConfig
         return this.data.containsKey(key);
     }
 
+    /**
+     * @eden.optional <i>Object of type provided</i> 
+     */
     public Option getKey(String key, Class<?> clazz)
     {
         if (!data.containsKey(key))
@@ -74,11 +77,17 @@ public class ModuleConfig
         return val;
     }
 
+    /** 
+     * @eden.optional java.lang.String
+     */
     public Option getString(String key)
     {
         return getKey(key, String.class);
     }
 
+    /** 
+     * @eden.optional java.lang.Integer
+     */
     public Option getInt(String key)
     {
         return getKey(key, Integer.class);

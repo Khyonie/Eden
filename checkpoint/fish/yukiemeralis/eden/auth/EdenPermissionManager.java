@@ -78,6 +78,7 @@ public class EdenPermissionManager extends PermissionsManager
      * Obtains a permissions group with a given name. Has an OptionState of NONE if the group does not exist.
      * @param name A permissions group with the given name.
      * @return A permissions group with the given name.
+     * @eden.optional {@link fish.yukiemeralis.eden.auth.PermissionGroup}
      */
     public Option getGroup(String name)
     {
@@ -107,6 +108,7 @@ public class EdenPermissionManager extends PermissionsManager
      * describing the reason.
      * @param group Permissions group to add.
      * @return The processing result of adding the given group.
+     * @eden.optional java.lang.String
      */
     public Option addGroup(PermissionGroup group)
     {

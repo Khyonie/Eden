@@ -524,6 +524,7 @@ public class ModuleManager
 	 * - If you are unsure, <code>false</code> is generally safe.
 	 * @param force Whether or not to force downstream modules to be disabled as well.
 	 * @return Whether or not disabling was successful.
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean syncEvent, boolean force)
 	{
@@ -645,6 +646,7 @@ public class ModuleManager
 	 * The resulting {@link ModuleDisableEvent} will be run asynchronously. See {@link ModuleManager#disableModuleSync(String name)} if synchronization is needed.
 	 * @param name The expected name of a module.
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name)
 	{
@@ -658,6 +660,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param token Privilege level of caller
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, CallerToken token)
 	{
@@ -671,6 +674,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, boolean force)
 	{
@@ -685,6 +689,7 @@ public class ModuleManager
 	 * @param token Privilege level of caller
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, CallerToken token, boolean force)
 	{
@@ -699,6 +704,7 @@ public class ModuleManager
 	 * @param token Privilege level of caller
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name)
 	{
@@ -712,6 +718,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param token Privilege level of caller
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name, CallerToken token)
 	{
@@ -724,6 +731,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name, boolean force)
 	{
@@ -737,6 +745,7 @@ public class ModuleManager
 	 * @param token Privilege level of caller
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name, CallerToken token, boolean force)
 	{
@@ -931,6 +940,7 @@ public class ModuleManager
 	 * NONE - Class was found outside of a module. 
 	 * @param clazz The class to search with.
 	 * @return Option containing a module on SOME, no module if NONE, or Some(null) if a class was not found anywhere
+	 * @eden.optional {@link fish.yukiemeralis.eden.module.EdenModule}
 	 */
 	public Option getHostModule(Class<?> clazz) 
 	{
