@@ -25,7 +25,7 @@ import fish.yukiemeralis.flock.repository.ModuleRepositoryEntry;
     modName = "Flock",
     description = "Handler for module repositories.",
     maintainer = "Yuki_emeralis",
-    modIcon = Material.END_PORTAL,
+    modIcon = Material.END_PORTAL_FRAME,
     version = "2.0.0",
     supportedApiVersions = { "v1_19_R1" }
 )
