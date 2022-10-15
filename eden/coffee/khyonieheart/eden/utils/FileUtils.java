@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.StandardCopyOption;
 
 import com.google.common.io.Files;
+
 
 /**
  * Utility class for files and folders.

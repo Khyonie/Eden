@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module;
+package coffee.khyonieheart.eden.module;
 
 import java.io.File;
 import java.lang.annotation.ElementType;
@@ -16,24 +16,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
-import fish.yukiemeralis.eden.module.annotation.EdenConfig;
-import fish.yukiemeralis.eden.module.annotation.EdenConfig.DefaultConfigWrapper;
-import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
-import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.enums.DefaultConfigFailure;
-import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.ItemUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.result.Result;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
+import coffee.khyonieheart.eden.module.annotation.EdenConfig;
+import coffee.khyonieheart.eden.module.annotation.HideFromCollector;
+import coffee.khyonieheart.eden.module.annotation.ModuleFamily;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.annotation.EdenConfig.DefaultConfigWrapper;
+import coffee.khyonieheart.eden.module.java.enums.DefaultConfigFailure;
+import coffee.khyonieheart.eden.utils.ChatUtils;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.ItemUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.exception.TimeSpaceDistortionException;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.result.Result;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -415,7 +415,7 @@ public abstract class EdenModule
      * issue will be printed.
      * @param file This module's configuration file.
      * @return An option containing a DefaultConfigWrapper.
-     * @eden.optional {@link fish.yukiemeralis.eden.module.annotation.EdenConfig.DefaultConfigWrapper}
+     * @eden.optional {@link coffee.khyonieheart.eden.module.annotation.EdenConfig.DefaultConfigWrapper}
      */
     private Option getConfigSafe(File file)
     {

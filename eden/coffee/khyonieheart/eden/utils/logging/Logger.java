@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.logging;
+package coffee.khyonieheart.eden.utils.logging;
 
 public interface Logger 
 {

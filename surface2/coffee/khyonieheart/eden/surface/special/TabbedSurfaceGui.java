@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2.special;
+package coffee.khyonieheart.eden.surface.special;
 
 import java.util.List;
 
@@ -7,15 +7,15 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.InventoryView;
 
-import fish.yukiemeralis.eden.surface2.GuiUtils;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.surface2.component.GuiTab;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.surface.GuiUtils;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.surface.component.GuiTab;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.utils.DataUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 public class TabbedSurfaceGui extends SurfaceGui
 {

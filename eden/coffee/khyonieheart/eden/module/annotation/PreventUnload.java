@@ -1,11 +1,11 @@
-package fish.yukiemeralis.eden.module.annotation;
+package coffee.khyonieheart.eden.module.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
 
 /**
  * Prevents a module from being disable and/or unloaded.<p>

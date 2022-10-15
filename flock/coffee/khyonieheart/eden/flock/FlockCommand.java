@@ -1,18 +1,18 @@
-package fish.yukiemeralis.flock;
+package coffee.khyonieheart.eden.flock;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.result.Result;
-import fish.yukiemeralis.flock.enums.JsonDownloadStatus;
-import fish.yukiemeralis.flock.gui.GlobalRepositoryGui;
-import fish.yukiemeralis.flock.repository.ModuleRepository;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandHandler;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandRedirect;
+import coffee.khyonieheart.eden.flock.enums.JsonDownloadStatus;
+import coffee.khyonieheart.eden.flock.gui.GlobalRepositoryGui;
+import coffee.khyonieheart.eden.flock.repository.ModuleRepository;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 /**
  * Flock command class

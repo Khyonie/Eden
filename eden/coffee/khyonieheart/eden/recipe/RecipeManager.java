@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.recipe;
+package coffee.khyonieheart.eden.recipe;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,10 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.Recipe;
 
-import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.DataUtils.KeyValuePair;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.DataUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.DataUtils.KeyValuePair;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 public class RecipeManager 
 {

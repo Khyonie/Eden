@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2.special;
+package coffee.khyonieheart.eden.surface.special;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,12 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.InventoryView;
 
-import fish.yukiemeralis.eden.surface2.GuiUtils;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.surface.GuiUtils;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
 
 public class PagedSurfaceGui extends SurfaceGui 
 {

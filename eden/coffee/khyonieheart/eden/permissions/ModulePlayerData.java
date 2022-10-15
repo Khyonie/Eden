@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.permissions;
+package coffee.khyonieheart.eden.permissions;
 
 import java.util.HashMap;
 import java.util.Map;

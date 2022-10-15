@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import java.util.ArrayList;
 import java.util.Arrays;

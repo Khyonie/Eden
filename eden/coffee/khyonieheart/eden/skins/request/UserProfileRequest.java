@@ -1,13 +1,14 @@
-package fish.yukiemeralis.eden.skins.request;
+package coffee.khyonieheart.eden.skins.request;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 
 import com.google.gson.JsonSyntaxException;
-import fish.yukiemeralis.eden.skins.MojangApi;
-import fish.yukiemeralis.eden.skins.MojangRequest;
-import fish.yukiemeralis.eden.skins.result.UserProfileResult;
-import fish.yukiemeralis.eden.utils.JsonUtils;
+
+import coffee.khyonieheart.eden.skins.MojangApi;
+import coffee.khyonieheart.eden.skins.MojangRequest;
+import coffee.khyonieheart.eden.skins.result.UserProfileResult;
+import coffee.khyonieheart.eden.utils.JsonUtils;
 
 public class UserProfileRequest extends MojangRequest<UserProfileResult>
 {

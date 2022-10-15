@@ -1,6 +1,6 @@
-package fish.yukiemeralis.eden.module.exception;
+package coffee.khyonieheart.eden.module.exception;
 
-import fish.yukiemeralis.eden.module.annotation.StaticInitialize;
+import coffee.khyonieheart.eden.module.annotation.StaticInitialize;
 
 /**
  * Exception that is thrown when the initialization of a class with an {@link StaticInitialize} annotation fail due

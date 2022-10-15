@@ -1,11 +1,11 @@
-package fish.yukiemeralis.eden.module.annotation;
+package coffee.khyonieheart.eden.module.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import fish.yukiemeralis.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule;
 
 /**
  * Protects a class from access unless the module class accessing said class is designated as an allowed accessor.

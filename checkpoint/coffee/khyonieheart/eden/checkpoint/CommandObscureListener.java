@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import java.util.Iterator;
 
@@ -7,9 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 
-import fish.yukiemeralis.eden.command.CommandManager;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonieheart.eden.command.CommandManager;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Helper class to obscure commands the player does not have access to.<p>

@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.skins.result;
+package coffee.khyonieheart.eden.skins.result;
 
 import java.util.Map;
 

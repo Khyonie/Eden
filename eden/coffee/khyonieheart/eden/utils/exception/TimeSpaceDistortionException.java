@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.exception;
+package coffee.khyonieheart.eden.utils.exception;
 
 /**
  * Exception for situations that can only be explained by a higher cosmic power.

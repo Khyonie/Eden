@@ -1,6 +1,6 @@
-package fish.yukiemeralis.eden.module.exception;
+package coffee.khyonieheart.eden.module.exception;
 
-import fish.yukiemeralis.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule;
 
 /**
  * Exception that is thrown when a class inside a module that is not permitted to access a resource attempts to access

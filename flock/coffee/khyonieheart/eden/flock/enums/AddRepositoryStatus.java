@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock.enums;
+package coffee.khyonieheart.eden.flock.enums;
 
 public enum AddRepositoryStatus 
 {

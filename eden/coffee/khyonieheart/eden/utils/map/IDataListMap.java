@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.map;
+package coffee.khyonieheart.eden.utils.map;
 
 public interface IDataListMap<A, B> 
 {

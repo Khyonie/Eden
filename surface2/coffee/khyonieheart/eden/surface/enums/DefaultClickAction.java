@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2.enums;
+package coffee.khyonieheart.eden.surface.enums;
 
 public enum DefaultClickAction 
 {

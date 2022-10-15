@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.annotation;
+package coffee.khyonieheart.eden.module.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

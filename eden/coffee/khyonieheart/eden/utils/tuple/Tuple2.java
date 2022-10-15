@@ -1,4 +1,5 @@
-package fish.yukiemeralis.eden.utils.tuple;
+package coffee.khyonieheart.eden.utils.tuple;
+
 
 public class Tuple2<A, B> extends Tuple
 {

@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.core;
+package coffee.khyonie.eden.rosetta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,10 +9,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.util.StringUtil;
 
-import fish.yukiemeralis.eden.command.CommandManager;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteBranch;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonieheart.eden.command.CommandManager;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.command.tabcomplete.TabCompleteBranch;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Listener for Eden TabComplete suggestions.

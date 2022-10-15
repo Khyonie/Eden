@@ -1,8 +1,4 @@
-package fish.yukiemeralis.eden.surface2.test;
-
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
+package coffee.khyonieheart.eden.surface.test;
 
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -10,6 +6,10 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
 
 public class RainbowTestGui extends SurfaceGui
 {

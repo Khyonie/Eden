@@ -21,7 +21,6 @@
 	<classpathentry kind="lib" path="lib/spigot-1.17.1.jar"/>
 	<classpathentry kind="lib" path="lib/spigot-api-1.16.5-R0.1-SNAPSHOT-shaded.jar"/>
 	<classpathentry kind="lib" path="lib/spigot-1.16.5.jar"/>
-	<classpathentry kind="lib" path="lib/Eden-061822-1.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/Checkpoint.jar"/>
 	<classpathentry kind="lib" path="lib/Flock.jar"/>
 	<classpathentry kind="lib" path="lib/Rosetta.jar"/>

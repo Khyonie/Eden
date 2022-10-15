@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+
 
 /**
  * Collection of utilities to manage .json files.

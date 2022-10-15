@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import org.bukkit.inventory.ItemStack;
 

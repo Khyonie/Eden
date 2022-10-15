@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.java;
+package coffee.khyonieheart.eden.module.java;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,19 +19,19 @@ import java.util.jar.JarFile;
 
 import org.bukkit.event.Listener;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
-import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
-import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
-import fish.yukiemeralis.eden.module.annotation.StaticInitialize;
-import fish.yukiemeralis.eden.module.annotation.Unimplemented;
-import fish.yukiemeralis.eden.module.exception.InvalidStaticInitException;
-import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.ModuleFamilyRegistry;
+import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
+import coffee.khyonieheart.eden.module.annotation.HideFromCollector;
+import coffee.khyonieheart.eden.module.annotation.StaticInitialize;
+import coffee.khyonieheart.eden.module.annotation.Unimplemented;
+import coffee.khyonieheart.eden.module.exception.InvalidStaticInitException;
+import coffee.khyonieheart.eden.utils.DataUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Special classloader that loads an Eden module from a file.

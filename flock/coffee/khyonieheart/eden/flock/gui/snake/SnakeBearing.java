@@ -1,6 +1,7 @@
-package fish.yukiemeralis.flock.gui.snake;
+package coffee.khyonieheart.eden.flock.gui.snake;
 
 import java.util.Random;
+
 
 public enum SnakeBearing
 {

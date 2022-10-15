@@ -1,9 +1,9 @@
-package fish.yukiemeralis.eden.module.event;
+package coffee.khyonieheart.eden.module.event;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import fish.yukiemeralis.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule;
 
 /**
  * Called when an Eden module is enabled.

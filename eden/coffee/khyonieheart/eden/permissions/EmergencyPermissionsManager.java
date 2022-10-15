@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.permissions;
+package coffee.khyonieheart.eden.permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.marker;
+package coffee.khyonieheart.eden.marker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;

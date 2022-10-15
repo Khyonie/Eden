@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.command;
+package coffee.khyonieheart.eden.command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,18 +12,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
-import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteBranch;
-import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteMultiBranch;
-import fish.yukiemeralis.eden.command.tabcomplete.TabCompleteTree;
-import fish.yukiemeralis.eden.command.tabcomplete.TabCompleter;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandHandler;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandRedirect;
+import coffee.khyonieheart.eden.command.tabcomplete.TabCompleteBranch;
+import coffee.khyonieheart.eden.command.tabcomplete.TabCompleteMultiBranch;
+import coffee.khyonieheart.eden.command.tabcomplete.TabCompleteTree;
+import coffee.khyonieheart.eden.command.tabcomplete.TabCompleter;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.utils.ChatUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.ChatUtils.ChatAction;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 /**
  * An instance of an Eden command. Please look at the wiki @ https://github.com/YukiEmeralis/Eden for documentation.

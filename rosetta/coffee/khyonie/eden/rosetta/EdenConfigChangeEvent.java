@@ -1,9 +1,9 @@
-package fish.yukiemeralis.eden.core;
+package coffee.khyonie.eden.rosetta;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import fish.yukiemeralis.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule;
 
 public class EdenConfigChangeEvent extends Event
 {

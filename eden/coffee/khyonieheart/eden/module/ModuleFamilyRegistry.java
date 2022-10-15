@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module;
+package coffee.khyonieheart.eden.module;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-
 import org.bukkit.Material;
+
+import coffee.khyonieheart.eden.module.annotation.ModuleFamily;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 public class ModuleFamilyRegistry 
 {

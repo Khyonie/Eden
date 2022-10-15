@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.exception;
+package coffee.khyonieheart.eden.utils.exception;
 
 public class UnwrapException extends RuntimeException
 {

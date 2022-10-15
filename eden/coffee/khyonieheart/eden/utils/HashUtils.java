@@ -1,9 +1,10 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+
 
 public class HashUtils 
 {

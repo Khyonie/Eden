@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.java.enums;
+package coffee.khyonieheart.eden.module.java.enums;
 
 /**
  * Enum that describes why a default config failed to load 

@@ -1,11 +1,11 @@
-package fish.yukiemeralis.eden.skins;
+package coffee.khyonieheart.eden.skins;
 
 import java.io.IOException;
 
 import com.google.gson.JsonSyntaxException;
 
-import fish.yukiemeralis.eden.skins.MojangApi.MojangApiStatus;
-import fish.yukiemeralis.eden.utils.result.Result;
+import coffee.khyonieheart.eden.skins.MojangApi.MojangApiStatus;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 public class QueuedRequest<T> extends Thread
 {

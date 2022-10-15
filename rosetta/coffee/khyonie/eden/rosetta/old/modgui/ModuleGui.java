@@ -1,6 +1,6 @@
-package fish.yukiemeralis.eden.core.old.modgui;
+package coffee.khyonie.eden.rosetta.old.modgui;
 
-import fish.yukiemeralis.eden.module.annotation.Unimplemented;
+import coffee.khyonieheart.eden.module.annotation.Unimplemented;
 
 /**
  * @deprecated Deprecated in favor of Surface2-based implementation.

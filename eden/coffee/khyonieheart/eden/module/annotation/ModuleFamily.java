@@ -1,11 +1,11 @@
-package fish.yukiemeralis.eden.module.annotation;
+package coffee.khyonieheart.eden.module.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import org.bukkit.Material;
 
-import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
+import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
 
 /** 
  * Interface that designates a module as being part of a family 

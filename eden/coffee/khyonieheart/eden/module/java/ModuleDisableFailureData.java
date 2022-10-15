@@ -1,11 +1,11 @@
-package fish.yukiemeralis.eden.module.java;
+package coffee.khyonieheart.eden.module.java;
 
 import java.util.Collections;
 import java.util.List;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.java.enums.ModuleDisableFailure;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.java.enums.ModuleDisableFailure;
 
 /**
  * Collection class containing an unmodifiable list of EdenModules and an {@link ModuleDisableFailure} enum.

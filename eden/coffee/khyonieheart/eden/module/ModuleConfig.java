@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module;
+package coffee.khyonieheart.eden.module;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 public class ModuleConfig
 {

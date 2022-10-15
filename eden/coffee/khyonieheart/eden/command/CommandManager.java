@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.command;
+package coffee.khyonieheart.eden.command;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -12,11 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * General-purpose handler for registering and unregistering Eden commands into the server.

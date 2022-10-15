@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.listeners;
+package coffee.khyonieheart.eden.listeners;
 
 import java.util.Iterator;
 
@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.module.annotation.HideFromCollector;
 
 /**
  * Listener to update player UUID cache 

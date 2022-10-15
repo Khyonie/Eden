@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,19 +12,19 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.core.CompletionsManager;
-import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
-import fish.yukiemeralis.eden.module.annotation.EdenConfig;
-import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonie.eden.rosetta.CompletionsManager;
+import coffee.khyonie.eden.rosetta.CompletionsManager.ObjectMethodPair;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
+import coffee.khyonieheart.eden.module.annotation.EdenConfig;
+import coffee.khyonieheart.eden.module.annotation.ModuleFamily;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for

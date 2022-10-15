@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.option;
+package coffee.khyonieheart.eden.utils.option;
 
 public class None implements Option 
 {

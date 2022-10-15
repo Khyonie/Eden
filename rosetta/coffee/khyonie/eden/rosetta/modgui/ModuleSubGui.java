@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.core.modgui;
+package coffee.khyonie.eden.rosetta.modgui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,22 +9,22 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.surface2.GuiUtils;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.ItemUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.option.OptionState;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.java.ModuleDisableFailureData;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.surface.GuiUtils;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.utils.DataUtils;
+import coffee.khyonieheart.eden.utils.ItemUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.option.OptionState;
 
 public class ModuleSubGui extends SurfaceGui
 {
@@ -208,7 +208,7 @@ public class ModuleSubGui extends SurfaceGui
     }
 
     /**
-     * @eden.optional {@link fish.yukiemeralis.eden.core.modgui.ModuleSubGui.DisableData}
+     * @eden.optional {@link coffee.khyonieheart.eden.core.modgui.ModuleSubGui.DisableData}
      */
     private Option isDisableDisallowed()
     {

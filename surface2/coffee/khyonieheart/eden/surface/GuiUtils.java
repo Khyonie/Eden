@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2;
+package coffee.khyonieheart.eden.surface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.utils.ItemUtils;
-
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.utils.ItemUtils;
 
 public class GuiUtils 
 {

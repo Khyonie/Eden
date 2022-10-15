@@ -1,19 +1,19 @@
-package fish.yukiemeralis.eden.core;
+package coffee.khyonie.eden.rosetta;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
-import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.option.OptionState;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandHandler;
+import coffee.khyonieheart.eden.command.annotations.HideFromEdenHelpall;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.java.ModuleDisableFailureData;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.option.OptionState;
 
 @HideFromEdenHelpall
 @PreventUnload(CallerToken.EDEN)

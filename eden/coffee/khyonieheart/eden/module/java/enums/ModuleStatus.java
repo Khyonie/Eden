@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.java.enums;
+package coffee.khyonieheart.eden.module.java.enums;
 
 /**
  * Enum describing all the possible states a module can be in

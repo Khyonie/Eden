@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock;
+package coffee.khyonieheart.eden.flock;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,18 +8,18 @@ import java.util.Map;
 
 import org.bukkit.Material;
 
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
-import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
-import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.flock.enums.AddRepositoryStatus;
-import fish.yukiemeralis.flock.repository.ModuleRepository;
-import fish.yukiemeralis.flock.repository.ModuleRepositoryEntry;
+import coffee.khyonieheart.eden.flock.enums.AddRepositoryStatus;
+import coffee.khyonieheart.eden.flock.repository.ModuleRepository;
+import coffee.khyonieheart.eden.flock.repository.ModuleRepositoryEntry;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule.LoadBefore;
+import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
+import coffee.khyonieheart.eden.module.annotation.ModuleFamily;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 @ModInfo(
     modName = "Flock",

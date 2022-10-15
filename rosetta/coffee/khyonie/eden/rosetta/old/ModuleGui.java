@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.core.old;
+package coffee.khyonie.eden.rosetta.old;
 
 /*
 import java.io.File;
@@ -11,19 +11,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import fish.yukiemeralis.zenith.Zenith;
-import fish.yukiemeralis.zenith.auth.Permissions;
-import fish.yukiemeralis.zenith.module.ZenithModule;
-import fish.yukiemeralis.zenith.module.java.annotations.HideFromCollector;
-import fish.yukiemeralis.zenith.module.java.enums.CallerToken;
-import fish.yukiemeralis.zenith.module.java.enums.PreventUnload;
-import fish.yukiemeralis.zenith.utils.ItemUtils;
-import fish.yukiemeralis.zenith.utils.PrintUtils;
 */
 
 import org.bukkit.event.Listener;
 
-import fish.yukiemeralis.eden.module.annotation.Unimplemented;
+import coffee.khyonieheart.eden.module.annotation.Unimplemented;
 
 @Unimplemented("Class has been retired in favor of using Surface.")
 public class ModuleGui implements Listener

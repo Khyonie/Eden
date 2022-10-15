@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.result;
+package coffee.khyonieheart.eden.utils.result;
 
 /**
  * Represents the result of an operation where the output is more complicated than output/exception or output/null.<p>

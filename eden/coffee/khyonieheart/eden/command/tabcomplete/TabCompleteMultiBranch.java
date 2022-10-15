@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.command.tabcomplete;
+package coffee.khyonieheart.eden.command.tabcomplete;
 
 import java.util.ArrayList;
 import java.util.List;

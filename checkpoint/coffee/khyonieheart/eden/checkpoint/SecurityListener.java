@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.permissions.PlayerData;
-import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.option.Option;
-
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.permissions.PlayerData;
+import coffee.khyonieheart.eden.utils.ChatUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Handler for various smaller security tasks.

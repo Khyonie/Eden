@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.permissions;
+package coffee.khyonieheart.eden.permissions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.google.gson.annotations.Expose;
 
-import fish.yukiemeralis.eden.utils.HashUtils;
+import coffee.khyonieheart.eden.utils.HashUtils;
 
 public class PlayerData 
 {

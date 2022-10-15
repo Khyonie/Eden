@@ -1,9 +1,9 @@
-package fish.yukiemeralis.eden.core;
+package coffee.khyonie.eden.rosetta;
 
 import java.io.File;
 
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 public class VersionCtrl 
 {

@@ -3,9 +3,18 @@
 all:
 	edex buildfiles/eden.edex
 	edex buildfiles/surface2.edex -noheader
+	cp ~/Servers/DevServer/1182/plugins/Eden/mods/Surface.jar ./lib/Surface.jar
+	cp ./lib/Surface.jar ./internalModules
 	edex buildfiles/checkpoint.edex -noheader
+	cp ~/Servers/DevServer/1182/plugins/Eden/mods/Checkpoint.jar ./lib/Checkpoint.jar
+	cp ./lib/Checkpoint.jar ./internalModules
 	edex buildfiles/rosetta.edex -noheader
+	cp ~/Servers/DevServer/1182/plugins/Eden/mods/Rosetta.jar ./lib/Rosetta.jar
+	cp ./lib/Rosetta.jar ./internalModules
 	edex buildfiles/flock.edex -noheader
+	cp ~/Servers/DevServer/1182/plugins/Eden/mods/Flock.jar ./lib/Flock.jar
+	cp ./lib/Flock.jar ./internalModules
+	edex buildfiles/eden.edex
 
 eden:
 	edex buildfiles/eden.edex

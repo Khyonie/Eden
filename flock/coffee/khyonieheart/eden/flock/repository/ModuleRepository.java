@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock.repository;
+package coffee.khyonieheart.eden.flock.repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,23 +11,23 @@ import org.bukkit.event.inventory.InventoryAction;
 
 import com.google.gson.annotations.Expose;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.marker.Nullable;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.result.Result;
-import fish.yukiemeralis.flock.DownloadUtils;
-import fish.yukiemeralis.flock.Flock;
-import fish.yukiemeralis.flock.enums.JsonDownloadStatus;
-import fish.yukiemeralis.flock.gui.GlobalRepositoryGui;
-import fish.yukiemeralis.flock.gui.RepositoryGui;
-import fish.yukiemeralis.flock.gui.SnakeLoadingGui;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.flock.DownloadUtils;
+import coffee.khyonieheart.eden.flock.Flock;
+import coffee.khyonieheart.eden.flock.enums.JsonDownloadStatus;
+import coffee.khyonieheart.eden.flock.gui.GlobalRepositoryGui;
+import coffee.khyonieheart.eden.flock.gui.RepositoryGui;
+import coffee.khyonieheart.eden.flock.gui.SnakeLoadingGui;
+import coffee.khyonieheart.eden.marker.Nullable;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.exception.TimeSpaceDistortionException;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.result.Result;
 import net.md_5.bungee.api.ChatColor;
 
 public class ModuleRepository implements GuiComponent
@@ -51,7 +51,7 @@ public class ModuleRepository implements GuiComponent
     } 
 
     /** 
-     * @eden.optional {@link fish.yukiemeralis.flock.enums.JsonDownloadStatus}
+     * @eden.optional {@link coffee.khyonieheart.eden.flock.enums.JsonDownloadStatus}
      */
     public Option sync()
     {
@@ -59,7 +59,7 @@ public class ModuleRepository implements GuiComponent
     }
 
     /** 
-     * @eden.optional {@link fish.yukiemeralis.flock.enums.JsonDownloadStatus}
+     * @eden.optional {@link coffee.khyonieheart.eden.flock.enums.JsonDownloadStatus}
      */
     public Option sync(@Nullable Runnable toRun)
     {

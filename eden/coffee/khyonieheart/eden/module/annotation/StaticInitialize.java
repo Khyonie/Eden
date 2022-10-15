@@ -1,11 +1,11 @@
-package fish.yukiemeralis.eden.module.annotation;
+package coffee.khyonieheart.eden.module.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import fish.yukiemeralis.eden.module.exception.InvalidStaticInitException;
+import coffee.khyonieheart.eden.module.exception.InvalidStaticInitException;
 
 /**
  * Annotation to denote that this class's static fields should be initialized on load according to sections 12.2, 12.3, and 12.4 of <i>The Java Language Specification.</i>

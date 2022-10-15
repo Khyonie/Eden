@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package fish.yukiemeralis.eden;
+package coffee.khyonieheart.eden;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -27,24 +27,24 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.annotation.Branch;
-import fish.yukiemeralis.eden.module.event.EdenFinishLoadingEvent;
-import fish.yukiemeralis.eden.module.java.ModuleManager;
-import fish.yukiemeralis.eden.module.java.enums.BranchType;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.permissions.EmergencyPermissionsManager;
-import fish.yukiemeralis.eden.permissions.PermissionsManager;
-import fish.yukiemeralis.eden.prelude.Prelude;
-import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.ClassicLogger;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.logging.PrecipiceLogger;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.option.OptionState;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.annotation.Branch;
+import coffee.khyonieheart.eden.module.event.EdenFinishLoadingEvent;
+import coffee.khyonieheart.eden.module.java.ModuleManager;
+import coffee.khyonieheart.eden.module.java.enums.BranchType;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.permissions.EmergencyPermissionsManager;
+import coffee.khyonieheart.eden.permissions.PermissionsManager;
+import coffee.khyonieheart.eden.prelude.Prelude;
+import coffee.khyonieheart.eden.utils.DataUtils;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.ClassicLogger;
+import coffee.khyonieheart.eden.utils.logging.PrecipiceLogger;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.option.OptionState;
 
 /**
  * Represents the Eden core plugin, with module management and commands.
@@ -70,7 +70,7 @@ public class Eden extends JavaPlugin
 		"verboseLogging", "false",
 		"flyingSolo", "false",
 		"elevatedUsersIgnorePerms", "true",
-		"preferredPermissionsManager", "fish.yukiemeralis.eden.auth.EdenPermissionManager",
+		"preferredPermissionsManager", "coffee.khyonieheart.eden.auth.EdenPermissionManager",
 		"displayModErrorsWithoutVerbose", "false",
 		"loggingTheme", "classic", // Options are "classic" and "precipice"
 		"prelude", "true"

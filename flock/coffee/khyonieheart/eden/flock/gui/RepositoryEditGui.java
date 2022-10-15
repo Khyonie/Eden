@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock.gui;
+package coffee.khyonieheart.eden.flock.gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,15 +10,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.surface2.special.PagedSurfaceGui;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.flock.repository.ModuleRepository;
-import fish.yukiemeralis.flock.repository.ModuleRepositoryEntry;
+import coffee.khyonieheart.eden.flock.repository.ModuleRepository;
+import coffee.khyonieheart.eden.flock.repository.ModuleRepositoryEntry;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.surface.special.PagedSurfaceGui;
+import coffee.khyonieheart.eden.utils.PrintUtils;
 
 @SuppressWarnings("unused")
 public class RepositoryEditGui extends PagedSurfaceGui

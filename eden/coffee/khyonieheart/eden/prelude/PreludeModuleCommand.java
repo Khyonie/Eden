@@ -1,19 +1,19 @@
-package fish.yukiemeralis.eden.prelude;
+package coffee.khyonieheart.eden.prelude;
 
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
-import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.result.Result;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandHandler;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.annotation.HideFromCollector;
+import coffee.khyonieheart.eden.module.java.ModuleDisableFailureData;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 /**
  * Simple module manager interface command.

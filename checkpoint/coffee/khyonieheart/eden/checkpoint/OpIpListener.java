@@ -1,13 +1,13 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 /**
  * Helper class to deop oped players when they login from a different IP than they did previously.<p>

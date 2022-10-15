@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2.annotation;
+package coffee.khyonieheart.eden.surface.annotation;
 
 public @interface CacheGuiItemStack {
     

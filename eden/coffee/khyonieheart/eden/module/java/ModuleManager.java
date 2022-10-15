@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.java;
+package coffee.khyonieheart.eden.module.java;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,29 +21,29 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.CommandManager;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
-import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
-import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
-import fish.yukiemeralis.eden.module.annotation.EdenConfig;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.event.ModuleDisableEvent;
-import fish.yukiemeralis.eden.module.event.ModuleEnableEvent;
-import fish.yukiemeralis.eden.module.event.ModuleLoadEvent;
-import fish.yukiemeralis.eden.module.event.ModuleUnloadEvent;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.module.java.enums.ModuleDisableFailure;
-import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.option.OptionState;
-import fish.yukiemeralis.eden.utils.result.Result;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.CommandManager;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.ModuleFamilyRegistry;
+import coffee.khyonieheart.eden.module.EdenModule.LoadBefore;
+import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
+import coffee.khyonieheart.eden.module.annotation.EdenConfig;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.event.ModuleDisableEvent;
+import coffee.khyonieheart.eden.module.event.ModuleEnableEvent;
+import coffee.khyonieheart.eden.module.event.ModuleLoadEvent;
+import coffee.khyonieheart.eden.module.event.ModuleUnloadEvent;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.module.java.enums.ModuleDisableFailure;
+import coffee.khyonieheart.eden.utils.DataUtils;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.exception.VersionNotHandledException;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.option.OptionState;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 /**
  * Handler for all tasks related to Eden's modules.</p>
@@ -524,7 +524,7 @@ public class ModuleManager
 	 * - If you are unsure, <code>false</code> is generally safe.
 	 * @param force Whether or not to force downstream modules to be disabled as well.
 	 * @return Whether or not disabling was successful.
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, CallerToken caller, List<EdenModule> disabledModuleList, boolean syncEvent, boolean force)
 	{
@@ -646,7 +646,7 @@ public class ModuleManager
 	 * The resulting {@link ModuleDisableEvent} will be run asynchronously. See {@link ModuleManager#disableModuleSync(String name)} if synchronization is needed.
 	 * @param name The expected name of a module.
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name)
 	{
@@ -660,7 +660,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param token Privilege level of caller
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, CallerToken token)
 	{
@@ -674,7 +674,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, boolean force)
 	{
@@ -689,7 +689,7 @@ public class ModuleManager
 	 * @param token Privilege level of caller
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModule(String name, CallerToken token, boolean force)
 	{
@@ -704,7 +704,7 @@ public class ModuleManager
 	 * @param token Privilege level of caller
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name)
 	{
@@ -718,7 +718,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param token Privilege level of caller
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name, CallerToken token)
 	{
@@ -731,7 +731,7 @@ public class ModuleManager
 	 * @param name The expected name of a module.
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name, boolean force)
 	{
@@ -745,7 +745,7 @@ public class ModuleManager
 	 * @param token Privilege level of caller
 	 * @param force Whether or not to continue with a disable operation if a downstream module fails to be correctly disabled 
 	 * @return An option containing either NONE or a {@link ModuleDisableFailureData} object, providing details and tools on disable failure
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.java.ModuleDisableFailureData}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.java.ModuleDisableFailureData}
 	 */
 	public Option disableModuleSync(String name, CallerToken token, boolean force)
 	{
@@ -940,7 +940,7 @@ public class ModuleManager
 	 * NONE - Class was found outside of a module. 
 	 * @param clazz The class to search with.
 	 * @return Option containing a module on SOME, no module if NONE, or Some(null) if a class was not found anywhere
-	 * @eden.optional {@link fish.yukiemeralis.eden.module.EdenModule}
+	 * @eden.optional {@link coffee.khyonieheart.eden.module.EdenModule}
 	 */
 	public Option getHostModule(Class<?> clazz) 
 	{

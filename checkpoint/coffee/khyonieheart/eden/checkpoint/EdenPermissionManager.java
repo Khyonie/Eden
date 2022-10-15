@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,16 +13,16 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.core.CompletionsManager;
-import fish.yukiemeralis.eden.core.CompletionsManager.ObjectMethodPair;
-import fish.yukiemeralis.eden.permissions.PermissionsManager;
-import fish.yukiemeralis.eden.permissions.PlayerData;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonie.eden.rosetta.CompletionsManager;
+import coffee.khyonie.eden.rosetta.CompletionsManager.ObjectMethodPair;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.permissions.PermissionsManager;
+import coffee.khyonieheart.eden.permissions.PlayerData;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Eden's permissions manager. Supplies default permissions, and supports permissions groups out of the box.
@@ -78,7 +78,7 @@ public class EdenPermissionManager extends PermissionsManager
      * Obtains a permissions group with a given name. Has an OptionState of NONE if the group does not exist.
      * @param name A permissions group with the given name.
      * @return A permissions group with the given name.
-     * @eden.optional {@link fish.yukiemeralis.eden.auth.PermissionGroup}
+     * @eden.optional {@link coffee.khyonieheart.eden.auth.PermissionGroup}
      */
     public Option getGroup(String name)
     {

@@ -1,16 +1,16 @@
-package fish.yukiemeralis.eden.core;
+package coffee.khyonie.eden.rosetta;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.module.annotation.Branch;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.module.annotation.Branch;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 @PreventUnload(CallerToken.EDEN)
 public class CoreListener implements Listener

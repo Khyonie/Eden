@@ -1,6 +1,6 @@
-package fish.yukiemeralis.eden.utils.exception;
+package coffee.khyonieheart.eden.utils.exception;
 
-import fish.yukiemeralis.eden.Eden;
+import coffee.khyonieheart.eden.Eden;
 
 /**
  * Exception for NMS-based classes.

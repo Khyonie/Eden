@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 
-import fish.yukiemeralis.eden.Eden;
+import coffee.khyonieheart.eden.Eden;
 
 /**
  * A collection of utilities to change an itemstack's metadata.

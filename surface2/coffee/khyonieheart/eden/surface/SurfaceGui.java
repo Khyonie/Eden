@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2;
+package coffee.khyonieheart.eden.surface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,10 +13,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.utils.option.Option;
 
 public abstract class SurfaceGui implements ISurfaceGui
 {

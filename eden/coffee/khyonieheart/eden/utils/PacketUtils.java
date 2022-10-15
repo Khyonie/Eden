@@ -1,10 +1,10 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.exception.VersionNotHandledException;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.exception.VersionNotHandledException;
 
 public interface PacketUtils
 {

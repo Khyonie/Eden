@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -13,11 +13,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.logging.ClassicLogger;
-import fish.yukiemeralis.eden.utils.logging.Logger;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.logging.ClassicLogger;
+import coffee.khyonieheart.eden.utils.logging.Logger;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;

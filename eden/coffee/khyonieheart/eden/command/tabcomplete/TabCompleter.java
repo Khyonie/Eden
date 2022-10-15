@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.command.tabcomplete;
+package coffee.khyonieheart.eden.command.tabcomplete;
 
 /**
  * Interface for classes that are made to be part of a TabComplete structure

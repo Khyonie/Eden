@@ -1,10 +1,10 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import fish.yukiemeralis.eden.permissions.PermissionsManager;
+import coffee.khyonieheart.eden.permissions.PermissionsManager;
 
 /**
  * Simple permissions manager with integration with Bukkit's default permissions scheme

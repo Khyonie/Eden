@@ -1,7 +1,8 @@
-package fish.yukiemeralis.eden.surface2.component;
+package coffee.khyonieheart.eden.surface.component;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
 
 public abstract class GuiItemStack extends ItemStack implements GuiComponent 
 {

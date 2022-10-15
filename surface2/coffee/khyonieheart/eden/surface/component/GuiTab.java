@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2.component;
+package coffee.khyonieheart.eden.surface.component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +7,11 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder.SimpleComponentAction;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.special.TabbedSurfaceGui;
-import fish.yukiemeralis.eden.utils.ItemUtils;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder.SimpleComponentAction;
+import coffee.khyonieheart.eden.surface.special.TabbedSurfaceGui;
+import coffee.khyonieheart.eden.utils.ItemUtils;
 
 public class GuiTab implements GuiComponent
 {

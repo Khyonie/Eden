@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock.repository;
+package coffee.khyonieheart.eden.flock.repository;
 
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
@@ -11,19 +11,19 @@ import org.bukkit.Material;
 
 import com.google.gson.annotations.Expose;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.surface2.GuiUtils;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.flock.DownloadFinishedThread;
-import fish.yukiemeralis.flock.DownloadUtils;
-import fish.yukiemeralis.flock.Flock;
-import fish.yukiemeralis.flock.TextUtils;
-import fish.yukiemeralis.flock.gui.EditRepositoryEntryGui;
-import fish.yukiemeralis.flock.gui.RepositoryGui;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.flock.DownloadFinishedThread;
+import coffee.khyonieheart.eden.flock.DownloadUtils;
+import coffee.khyonieheart.eden.flock.Flock;
+import coffee.khyonieheart.eden.flock.TextUtils;
+import coffee.khyonieheart.eden.flock.gui.EditRepositoryEntryGui;
+import coffee.khyonieheart.eden.flock.gui.RepositoryGui;
+import coffee.khyonieheart.eden.surface.GuiUtils;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.utils.PrintUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class ModuleRepositoryEntry implements GuiComponent

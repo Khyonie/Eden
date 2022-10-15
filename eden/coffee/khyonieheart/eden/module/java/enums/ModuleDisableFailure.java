@@ -1,6 +1,6 @@
-package fish.yukiemeralis.eden.module.java.enums;
+package coffee.khyonieheart.eden.module.java.enums;
 
-import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
+import coffee.khyonieheart.eden.module.java.ModuleDisableFailureData;
 
 /**
  * Enum that describes why a module failed to be disabled

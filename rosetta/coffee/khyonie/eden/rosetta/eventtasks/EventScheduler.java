@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.core.eventtasks;
+package coffee.khyonie.eden.rosetta.eventtasks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
-import fish.yukiemeralis.eden.module.annotation.Unimplemented;
+import coffee.khyonieheart.eden.module.annotation.HideFromCollector;
+import coffee.khyonieheart.eden.module.annotation.Unimplemented;
 
 @HideFromCollector
 @Unimplemented("Need to determine how to make this work")

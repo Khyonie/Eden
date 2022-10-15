@@ -1,13 +1,13 @@
-package fish.yukiemeralis.eden.auth;
+package coffee.khyonieheart.eden.checkpoint;
 
 import org.bukkit.command.CommandSender;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandHandler;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.utils.ChatUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
 
 /**
  * UUID ban command for /uuidban

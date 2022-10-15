@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.surface2;
+package coffee.khyonieheart.eden.surface;
 
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.InventoryView;

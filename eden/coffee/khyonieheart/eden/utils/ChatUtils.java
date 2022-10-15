@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 /**
  * This class is a little bit interesting: it lets a developer pull a message from a player's chat, and prevents the message from reaching server chat and console logs.

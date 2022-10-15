@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock;
+package coffee.khyonieheart.eden.flock;
 
 public abstract class DownloadFinishedThread implements Runnable 
 {

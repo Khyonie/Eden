@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.java.enums;
+package coffee.khyonieheart.eden.module.java.enums;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

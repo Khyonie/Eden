@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.option;
+package coffee.khyonieheart.eden.utils.option;
 
 /**
  * Represents the result of an operation in which said operation may fail or produce an unexpected result.

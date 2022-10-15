@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package fish.yukiemeralis.eden.core;
+package coffee.khyonie.eden.rosetta;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,34 +33,34 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.auth.EdenPermissionManager;
-import fish.yukiemeralis.eden.auth.PermissionGroup;
-import fish.yukiemeralis.eden.auth.SecurityCore;
-import fish.yukiemeralis.eden.command.CommandManager;
-import fish.yukiemeralis.eden.command.EdenCommand;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandHandler;
-import fish.yukiemeralis.eden.command.annotations.EdenCommandRedirect;
-import fish.yukiemeralis.eden.command.annotations.HideFromEdenHelpall;
-import fish.yukiemeralis.eden.core.Rosetta.DisableRequest;
-import fish.yukiemeralis.eden.core.modgui.ModuleGui;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.annotation.EdenConfig;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.ModuleDisableFailureData;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.permissions.PlayerData;
-import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.ChatUtils.ChatAction;
-import fish.yukiemeralis.eden.utils.DataUtils;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.HashUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.option.OptionState;
-import fish.yukiemeralis.eden.utils.result.Result;
+import coffee.khyonie.eden.rosetta.Rosetta.DisableRequest;
+import coffee.khyonie.eden.rosetta.modgui.ModuleGui;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.checkpoint.EdenPermissionManager;
+import coffee.khyonieheart.eden.checkpoint.PermissionGroup;
+import coffee.khyonieheart.eden.checkpoint.SecurityCore;
+import coffee.khyonieheart.eden.command.CommandManager;
+import coffee.khyonieheart.eden.command.EdenCommand;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandHandler;
+import coffee.khyonieheart.eden.command.annotations.EdenCommandRedirect;
+import coffee.khyonieheart.eden.command.annotations.HideFromEdenHelpall;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.annotation.EdenConfig;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.java.ModuleDisableFailureData;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.permissions.PlayerData;
+import coffee.khyonieheart.eden.utils.ChatUtils;
+import coffee.khyonieheart.eden.utils.DataUtils;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.HashUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.ChatUtils.ChatAction;
+import coffee.khyonieheart.eden.utils.exception.TimeSpaceDistortionException;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.option.OptionState;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 @PreventUnload(CallerToken.EDEN)
 public class CoreCommand extends EdenCommand

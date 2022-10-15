@@ -1,11 +1,11 @@
-package fish.yukiemeralis.eden.surface2;
-
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.utils.ItemUtils;
+package coffee.khyonieheart.eden.surface;
 
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.utils.ItemUtils;
 
 public class SimpleComponentBuilder 
 {

@@ -1,8 +1,8 @@
-package fish.yukiemeralis.eden.core.eventtasks;
+package coffee.khyonie.eden.rosetta.eventtasks;
 
 import org.bukkit.event.Event;
 
-import fish.yukiemeralis.eden.module.annotation.Unimplemented;
+import coffee.khyonieheart.eden.module.annotation.Unimplemented;
 
 @Unimplemented
 public abstract class EventScheduledTask<T extends Event> implements Runnable

@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.permissions;
+package coffee.khyonieheart.eden.permissions;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -10,11 +10,11 @@ import java.util.Map;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.FileUtils;
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.FileUtils;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 /**
  * Base class for all Eden permissions handlers.

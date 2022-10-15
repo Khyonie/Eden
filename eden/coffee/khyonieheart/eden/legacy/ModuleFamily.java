@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.legacy;
+package coffee.khyonieheart.eden.legacy;
 
 import java.util.HashMap;
 import java.util.Map;

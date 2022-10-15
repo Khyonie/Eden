@@ -1,9 +1,9 @@
-package fish.yukiemeralis.eden.utils.logging;
+package coffee.khyonieheart.eden.utils.logging;
 
 import org.apache.commons.lang.StringUtils;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.PrintUtils;
 
 /**
  * Logger with the classic < 1.7.3 style.

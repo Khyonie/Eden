@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.core.modgui;
+package coffee.khyonie.eden.rosetta.modgui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,19 +7,19 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.ModuleFamilyRegistry;
-import fish.yukiemeralis.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiTab;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.surface2.special.TabbedSurfaceGui;
-import fish.yukiemeralis.eden.utils.ItemUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
-import fish.yukiemeralis.eden.utils.exception.TimeSpaceDistortionException;
-import fish.yukiemeralis.eden.utils.result.Result;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.ModuleFamilyRegistry;
+import coffee.khyonieheart.eden.module.ModuleFamilyRegistry.ModuleFamilyEntry;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiTab;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.surface.special.TabbedSurfaceGui;
+import coffee.khyonieheart.eden.utils.ItemUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.exception.TimeSpaceDistortionException;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 public class ModuleGui
 {

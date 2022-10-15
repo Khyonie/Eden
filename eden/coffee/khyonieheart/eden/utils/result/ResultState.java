@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils.result;
+package coffee.khyonieheart.eden.utils.result;
 
 public enum ResultState 
 {

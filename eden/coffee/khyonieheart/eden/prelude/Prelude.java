@@ -1,16 +1,16 @@
-package fish.yukiemeralis.eden.prelude;
+package coffee.khyonieheart.eden.prelude;
 
 import org.bukkit.Material;
 
-import fish.yukiemeralis.eden.listeners.PlayerIPListener;
-import fish.yukiemeralis.eden.listeners.UuidCacheListener;
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.ModInfo;
-import fish.yukiemeralis.eden.module.annotation.HideFromCollector;
-import fish.yukiemeralis.eden.module.annotation.ModuleFamily;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.utils.ChatUtils;
+import coffee.khyonieheart.eden.listeners.PlayerIPListener;
+import coffee.khyonieheart.eden.listeners.UuidCacheListener;
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
+import coffee.khyonieheart.eden.module.annotation.HideFromCollector;
+import coffee.khyonieheart.eden.module.annotation.ModuleFamily;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.utils.ChatUtils;
 
 /**
  * Internal Eden module

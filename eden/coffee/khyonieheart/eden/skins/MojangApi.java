@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.skins;
+package coffee.khyonieheart.eden.skins;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -9,12 +9,12 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.JsonSyntaxException;
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.PrintUtils;
 
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.option.Option;
-import fish.yukiemeralis.eden.utils.result.Result;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.PrintUtils;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.option.Option;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;

@@ -1,8 +1,8 @@
-package fish.yukiemeralis.eden.surface2.component;
-
-import fish.yukiemeralis.eden.surface2.GuiUtils;
+package coffee.khyonieheart.eden.surface.component;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
+
+import coffee.khyonieheart.eden.surface.GuiUtils;
 
 public interface GuiComponent 
 {

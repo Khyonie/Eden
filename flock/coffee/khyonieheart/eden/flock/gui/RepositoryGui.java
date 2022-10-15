@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock.gui;
+package coffee.khyonieheart.eden.flock.gui;
 
 import java.util.List;
 
@@ -6,11 +6,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryAction;
 
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.surface2.special.PagedSurfaceGui;
-import fish.yukiemeralis.flock.repository.ModuleRepository;
+import coffee.khyonieheart.eden.flock.repository.ModuleRepository;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.surface.special.PagedSurfaceGui;
 
 public class RepositoryGui extends PagedSurfaceGui 
 {

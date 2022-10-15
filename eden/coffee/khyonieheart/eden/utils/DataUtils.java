@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.utils;
+package coffee.khyonieheart.eden.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.utils.logging.Logger.InfoType;
-import fish.yukiemeralis.eden.utils.map.IDataListMap;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
+import coffee.khyonieheart.eden.utils.map.IDataListMap;
 
 /**
  * A collection of slightly random utilities involving classes and data.

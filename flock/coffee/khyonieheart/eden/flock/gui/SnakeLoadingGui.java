@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock.gui;
+package coffee.khyonieheart.eden.flock.gui;
 
 import java.util.Random;
 
@@ -9,12 +9,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import fish.yukiemeralis.eden.Eden;
-import fish.yukiemeralis.eden.surface2.GuiUtils;
-import fish.yukiemeralis.eden.surface2.SurfaceGui;
-import fish.yukiemeralis.eden.surface2.enums.DefaultClickAction;
-import fish.yukiemeralis.eden.utils.ItemUtils;
-import fish.yukiemeralis.flock.gui.snake.SnakeBearing;
+import coffee.khyonieheart.eden.Eden;
+import coffee.khyonieheart.eden.flock.gui.snake.SnakeBearing;
+import coffee.khyonieheart.eden.surface.GuiUtils;
+import coffee.khyonieheart.eden.surface.SurfaceGui;
+import coffee.khyonieheart.eden.surface.enums.DefaultClickAction;
+import coffee.khyonieheart.eden.utils.ItemUtils;
 
 /**
  * A silly GUI that randomly plays Snake. Used as an entertaining alternative to a generic loading screen when updating the repository list.

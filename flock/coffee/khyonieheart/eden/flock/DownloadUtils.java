@@ -1,4 +1,4 @@
-package fish.yukiemeralis.flock;
+package coffee.khyonieheart.eden.flock;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,9 +12,9 @@ import java.net.URL;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-import fish.yukiemeralis.eden.utils.JsonUtils;
-import fish.yukiemeralis.eden.utils.result.Result;
-import fish.yukiemeralis.flock.enums.JsonDownloadStatus;
+import coffee.khyonieheart.eden.flock.enums.JsonDownloadStatus;
+import coffee.khyonieheart.eden.utils.JsonUtils;
+import coffee.khyonieheart.eden.utils.result.Result;
 
 public class DownloadUtils 
 {

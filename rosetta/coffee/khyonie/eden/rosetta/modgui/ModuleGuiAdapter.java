@@ -1,17 +1,18 @@
-package fish.yukiemeralis.eden.core.modgui;
+package coffee.khyonie.eden.rosetta.modgui;
 
-import fish.yukiemeralis.eden.module.EdenModule;
-import fish.yukiemeralis.eden.module.EdenModule.LoadBefore;
-import fish.yukiemeralis.eden.module.annotation.PreventUnload;
-import fish.yukiemeralis.eden.module.java.enums.CallerToken;
-import fish.yukiemeralis.eden.surface2.SimpleComponentBuilder.SimpleComponentAction;
-import fish.yukiemeralis.eden.surface2.component.GuiComponent;
-import fish.yukiemeralis.eden.surface2.component.GuiItemStack;
-import fish.yukiemeralis.eden.utils.ChatUtils;
-import fish.yukiemeralis.eden.utils.ItemUtils;
-import fish.yukiemeralis.eden.utils.PrintUtils;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
+
+import coffee.khyonieheart.eden.module.EdenModule;
+import coffee.khyonieheart.eden.module.EdenModule.LoadBefore;
+import coffee.khyonieheart.eden.module.annotation.PreventUnload;
+import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.surface.SimpleComponentBuilder.SimpleComponentAction;
+import coffee.khyonieheart.eden.surface.component.GuiComponent;
+import coffee.khyonieheart.eden.surface.component.GuiItemStack;
+import coffee.khyonieheart.eden.utils.ChatUtils;
+import coffee.khyonieheart.eden.utils.ItemUtils;
+import coffee.khyonieheart.eden.utils.PrintUtils;
 
 /**
  * Adapter class for Eden modules to be Surface-compatible.

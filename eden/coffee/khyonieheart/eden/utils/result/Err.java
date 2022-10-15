@@ -1,6 +1,6 @@
-package fish.yukiemeralis.eden.utils.result;
+package coffee.khyonieheart.eden.utils.result;
 
-import fish.yukiemeralis.eden.utils.exception.UnwrapException;
+import coffee.khyonieheart.eden.utils.exception.UnwrapException;
 
 public class Err implements Result 
 {

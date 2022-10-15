@@ -1,4 +1,4 @@
-package fish.yukiemeralis.eden.module.java.enums;
+package coffee.khyonieheart.eden.module.java.enums;
 
 /**
  * Represents a type of release branch.
