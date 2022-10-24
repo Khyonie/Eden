@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta;
+package coffee.khyonieheart.eden.rosetta;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

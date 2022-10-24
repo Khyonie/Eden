@@ -12,8 +12,6 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import coffee.khyonie.eden.rosetta.CompletionsManager;
-import coffee.khyonie.eden.rosetta.CompletionsManager.ObjectMethodPair;
 import coffee.khyonieheart.eden.Eden;
 import coffee.khyonieheart.eden.module.EdenModule;
 import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
@@ -21,6 +19,8 @@ import coffee.khyonieheart.eden.module.annotation.EdenConfig;
 import coffee.khyonieheart.eden.module.annotation.ModuleFamily;
 import coffee.khyonieheart.eden.module.annotation.PreventUnload;
 import coffee.khyonieheart.eden.module.java.enums.CallerToken;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager.ObjectMethodPair;
 import coffee.khyonieheart.eden.utils.FileUtils;
 import coffee.khyonieheart.eden.utils.JsonUtils;
 import coffee.khyonieheart.eden.utils.PrintUtils;

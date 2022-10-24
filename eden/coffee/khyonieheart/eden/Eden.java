@@ -70,7 +70,7 @@ public class Eden extends JavaPlugin
 		"verboseLogging", "false",
 		"flyingSolo", "false",
 		"elevatedUsersIgnorePerms", "true",
-		"preferredPermissionsManager", "coffee.khyonieheart.eden.auth.EdenPermissionManager",
+		"preferredPermissionsManager", "coffee.khyonieheart.eden.checkpoint.EdenPermissionManager",
 		"displayModErrorsWithoutVerbose", "false",
 		"loggingTheme", "classic", // Options are "classic" and "precipice"
 		"prelude", "true"

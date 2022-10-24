@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta;
+package coffee.khyonieheart.eden.rosetta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
