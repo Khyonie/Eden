@@ -13,11 +13,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 
-import coffee.khyonieheart.eden.rosetta.CompletionsManager;
-import coffee.khyonieheart.eden.rosetta.CompletionsManager.ObjectMethodPair;
 import coffee.khyonieheart.eden.Eden;
 import coffee.khyonieheart.eden.permissions.PermissionsManager;
 import coffee.khyonieheart.eden.permissions.PlayerData;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager.ObjectMethodPair;
 import coffee.khyonieheart.eden.utils.FileUtils;
 import coffee.khyonieheart.eden.utils.JsonUtils;
 import coffee.khyonieheart.eden.utils.PrintUtils;

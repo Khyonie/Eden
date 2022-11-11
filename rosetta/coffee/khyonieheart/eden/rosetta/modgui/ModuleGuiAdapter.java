@@ -1,6 +1,5 @@
 package coffee.khyonieheart.eden.rosetta.modgui;
 
-
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import coffee.khyonieheart.eden.module.EdenModule;
