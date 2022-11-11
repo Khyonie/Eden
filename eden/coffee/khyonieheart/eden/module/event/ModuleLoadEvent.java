@@ -7,7 +7,7 @@ import coffee.khyonieheart.eden.module.EdenModule;
 
 /**
  * Called when an Eden module is loaded into memory from its file.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class ModuleLoadEvent extends Event
 {

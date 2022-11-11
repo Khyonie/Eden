@@ -14,7 +14,7 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * Collection of utilities to manage .json files.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class JsonUtils 
 {

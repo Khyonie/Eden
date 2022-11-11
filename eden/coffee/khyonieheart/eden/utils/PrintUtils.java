@@ -24,7 +24,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 
 /**
  * A collection of utilities for printing text to players, entities, and the console.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class PrintUtils 
 {

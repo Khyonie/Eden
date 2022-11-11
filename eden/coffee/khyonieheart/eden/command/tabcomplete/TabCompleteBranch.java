@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * An object that contains a String label and a list of branches.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class TabCompleteBranch implements TabCompleter
 {

@@ -11,7 +11,7 @@ import coffee.khyonieheart.eden.utils.PrintUtils;
 
 /**
  * UUID ban command for /uuidban
- * @author Yuki_emeralis
+ * @author Khyonie
  * @since 1.5.0
  */
 public class UuidBanCommand extends EdenCommand

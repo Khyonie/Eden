@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta;
+package coffee.khyonieheart.eden.rosetta;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

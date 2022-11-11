@@ -9,7 +9,7 @@ import coffee.khyonieheart.eden.module.java.enums.BranchType;
 
 /**
  * Represents a type of program "branch".
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

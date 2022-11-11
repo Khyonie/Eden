@@ -7,7 +7,7 @@ import coffee.khyonieheart.eden.module.EdenModule;
 
 /**
  * Called when an Eden module is disabled.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class ModuleDisableEvent extends Event
 {

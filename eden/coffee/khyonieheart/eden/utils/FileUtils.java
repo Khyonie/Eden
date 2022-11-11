@@ -10,7 +10,7 @@ import com.google.common.io.Files;
 
 /**
  * Utility class for files and folders.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class FileUtils 
 {

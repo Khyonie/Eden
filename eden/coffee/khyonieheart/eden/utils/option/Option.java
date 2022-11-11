@@ -18,7 +18,7 @@ package coffee.khyonieheart.eden.utils.option;
  * <pre><code>
  *Object contained = switch(option)
  *{
- *   case Some some -> some.unwrap(Option.class);
+ *   case Some some -> some.unwrap(Object.class);
  *   case None none -> null;
  *}; 
  * </code></pre>

@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Yuki_emeralis https://yukiemeralis.blogspot.com
+Copyright 2021 Khyonie https://yukiemeralis.blogspot.com
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import coffee.khyonieheart.eden.utils.option.OptionState;
 
 /**
  * Represents the Eden core plugin, with module management and commands.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 @Branch(BranchType.RELEASE_CANDIDATE)
 public class Eden extends JavaPlugin

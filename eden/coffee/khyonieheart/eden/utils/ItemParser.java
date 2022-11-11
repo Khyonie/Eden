@@ -4,7 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * A generic item parser that can read and write objects of type T to an itemstack's persistent data container.
- * @author Yuki_emeralis
+ * @author Khyonie
  *
  * @param <T> Type of object to read/write
  */

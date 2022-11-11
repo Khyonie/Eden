@@ -18,7 +18,7 @@ import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 /**
  * Base class for all Eden permissions handlers.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public abstract class PermissionsManager 
 {

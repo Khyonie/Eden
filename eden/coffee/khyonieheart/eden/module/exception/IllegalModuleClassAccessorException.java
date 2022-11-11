@@ -6,7 +6,7 @@ import coffee.khyonieheart.eden.module.EdenModule;
  * Exception that is thrown when a class inside a module that is not permitted to access a resource attempts to access
  * such a resource.
  * @since 1.7.3
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class IllegalModuleClassAccessorException extends RuntimeException
 {

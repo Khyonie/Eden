@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 /**
  * An instance of a UUID ban to be loaded on checkpoint startup.
- * @author Yuki_emeralis
+ * @author Khyonie
  * @since 1.5.0
  */
 public class UuidBanEntry 

@@ -8,7 +8,7 @@ import org.bukkit.Material;
 
 /**
  * A simple module family registry, each with an icon and description.
- * @author Yuki_emeralis
+ * @author Khyonie
  * @deprecated Module families are now registered automagically with hints given via annotation on a per-module basis.
  */
 @Deprecated

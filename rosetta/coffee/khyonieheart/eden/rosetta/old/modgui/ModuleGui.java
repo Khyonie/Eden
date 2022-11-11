@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta.old.modgui;
+package coffee.khyonieheart.eden.rosetta.old.modgui;
 
 import coffee.khyonieheart.eden.module.annotation.Unimplemented;
 

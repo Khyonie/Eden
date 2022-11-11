@@ -11,7 +11,7 @@ import com.google.gson.annotations.Expose;
  * A grouped list of permission and permission states. Players can be assigned groups to have permissions added in bulk.<p>
  * Permissions can be "negative" or revoked, meaning players cannot use the associated command, even if they've been allowed access elsewhere. 
  * @since 1.4.10
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class PermissionGroup 
 {

@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Annotation to notify Eden that this module has a configuration file.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

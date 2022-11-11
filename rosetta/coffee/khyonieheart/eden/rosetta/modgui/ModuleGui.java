@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta.modgui;
+package coffee.khyonieheart.eden.rosetta.modgui;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that marks a class to be ignored by the class collection process.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

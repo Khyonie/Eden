@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Yuki_emeralis https://yukiemeralis.blogspot.com/
+Copyright 2021 Khyonie https://yukiemeralis.blogspot.com/
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package coffee.khyonie.eden.rosetta;
+package coffee.khyonieheart.eden.rosetta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import coffee.khyonieheart.eden.utils.PrintUtils;
 @ModInfo(
     modName = "Rosetta", 
     description = "Eden's core module.",
-    maintainer = "Yuki_emeralis",
+    maintainer = "Khyonie",
     version = "1.6.5",
     modIcon = Material.ENDER_EYE,
     supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2", "v1_19_R1"}

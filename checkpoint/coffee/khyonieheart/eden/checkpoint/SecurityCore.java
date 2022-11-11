@@ -12,8 +12,8 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import coffee.khyonie.eden.rosetta.CompletionsManager;
-import coffee.khyonie.eden.rosetta.CompletionsManager.ObjectMethodPair;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager.ObjectMethodPair;
 import coffee.khyonieheart.eden.Eden;
 import coffee.khyonieheart.eden.module.EdenModule;
 import coffee.khyonieheart.eden.module.EdenModule.ModInfo;
@@ -30,14 +30,14 @@ import coffee.khyonieheart.eden.utils.option.Option;
  * Checkpoint module class. Checkpoint handles various small security tasks, as well as providing two options for
  * permissions managers in EdenPermissionManager and BukkitPermissionManager.
  * @since 1.0
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 @ModInfo (
     modName = "Checkpoint",
     description = "Provides permissions for users and commands.",
     version = "1.4.4",
     modIcon = Material.IRON_BARS,
-    maintainer = "Yuki_emeralis",
+    maintainer = "Khyonie",
     supportedApiVersions = {"v1_16_R3", "v1_17_R1", "v1_18_R1", "v1_18_R2", "v1_19_R1"}
 )
 @ModuleFamily(name = "Eden core modules", icon = Material.ENDER_EYE)

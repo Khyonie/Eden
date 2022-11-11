@@ -10,7 +10,7 @@ public interface Logger
 
     /**
      * Category of information, used for logging.
-     * @author Yuki_emeralis
+     * @author Khyonie
      */
     public static enum InfoType
     {

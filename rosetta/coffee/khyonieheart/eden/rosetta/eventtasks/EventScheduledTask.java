@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta.eventtasks;
+package coffee.khyonieheart.eden.rosetta.eventtasks;
 
 import org.bukkit.event.Event;
 

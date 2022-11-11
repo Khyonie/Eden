@@ -13,8 +13,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 
-import coffee.khyonie.eden.rosetta.CompletionsManager;
-import coffee.khyonie.eden.rosetta.CompletionsManager.ObjectMethodPair;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager;
+import coffee.khyonieheart.eden.rosetta.CompletionsManager.ObjectMethodPair;
 import coffee.khyonieheart.eden.Eden;
 import coffee.khyonieheart.eden.permissions.PermissionsManager;
 import coffee.khyonieheart.eden.permissions.PlayerData;
@@ -27,7 +27,7 @@ import coffee.khyonieheart.eden.utils.option.Option;
 /**
  * Eden's permissions manager. Supplies default permissions, and supports permissions groups out of the box.
  * @since 1.4.10
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class EdenPermissionManager extends PermissionsManager
 {

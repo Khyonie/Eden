@@ -19,7 +19,7 @@ import coffee.khyonieheart.eden.utils.ChatUtils;
 @ModInfo(
     modName = "Prelude",
     description = "Module interface for Eden internals.",
-    maintainer = "Yuki_emeralis",
+    maintainer = "Khyonie",
     modIcon = Material.WHITE_CONCRETE,
     version = "1.0.0",
     supportedApiVersions = { "v1_19_R1" }

@@ -2,7 +2,7 @@ package coffee.khyonieheart.eden.module.java.enums;
 
 /**
  * Represents a type of release branch.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public enum BranchType 
 {

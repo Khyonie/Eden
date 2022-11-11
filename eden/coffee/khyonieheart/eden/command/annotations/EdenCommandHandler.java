@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation to mark a method named "edencommand_name" as a valid command method
  * @since 1.0
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

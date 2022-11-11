@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 /**
  * Represents a type of user requesting a resource.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public enum CallerToken 
 {

@@ -14,7 +14,7 @@ import coffee.khyonieheart.eden.utils.option.Option;
 /**
  * Helper class to obscure commands the player does not have access to.<p>
  * If <code>obscureDisallowedCommands</code> is set to false, this listener does nothing.
- * @author Yuki_emeralis
+ * @author Khyonie
  * @since 1.5.5
  */
 public class CommandObscureListener implements Listener

@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Yuki_emeralis https://yukiemeralis.blogspot.com
+Copyright 2021 Khyonie https://yukiemeralis.blogspot.com
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package coffee.khyonie.eden.rosetta;
+package coffee.khyonieheart.eden.rosetta;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,8 +33,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import coffee.khyonie.eden.rosetta.Rosetta.DisableRequest;
-import coffee.khyonie.eden.rosetta.modgui.ModuleGui;
+import coffee.khyonieheart.eden.rosetta.Rosetta.DisableRequest;
+import coffee.khyonieheart.eden.rosetta.modgui.ModuleGui;
 import coffee.khyonieheart.eden.Eden;
 import coffee.khyonieheart.eden.checkpoint.EdenPermissionManager;
 import coffee.khyonieheart.eden.checkpoint.PermissionGroup;
@@ -1277,7 +1277,7 @@ public class CoreCommand extends EdenCommand
         buffer = buffer.replace("┌", "└").replace("┐", "┘");
         PrintUtils.sendMessage(sender, buffer);
 
-        PrintUtils.sendMessage(sender, "§oWith love from Yuki_emeralis §r§c:heart:");
+        PrintUtils.sendMessage(sender, "§oWith love from Khyonie §r§c:heart:");
         PrintUtils.sendMessage(sender, "Project is maintained here: §9https://github.com/YukiEmeralis/Eden");
 
         PrintUtils.sendMessage(sender, 

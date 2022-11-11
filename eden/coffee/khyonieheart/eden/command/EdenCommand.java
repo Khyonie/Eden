@@ -27,7 +27,7 @@ import coffee.khyonieheart.eden.utils.logging.Logger.InfoType;
 
 /**
  * An instance of an Eden command. Please look at the wiki @ https://github.com/YukiEmeralis/Eden for documentation.
- * @author Yuki_emeralis
+ * @author Khyonie
  * @since 1.0
  */
 public abstract class EdenCommand extends Command

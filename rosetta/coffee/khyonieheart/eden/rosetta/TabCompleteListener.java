@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta;
+package coffee.khyonieheart.eden.rosetta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Listener for Eden TabComplete suggestions.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class TabCompleteListener implements Listener
 {

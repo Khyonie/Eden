@@ -35,7 +35,7 @@ import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * Special classloader that loads an Eden module from a file.
- * @author Yuki_emeralis
+ * @author Khyonie
  * @since 2.0.0
  */
 @SuppressWarnings("unused")

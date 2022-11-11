@@ -10,7 +10,7 @@ import java.util.Map;
  * An instance of a TabComplete tree. Note that this class does NOT implement {@link TabCompleter}, and does not fulfill 
  * the contract of such classes.
  * @since 1.3.0
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class TabCompleteTree 
 {

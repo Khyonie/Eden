@@ -24,7 +24,7 @@ import coffee.khyonieheart.eden.utils.option.Option;
 @ModInfo(
     modName = "Flock",
     description = "Handler for module repositories.",
-    maintainer = "Yuki_emeralis",
+    maintainer = "Khyonie",
     modIcon = Material.END_PORTAL_FRAME,
     version = "2.0.0",
     supportedApiVersions = { "v1_19_R1" }

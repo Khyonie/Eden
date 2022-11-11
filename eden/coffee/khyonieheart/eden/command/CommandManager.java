@@ -20,7 +20,7 @@ import coffee.khyonieheart.eden.utils.option.Option;
 
 /**
  * General-purpose handler for registering and unregistering Eden commands into the server.
- * @author Yuki_emeralis
+ * @author Khyonie
  * @since 1.0
  */
 public class CommandManager 

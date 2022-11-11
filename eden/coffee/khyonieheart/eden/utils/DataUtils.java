@@ -21,7 +21,7 @@ import coffee.khyonieheart.eden.utils.map.IDataListMap;
 
 /**
  * A collection of slightly random utilities involving classes and data.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class DataUtils 
 {

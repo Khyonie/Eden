@@ -1,4 +1,4 @@
-package coffee.khyonie.eden.rosetta.modgui;
+package coffee.khyonieheart.eden.rosetta.modgui;
 
 
 import org.bukkit.event.inventory.InventoryClickEvent;

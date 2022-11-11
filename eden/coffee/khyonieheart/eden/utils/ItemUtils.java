@@ -16,7 +16,7 @@ import coffee.khyonieheart.eden.Eden;
 
 /**
  * A collection of utilities to change an itemstack's metadata.
- * @author Yuki_emeralis
+ * @author Khyonie
  */
 public class ItemUtils 
 {

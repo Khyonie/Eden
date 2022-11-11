@@ -38,7 +38,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * Represents an Eden module.
- * @author Yuki_emeralis
+ * @author Khyonie
  * @since 1.0
  */
 @HideFromCollector
@@ -349,7 +349,7 @@ public abstract class EdenModule
 
     /**
      * Required annotation for all Eden modules to set themselves apart from other modules.
-     * @author Yuki_emeralis
+     * @author Khyonie
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
@@ -726,7 +726,7 @@ public abstract class EdenModule
 
     /**
      * Annotation to notify Eden that this module depends on other modules.
-     * @author Yuki_emeralis
+     * @author Khyonie
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
